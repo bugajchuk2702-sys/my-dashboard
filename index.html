@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -51,7 +51,7 @@ body{margin:0;min-height:100vh;color:var(--tx);
 @keyframes f2{to{transform:translate(-8vmax,-5vmax) scale(.92)}}
 @media (prefers-reduced-motion:reduce){.bg i{animation:none}*{transition:none!important}}
 
-.wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:max(22px,env(safe-area-inset-top)) 20px 140px}
+.wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:calc(max(14px,env(safe-area-inset-top)) + 80px) 20px 48px}
 header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:10px 4px 22px}
 #date{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--tx2)}
 h1{margin:2px 0 0;font-size:clamp(30px,5vw,44px);font-weight:700;letter-spacing:-.035em;line-height:1.05}
@@ -181,9 +181,9 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border:0;border-radiu
 .deal .m button:disabled{opacity:.3;cursor:default}
 .more{font-size:12px;color:var(--tx2);text-align:center;padding:4px}
 
-nav.tabs{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;display:flex;gap:4px;padding:6px;border-radius:99px;
+nav.tabs{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);z-index:20;display:flex;gap:4px;padding:6px;border-radius:99px;
   background:var(--glass);-webkit-backdrop-filter:blur(36px) saturate(200%);backdrop-filter:blur(36px) saturate(200%);border:1px solid var(--stroke);
-  box-shadow:0 18px 50px rgba(0,0,0,.18),0 1px 0 rgba(255,255,255,.5) inset;max-width:calc(100vw - 20px)}
+  box-shadow:0 10px 36px rgba(30,40,100,.14),0 1px 0 rgba(255,255,255,.6) inset;max-width:calc(100vw - 20px)}
 nav.tabs button{display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:transparent;color:var(--tx2);font:inherit;font-size:11px;font-weight:600;
   padding:9px 20px 7px;border-radius:99px;cursor:pointer;transition:.3s cubic-bezier(.2,.8,.2,1);min-width:0}
 nav.tabs button svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -249,7 +249,7 @@ function seed(){
   const dm=k=>iso(new Date(y,m,Math.max(1,dd-k)));
   const pm=(k,day)=>iso(new Date(y,m-k,day));
   return {
-    tab:'personal',theme:'auto',name:'',cur:'₴',
+    tab:'personal',theme:'light',name:'',cur:'₴',
     tasks:[{id:uid(),t:'Спланировать неделю',done:true},{id:uid(),t:'Позвонить родителям',done:false},{id:uid(),t:'Прогулка 30 минут',done:false}],
     habits:[
       {id:uid(),name:'Вода с утра',days:{[ago(0)]:1,[ago(1)]:1,[ago(2)]:1,[ago(4)]:1}},
@@ -287,6 +287,7 @@ function seed(){
 }
 let S;
 try{const r=localStorage.getItem(KEY);S=r?Object.assign(seed(),JSON.parse(r)):seed()}catch(e){S=seed()}
+if(S.theme!=='dark')S.theme='light';
 /* ---------- сохранение: устройство + облако (если доступно) ---------- */
 let cloudRef=null,syncState='local',pushT=null,pushing=false,pushAgain=false;
 const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
@@ -469,7 +470,7 @@ function sheetHtml(){
   return `<div class="sheet-bg" data-a="closebg"><div class="sheet" role="dialog" aria-label="Настройки"><h2>Настройки <button class="icon-btn" data-a="close" aria-label="Закрыть">✕</button></h2>
   <div class="set"><span>Ваше имя</span><input data-bind="name" value="${esc(S.name)}" placeholder="Необязательно" style="width:190px"></div>
   <div class="set"><span>Валюта</span><div class="seg">${['₴','$','€','₽'].map(c=>`<button class="${S.cur===c?'on':''}" data-a="cur" data-v="${c}">${c}</button>`).join('')}</div></div>
-  <div class="set"><span>Тема</span><div class="seg">${[['auto','Авто'],['light','Светлая'],['dark','Тёмная']].map(([k,n])=>`<button class="${S.theme===k?'on':''}" data-a="theme" data-v="${k}">${n}</button>`).join('')}</div></div>
+  <div class="set"><span>Тема</span><div class="seg">${[['light','Светлая'],['dark','Тёмная']].map(([k,n])=>`<button class="${S.theme===k?'on':''}" data-a="theme" data-v="${k}">${n}</button>`).join('')}</div></div>
   <div class="set"><span>Хранение</span><span class="val" style="white-space:normal;text-align:right">${cloudRef?'☁️ Автосохранение в облаке включено':'Только на этом устройстве'}</span></div>
   <h3 style="margin:16px 0 8px;font-size:15px">Резервная копия</h3>
   <textarea id="bk" style="min-height:90px;font-size:12px;font-family:ui-monospace,Menlo,monospace" placeholder="Здесь появится копия данных. Чтобы восстановить — вставьте сюда ранее сохранённый текст.">${bkText?esc(bkText):''}</textarea>
