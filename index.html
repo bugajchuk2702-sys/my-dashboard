@@ -301,7 +301,8 @@ const streak=has=>{let n=0,d=new Date();if(!has(iso(d)))d=addDays(d,-1);while(ha
 const WD=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],WDL=['П','В','С','Ч','П','С','В'];
 const MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const FREQS=[['daily','Ежедневно'],['alt','Через день'],['dow','По дням']];
-let habMonth=today().slice(0,7),editHab=null,newFreq='daily',newDow=[],newHabName='';
+const HAB_START='2026-11';
+let habMonth=today().slice(0,7)<HAB_START?HAB_START:today().slice(0,7),editHab=null,newFreq='daily',newDow=[],newHabName='';
 const dkey=(y,m,d)=>y+'-'+pad(m+1)+'-'+pad(d);
 const kdate=k=>new Date(k+'T00:00:00');
 const wdMon=dt=>(dt.getDay()+6)%7;
@@ -334,6 +335,11 @@ function monthStats(h,y,m){
   return {done,plan:(h.freq||'daily')==='alt'?null:plan};
 }
 let renderedMonth='';
+function monthKeys(){
+  const [sy,sm]=HAB_START.split('-').map(Number),n=new Date(),end=new Date(n.getFullYear(),n.getMonth()+6,1),out=[];
+  for(let d=new Date(sy,sm-1,1);d<=end;d=new Date(d.getFullYear(),d.getMonth()+1,1))out.push(d.getFullYear()+'-'+pad(d.getMonth()+1));
+  return out;
+}
 function habRow(h,y,m,dim,t,isCur){
   const f=h.freq||'daily',st=habStreak(h),ms=monthStats(h,y,m);
   const flabel=f==='daily'?'каждый день':f==='alt'?'через день':((h.dow||[]).map(i=>WD[i]).join(',')||'—');
@@ -350,8 +356,7 @@ function habitsCard(){
   const eh=S.habits.find(x=>x.id===editHab),f=eh&&(eh.freq||'daily');
   const edit=eh?`<div class="hedit"><div class="lbl" style="margin-bottom:6px">Расписание: <b>${esc(eh.name)}</b></div><div class="seg">${FREQS.map(([k,n])=>`<button class="${f===k?'on':''}" data-a="hfreq" data-id="${eh.id}" data-v="${k}">${n}</button>`).join('')}</div>${f==='dow'?`<div class="wds">${WD.map((n,i)=>`<button class="${(eh.dow||[]).includes(i)?'on':''}" data-a="hdow" data-id="${eh.id}" data-v="${i}">${n}</button>`).join('')}</div>`:''}<div class="acts" style="margin-top:10px"><button class="btn sm" data-a="hedit" data-id="${eh.id}">Готово</button><button class="btn danger sm" data-a="hdel" data-id="${eh.id}">Удалить привычку</button></div></div>`:'';
   return `<section class="card c12"><h3>Привычки<small>${MONTHS[m]} ${y}</small></h3>
-  <div class="mrow"><div class="yr"><button class="btn ghost sm" data-a="hyear" data-v="-1" aria-label="Прошлый год">‹</button><span>${y}</span><button class="btn ghost sm" data-a="hyear" data-v="1" aria-label="Следующий год">›</button></div>
-  <div class="mchips">${MONTHS.map((n,i)=>{const key=y+'-'+pad(i+1);return `<button class="${key===habMonth?'on':''} ${key===cur?'cur':''}" data-a="hmonth" data-v="${key}">${n}</button>`}).join('')}</div>${isCur?'':`<button class="btn ghost sm" style="flex:none" data-a="hmonth" data-v="${cur}">Сегодня</button>`}</div>
+  <div class="mrow"><div class="mchips">${monthKeys().map(key=>{const [ky,km]=key.split('-').map(Number);return `<button class="${key===habMonth?'on':''} ${key===cur?'cur':''}" data-a="hmonth" data-v="${key}">${MONTHS[km-1]}${ky!==+HAB_START.slice(0,4)?' ’'+String(ky).slice(2):''}</button>`}).join('')}</div>${isCur?'':`<button class="btn ghost sm" style="flex:none" data-a="hmonth" data-v="${cur}">Сегодня</button>`}</div>
   ${S.habits.length?`<div class="hscroll"><div class="hm"><div class="hr hh"><div class="hn"></div>${head}</div>${S.habits.map(h=>habRow(h,y,m,dim,t,isCur)).join('')}</div></div>`:'<p class="empty">Добавьте первую привычку</p>'}
   ${edit}
   <form class="hadd" data-f="addHabit"><input name="name" data-bind="newHab" placeholder="Новая привычка" autocomplete="off" value="${esc(newHabName)}" required><div class="seg">${FREQS.map(([k,n])=>`<button type="button" class="${newFreq===k?'on':''}" data-a="nfreq" data-v="${k}">${n}</button>`).join('')}</div>${newFreq==='dow'?`<div class="wds">${WD.map((n,i)=>`<button type="button" class="${newDow.includes(i)?'on':''}" data-a="ndow" data-v="${i}">${n}</button>`).join('')}</div>`:''}<button class="btn">Добавить</button></form></section>`;
