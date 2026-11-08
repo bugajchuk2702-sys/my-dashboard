@@ -474,14 +474,7 @@ function seed(){
       {id:uid(),name:'Бег',freq:'alt',days:{[ago(1)]:1,[ago(3)]:1,[ago(5)]:1}}],
     events:[{id:uid(),t:'День рождения друга',d:iso(new Date(y,m,dd+9))},{id:uid(),t:'Визит к врачу',d:iso(new Date(y,m,dd+3))}],
     notes:'',mood:{date:'',v:0},water:{date:'',n:0},
-    tx:[
-      {id:uid(),type:'in',amt:45000,cat:'Зарплата',note:'Аванс',date:iso(new Date(y,m,1))},
-      {id:uid(),type:'in',amt:12000,cat:'Бизнес',note:'Проект',date:dm(2)},
-      {id:uid(),type:'out',amt:9500,cat:'Жильё',note:'Аренда',date:iso(new Date(y,m,1))},
-      {id:uid(),type:'out',amt:3200,cat:'Еда',note:'Продукты',date:dm(1)},
-      {id:uid(),type:'out',amt:1100,cat:'Транспорт',note:'',date:dm(2)},
-      {id:uid(),type:'out',amt:2400,cat:'Развлечения',note:'Кино и ужин',date:dm(3)},
-      {id:uid(),type:'out',amt:1800,cat:'Здоровье',note:'',date:dm(0)}],
+    tx:[],
     budget:30000,
     saves:[{id:uid(),name:'Отпуск',target:80000,saved:24000},{id:uid(),name:'Подушка безопасности',target:150000,saved:61000}],
     goals:[{id:uid(),name:'Английский до уровня B2',p:35},{id:uid(),name:'Пробежать 10 км',p:60}],
@@ -674,7 +667,7 @@ finance(){
   const R=44,C=2*Math.PI*R;let off=0;
   const donut=cats.length?`<div class="donut"><svg width="130" height="130" viewBox="0 0 110 110"><circle cx="55" cy="55" r="${R}" stroke="var(--fill)"/>${cats.map(([c,v],i)=>{const len=v/exp*C;const s=`<circle cx="55" cy="55" r="${R}" stroke="${PAL[i%PAL.length]}" stroke-dasharray="${Math.max(len-2,0.5)} ${C}" stroke-dashoffset="${-off}" stroke-linecap="round"/>`;off+=len;return s}).join('')}</svg>
     <div class="leg">${cats.map(([c,v],i)=>`<div><i style="background:${PAL[i%PAL.length]}"></i><span>${c}</span><span>${fmt(v)}</span></div>`).join('')}</div></div>`:'<p class="empty">На этой неделе расходов нет</p>';
-  const list=txm.filter(x=>x.type===txType).sort((a,b)=>b.date.localeCompare(a.date));
+  const list=txMo.filter(x=>x.type===txType).sort((a,b)=>b.date.localeCompare(a.date));
   const totalSaved=sumBy(S.saves,x=>x.saved),defDate=days.includes(t)?t:days[6],dl=days.filter(k=>k>=t).length;
   const dlt=expPrev?Math.round((expM-expPrev)/expPrev*100):null;
   return `<div class="grid">
@@ -685,7 +678,7 @@ finance(){
     <div class="big sm">${Math.round(bp)}%</div>${bar(bp,bc)}
     <p class="lbl" style="margin:10px 0 0">${exp>wb?`Превышено на <b class="down">${fmt(exp-wb)}</b>`:`Осталось <b>${fmt(wb-exp)}</b>${dl&&days.includes(t)?` · ${dl} дн. до конца недели`:''}`}</p></section>
   <section class="card c6"><h3>Расходы по категориям</h3>${donut}</section>
-  <section class="card c7 tx"><h3>Операции недели<small>${list.length}</small></h3>
+  <section class="card c7 tx"><h3>Операции · ${MONTHS[mi].toLowerCase()}<small>${list.length}</small></h3>
     <div class="seg" style="margin-bottom:12px"><button class="${txType==='out'?'on':''}" data-a="txtype" data-v="out">Расход</button><button class="${txType==='in'?'on':''}" data-a="txtype" data-v="in">Доход</button></div>
     <form class="add" data-f="addTx" style="margin:0 0 8px"><input type="number" name="amt" placeholder="Сумма" min="0" step="any" inputmode="decimal" required><select name="cat">${CATS[txType].map(c=>`<option>${c}</option>`).join('')}</select><input name="note" placeholder="Заметка" autocomplete="off"><input type="date" name="date" value="${defDate}" required><button class="btn">Добавить</button></form>
     ${list.length?list.map(x=>{const ci=Math.max(0,(x.type==='out'?CATS.out:CATS.in).indexOf(x.cat));return `<div class="row"><div class="badge" style="background:${x.type==='in'?'var(--green)':PAL[ci%PAL.length]}">${esc(x.cat.slice(0,2))}</div><div class="grow">${esc(x.note||x.cat)}<small>${esc(x.cat)} · ${dshort(x.date)}</small></div><span class="amt ${x.type}">${x.type==='in'?'+':'−'}${fmt(x.amt)}</span>${delBtn('tx',x.id)}</div>`}).join(''):'<p class="empty">Операций за эту неделю нет</p>'}</section>
