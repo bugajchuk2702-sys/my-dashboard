@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Дашборд">
 <title>Мой дашборд</title>
+<script src="config.js"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -210,7 +211,7 @@ nav.tabs button.on{background:var(--fill);color:var(--accent)}
   <header>
     <div><div id="date"></div><h1 id="hello"></h1></div>
     <div class="hdr-r">
-      <div class="pill glass on" id="net"><b></b><span>Онлайн</span></div>
+      <div class="pill glass on" id="net" data-a="settings" style="cursor:pointer" title="Настройки и облако"><b></b><span>Онлайн</span></div>
       <button class="icon-btn glass" data-a="settings" aria-label="Настройки">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg>
       </button>
@@ -288,43 +289,79 @@ function seed(){
 let S;
 try{const r=localStorage.getItem(KEY);S=r?Object.assign(seed(),JSON.parse(r)):seed()}catch(e){S=seed()}
 if(S.theme!=='dark')S.theme='light';
-/* ---------- сохранение: устройство + облако (если доступно) ---------- */
-let cloudRef=null,syncState='local',pushT=null,pushing=false,pushAgain=false;
+/* ---------- сохранение: устройство + облако Supabase ---------- */
+const CFG=window.SUPABASE||{};const SB=String(CFG.url||'').replace(/\/+$/,'');const sbOn=!!(SB&&CFG.anon);
+const SKEY='my-dashboard-sb';
+let sess=null;try{sess=JSON.parse(localStorage.getItem(SKEY)||'null')}catch(e){}
+let syncState=sbOn&&sess?'saving':'local',pushT=null,pushing=false,pushAgain=false,lastSync=0,cloudMsg='',sbEmail='';
 const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const save=()=>{S._t=Date.now();saveLocal();schedulePush()};
-function schedulePush(){if(!cloudRef)return;syncState='saving';net();clearTimeout(pushT);pushT=setTimeout(push,1200)}
+const hdr=t=>({apikey:CFG.anon,Authorization:'Bearer '+(t||CFG.anon),'Content-Type':'application/json'});
+function setSess(j){
+  sess={access_token:j.access_token,refresh_token:j.refresh_token,expires_at:j.expires_at||Math.floor(Date.now()/1000)+(j.expires_in||3600),user:{id:j.user.id,email:j.user.email}};
+  try{localStorage.setItem(SKEY,JSON.stringify(sess))}catch(e){}
+}
+function dropSess(){sess=null;syncState='local';try{localStorage.removeItem(SKEY)}catch(e){}}
+async function authCall(path,body){
+  const r=await fetch(SB+'/auth/v1/'+path,{method:'POST',headers:hdr(),body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok){const e=new Error(j.msg||j.error_description||j.message||('HTTP '+r.status));e.status=r.status;throw e}
+  return j;
+}
+async function getToken(){
+  if(!sess)throw Object.assign(new Error('no session'),{status:401});
+  if(sess.expires_at-60<Date.now()/1000){
+    try{setSess(await authCall('token?grant_type=refresh_token',{refresh_token:sess.refresh_token}))}
+    catch(e){if(e.status>=400&&e.status<500){dropSess();net()}throw e}
+  }
+  return sess.access_token;
+}
+async function rest(method,qs,body,extra){
+  const t=await getToken();
+  const r=await fetch(SB+'/rest/v1/dash_state'+qs,{method,headers:Object.assign(hdr(t),extra||{}),body:body?JSON.stringify(body):undefined});
+  if(!r.ok){const e=new Error('HTTP '+r.status);e.status=r.status;throw e}
+  return method==='GET'?r.json():null;
+}
+const failState=e=>!sess?'local':(e&&e.status>=400&&e.status<500?'error':'pending');
+function schedulePush(){if(!sbOn||!sess)return;syncState='saving';net();clearTimeout(pushT);pushT=setTimeout(push,1200)}
 async function push(){
-  if(!cloudRef)return;
+  pushT=null;
+  if(!sbOn||!sess)return;
+  if(!navigator.onLine){syncState='pending';net();return}
   if(pushing){pushAgain=true;return}
   pushing=true;
-  try{if(!S._t)S._t=Date.now();await cloudRef.set({json:JSON.stringify(S),t:S._t});syncState='synced'}
-  catch(e){syncState='error'}
+  try{
+    if(!S._t)S._t=Date.now();
+    await rest('POST','?on_conflict=user_id',{user_id:sess.user.id,data:S,updated_at:new Date(S._t).toISOString()},{Prefer:'resolution=merge-duplicates,return=minimal'});
+    syncState='synced';lastSync=Date.now();
+  }catch(e){syncState=failState(e)}
   pushing=false;net();
   if(pushAgain){pushAgain=false;push()}
 }
-async function initCloud(){
+async function pull(){
+  if(!sbOn||!sess)return;
+  if(!navigator.onLine){syncState='pending';net();return}
   try{
-    if(!window.claude||!window.claude.use)return;
-    const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);
-    if(!db||!user)return;
-    const id=await user.id();if(!id)return;
-    cloudRef=db.doc('data/users/'+id+'/state');
-    syncState='saving';net();
-    const slow=setTimeout(()=>{if(syncState!=='synced'){syncState='slow';net()}},10000);
-    cloudRef.onSnapshot(snap=>{
-      if(!snap.metadata.fromCache)clearTimeout(slow);
-      const d=snap.exists?snap.data():null;
-      if(d&&d.json){
-        try{
-          const r=JSON.parse(d.json),rt=r._t||0,lt=S._t||0;
-          if(rt>lt){S=Object.assign(seed(),r);saveLocal();render()}
-          else if(rt<lt&&!snap.metadata.fromCache)schedulePush();
-        }catch(e){}
-      }else if(!snap.metadata.fromCache){schedulePush()}
-      if(!snap.metadata.hasPendingWrites&&!snap.metadata.fromCache&&!pushing&&!pushT)syncState='synced';
-      net();
-    },()=>{syncState='error';net()});
-  }catch(e){}
+    const rows=await rest('GET','?select=data&user_id=eq.'+sess.user.id);
+    const r=rows[0]&&rows[0].data,rt=(r&&r._t)||0,lt=S._t||0;
+    if(r&&rt>lt){S=Object.assign(seed(),r);if(S.theme!=='dark')S.theme='light';saveLocal();render();syncState='synced';lastSync=Date.now()}
+    else if(!r||rt<lt){await push();return}
+    else{syncState='synced';lastSync=Date.now()}
+  }catch(e){syncState=failState(e)}
+  net();
+}
+const AUTH_ERR={'Invalid login credentials':'Неверная почта или пароль.','User already registered':'Такой аккаунт уже есть — нажмите «Войти».','Email not confirmed':'Почта не подтверждена: откройте письмо от Supabase и перейдите по ссылке.'};
+async function doAuth(path){
+  const email=($('#sbe')||{}).value||sbEmail,password=($('#sbp')||{}).value||'';
+  sbEmail=email.trim();
+  if(!sbEmail||!password){cloudMsg='Введите почту и пароль.';render();return}
+  cloudMsg='Подождите…';render();
+  try{
+    const j=await authCall(path,{email:sbEmail,password});
+    if(!j.access_token){cloudMsg='Аккаунт создан. Подтвердите почту по письму и нажмите «Войти».'}
+    else{setSess(j);cloudMsg='';syncState='saving';net();await pull()}
+  }catch(e){cloudMsg=AUTH_ERR[e.message]||(!navigator.onLine||e instanceof TypeError?'Нет связи с интернетом.':e.message)}
+  render();
 }
 let sheet=false,sheetMsg='',resetArm=false,bkText='',txType='out',anim=true;
 
@@ -465,13 +502,20 @@ business(){
 }};
 
 /* ---------- render ---------- */
+function cloudBlock(){
+  const inp='style="width:100%;margin-bottom:8px"';
+  if(!sbOn)return '<div class="set"><span>Облако</span><span class="val">Не подключено</span></div>';
+  if(!sess)return `<h3 style="margin:14px 0 8px;font-size:15px">☁️ Облако — войдите, чтобы данные сохранялись</h3><input id="sbe" type="email" autocomplete="username" placeholder="Почта" value="${esc(sbEmail)}" ${inp}><input id="sbp" type="password" autocomplete="current-password" placeholder="Пароль (от 6 символов)" ${inp}><div class="acts" style="margin-top:0"><button class="btn sm" data-a="sbin">Войти</button><button class="btn ghost sm" data-a="sbup">Создать аккаунт</button></div>${cloudMsg?`<p class="note" style="color:var(--accent)">${esc(cloudMsg)}</p>`:''}`;
+  const st={saving:'Сохраняется…',synced:'Всё сохранено в облаке'+(lastSync?' · '+new Date(lastSync).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''),pending:'Ждёт интернета — отправится автоматически',error:'Ошибка облака — нажмите «Синхронизировать»',local:''}[syncState]||'';
+  return `<div class="set"><span>☁️ Облако</span><span class="val" style="white-space:normal;text-align:right">${esc(sess.user.email)}</span></div><p class="note" style="margin:0 0 8px">${st}</p><div class="acts" style="margin-top:0"><button class="btn ghost sm" data-a="sbsync">Синхронизировать сейчас</button><button class="btn ghost sm" data-a="sbout">Выйти</button></div>`;
+}
 function sheetHtml(){
   if(!sheet)return '';
   return `<div class="sheet-bg" data-a="closebg"><div class="sheet" role="dialog" aria-label="Настройки"><h2>Настройки <button class="icon-btn" data-a="close" aria-label="Закрыть">✕</button></h2>
   <div class="set"><span>Ваше имя</span><input data-bind="name" value="${esc(S.name)}" placeholder="Необязательно" style="width:190px"></div>
   <div class="set"><span>Валюта</span><div class="seg">${['₴','$','€','₽'].map(c=>`<button class="${S.cur===c?'on':''}" data-a="cur" data-v="${c}">${c}</button>`).join('')}</div></div>
   <div class="set"><span>Тема</span><div class="seg">${[['light','Светлая'],['dark','Тёмная']].map(([k,n])=>`<button class="${S.theme===k?'on':''}" data-a="theme" data-v="${k}">${n}</button>`).join('')}</div></div>
-  <div class="set"><span>Хранение</span><span class="val" style="white-space:normal;text-align:right">${cloudRef?'☁️ Автосохранение в облаке включено':'Только на этом устройстве'}</span></div>
+  ${cloudBlock()}
   <h3 style="margin:16px 0 8px;font-size:15px">Резервная копия</h3>
   <textarea id="bk" style="min-height:90px;font-size:12px;font-family:ui-monospace,Menlo,monospace" placeholder="Здесь появится копия данных. Чтобы восстановить — вставьте сюда ранее сохранённый текст.">${bkText?esc(bkText):''}</textarea>
   <div class="acts"><button class="btn ghost sm" data-a="bkmake">Создать копию</button><button class="btn ghost sm" data-a="bkcopy">Копировать</button><button class="btn ghost sm" data-a="bkfile">Скачать файл</button><button class="btn ghost sm" data-a="bkload">Восстановить из текста</button><button class="btn ghost sm" data-a="import">Из файла</button></div>
@@ -498,7 +542,7 @@ function render(){
 
 /* ---------- actions ---------- */
 const A={
-  tab:d=>{S.tab=d.v;anim=true;window.scrollTo({top:0,behavior:'smooth'})},
+  tab:d=>{S.tab=d.v;anim=true;window.scrollTo({top:0,behavior:'smooth'});return 'skip-save'},
   tg:d=>{const i=S[d.k].find(x=>x.id===d.id);if(i)i.done=!i.done},
   dl:d=>{S[d.k]=S[d.k].filter(x=>x.id!==d.id)},
   hd:d=>{const h=S.habits.find(x=>x.id===d.id);if(h.days[d.v])delete h.days[d.v];else h.days[d.v]=1},
@@ -508,11 +552,11 @@ const A={
   learn:d=>{S.learn[today()]=(S.learn[today()]||0)+ +d.v},
   learnclr:()=>{delete S.learn[today()]},
   mv:d=>{const x=S.deals.find(q=>q.id===d.id);x.stage=clamp(x.stage+ +d.v,0,2);x.paid=x.stage===2?(x.paid||today()):null},
-  settings:()=>{sheet=true;sheetMsg='';resetArm=false;bkText=''},
-  close:()=>{sheet=false},
-  closebg:(d,el,e)=>{if(e.target!==el)return 'skip';sheet=false},
+  settings:()=>{sheet=true;sheetMsg='';resetArm=false;bkText='';return 'skip-save'},
+  close:()=>{sheet=false;return 'skip-save'},
+  closebg:(d,el,e)=>{if(e.target!==el)return 'skip';sheet=false;return 'skip-save'},
   cur:d=>{S.cur=d.v},
-  theme:d=>{S.theme=d.v},
+  theme:d=>{S.theme=d.v;return 'skip-save'},
   bkmake:()=>{bkText=JSON.stringify(S);sheetMsg='Копия создана. Скопируйте её или скачайте файл.';return 'skip-save'},
   bkcopy:()=>{
     const t=$('#bk');if(!t.value){bkText=JSON.stringify(S);sheetMsg='Копия создана — нажмите «Копировать» ещё раз.';return 'skip-save'}
@@ -528,6 +572,10 @@ const A={
     const v=($('#bk').value||'').trim();
     try{const j=JSON.parse(v);if(typeof j!=='object'||!j||Array.isArray(j))throw 0;S=Object.assign(seed(),j);bkText='';sheetMsg='Данные восстановлены.'}
     catch(e){bkText=v;sheetMsg='Не удалось прочитать текст копии.';return 'skip-save'}},
+  sbin:()=>{doAuth('token?grant_type=password');return 'skip-save'},
+  sbup:()=>{doAuth('signup');return 'skip-save'},
+  sbout:()=>{dropSess();cloudMsg='';return 'skip-save'},
+  sbsync:()=>{syncState='saving';pull();return 'skip-save'},
   import:()=>{$('#imp').click();return 'skip'},
   reset:()=>{
     if(!resetArm){resetArm=true;return 'skip-save'}
@@ -539,7 +587,7 @@ document.addEventListener('click',e=>{
   const f=A[el.dataset.a];if(!f)return;
   const res=f(el.dataset,el,e);
   if(res==='skip')return;
-  if(res!=='skip-save')save();
+  if(res==='skip-save')saveLocal();else save();
   render();
 });
 
@@ -593,17 +641,20 @@ document.addEventListener('change',e=>{
 /* ---------- network status ---------- */
 function net(){
   const on=navigator.onLine,n=$('#net');let txt,warn=!on;
-  if(!on)txt=cloudRef?'Офлайн · сохранится позже':'Офлайн';
-  else if(!cloudRef)txt='Онлайн';
+  if(!on)txt=sbOn&&sess?'Офлайн · сохранится позже':'Офлайн';
+  else if(!sbOn)txt='Онлайн';
+  else if(!sess){txt='Войти в облако';warn=true}
   else if(syncState==='saving')txt='Сохранение…';
-  else if(syncState==='error'){txt='Ошибка синхронизации';warn=true}
-  else if(syncState==='slow'){txt='Облако недоступно';warn=true}
+  else if(syncState==='pending'){txt='Ждёт сети';warn=true}
+  else if(syncState==='error'){txt='Ошибка облака';warn=true}
   else txt='☁ Сохранено';
   n.classList.toggle('off',warn);n.querySelector('span').textContent=txt;
 }
-addEventListener('online',()=>{net();if(cloudRef)schedulePush()});addEventListener('offline',net);
+addEventListener('online',()=>{net();if(sess)pull()});addEventListener('offline',net);
+addEventListener('focus',()=>{if(sess&&!pushT&&!pushing)pull()});
+setInterval(()=>{if(sess&&syncState==='pending'&&navigator.onLine)pull()},30000);
 setInterval(head,60000);
-net();render();initCloud();
+net();render();if(sess)pull();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 })();
 </script>
