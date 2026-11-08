@@ -35,6 +35,7 @@ body[data-tab=personal]{--accent:#0a84ff}
 body[data-tab=finance]{--accent:#30d158}
 body[data-tab=growth]{--accent:#bf5af2}
 body[data-tab=business]{--accent:#ff9f0a}
+body[data-tab=stats]{--accent:#ff375f}
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg1)}
@@ -238,6 +239,15 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border:0;border-radiu
 .hr .c:disabled{opacity:.2;cursor:default}
 .hr .c.sk{display:grid;place-items:center;background:rgba(255,69,58,.14);box-shadow:inset 0 0 0 1.5px rgba(255,69,58,.35)}
 .hr .c.sk::after{content:'✕';color:var(--red);font-size:11px;font-weight:700;line-height:1}
+.shead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sring .ring span{font-size:17px}
+.kv{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 16px;margin-top:14px}
+.kv b{display:block;font-size:20px;font-weight:700;letter-spacing:-.02em}
+.kv span{font-size:12px;color:var(--tx2)}
+.wbars{display:flex;align-items:flex-end;gap:8px;height:84px;margin-top:8px}
+.wbars .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:5px}
+.wbars .b{width:100%;max-width:36px;border-radius:9px 9px 4px 4px;background:linear-gradient(180deg,var(--accent),color-mix(in srgb,var(--accent) 50%,transparent));min-height:3px;transition:height .6s cubic-bezier(.2,.8,.2,1)}
+.wbars small{font-size:10px;color:var(--tx2);text-transform:uppercase}
 .hedit{margin-top:10px}
 
 nav.tabs{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);z-index:20;display:flex;gap:4px;padding:6px;border-radius:99px;
@@ -247,7 +257,7 @@ nav.tabs button{display:flex;flex-direction:column;align-items:center;gap:3px;bo
   padding:9px 20px 7px;border-radius:99px;cursor:pointer;transition:.3s cubic-bezier(.2,.8,.2,1);min-width:0}
 nav.tabs button svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 nav.tabs button.on{background:var(--fill);color:var(--accent)}
-@media (max-width:520px){nav.tabs button{padding:8px 11px 6px}nav.tabs{gap:0}}
+@media (max-width:520px){nav.tabs button{padding:8px 7px 6px;font-size:10px}nav.tabs{gap:0}}
 @media (min-width:900px){nav.tabs button{flex-direction:row;gap:8px;font-size:14px;padding:11px 22px}}
 
 .sheet-bg{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.32);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;animation:fade .25s both}
@@ -336,6 +346,23 @@ function monthStats(h,y,m){
   for(let d=1;d<=dim;d++){const k=dkey(y,m,d);if(k>t)break;if(h.days[k])done++;if(h.skip&&h.skip[k])skip++;if((h.freq||'daily')!=='alt'&&(isDue(h,k)||h.days[k]))plan++}
   return {done,skip,plan:(h.freq||'daily')==='alt'?null:plan};
 }
+function bestStreak(h){
+  const keys=Object.keys(h.days).sort();if(!keys.length)return 0;
+  const f=h.freq||'daily',t=today();
+  if(f==='alt'){let best=1,n=1;for(let i=1;i<keys.length;i++){const gap=Math.round((kdate(keys[i])-kdate(keys[i-1]))/864e5);n=gap<=2?n+1:1;if(n>best)best=n}return best}
+  let best=0,n=0,d=kdate(keys[0]);const end=kdate(t);
+  while(d<=end){const k=iso(d);if(h.days[k]){n++;if(n>best)best=n}else if((h.skip&&h.skip[k])||(isDue(h,k)&&k!==t))n=0;d=addDays(d,1)}
+  return best;
+}
+function weekdayStats(h,y,m){
+  const dim=new Date(y,m+1,0).getDate(),t=today(),done=Array(7).fill(0),plan=Array(7).fill(0);
+  for(let d=1;d<=dim;d++){const k=dkey(y,m,d);if(k>t)break;const w=wdMon(kdate(k));if(h.days[k]){done[w]++;plan[w]++}else if(isDue(h,k)&&!(k===t))plan[w]++}
+  return {done,plan};
+}
+function monthChipsHtml(){
+  const cur=today().slice(0,7);
+  return `<div class="mrow"><div class="mchips">${monthKeys().map(key=>{const [ky,km]=key.split('-').map(Number);return `<button class="${key===habMonth?'on':''} ${key===cur?'cur':''}" data-a="hmonth" data-v="${key}">${MONTHS[km-1]}${ky!==+HAB_START.slice(0,4)?' ’'+String(ky).slice(2):''}</button>`}).join('')}</div>${habMonth===cur?'':`<button class="btn ghost sm" style="flex:none" data-a="hmonth" data-v="${cur}">Сегодня</button>`}</div>`;
+}
 let renderedMonth='';
 function monthKeys(){
   const [sy,sm]=HAB_START.split('-').map(Number),n=new Date(),end=new Date(n.getFullYear(),n.getMonth()+6,1),out=[];
@@ -350,7 +377,7 @@ function habRow(h,y,m,dim,t,isCur){
     const k=dkey(y,m,d),done=!!h.days[k],skp=!!(h.skip&&h.skip[k]),cls=done?'on':skp?'sk':(!isDue(h,k)?(f==='alt'?'rest':'off'):'');
     cells+=`<button class="c ${cls} ${k===t?'t':''}" ${k>t?'disabled':''} data-a="hd" data-id="${h.id}" data-v="${k}" aria-label="${k}"></button>`;
   }
-  return `<div class="hr"><div class="hn" data-a="hedit" data-id="${h.id}" title="Настроить расписание"><b>${esc(h.name)}</b><small>${flabel} · 🔥${st} · ${ms.done}${ms.plan!=null?'/'+ms.plan:''}${ms.skip?' · ✕'+ms.skip:''}</small></div>${cells}</div>`;
+  return `<div class="hr"><div class="hn" data-a="hedit" data-id="${h.id}" title="Настроить расписание"><b>${esc(h.name)}</b><small>${flabel}</small></div>${cells}</div>`;
 }
 function habitsCard(){
   const t=today(),y=+habMonth.slice(0,4),m=+habMonth.slice(5)-1,cur=t.slice(0,7),isCur=habMonth===cur,dim=new Date(y,m+1,0).getDate();
@@ -494,7 +521,8 @@ const TABS=[
   {id:'personal',name:'Личное',ic:'<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5"/>'},
   {id:'finance',name:'Финансы',ic:'<rect x="3" y="6" width="18" height="13" rx="3.5"/><path d="M3 10.5h18"/><circle cx="16.5" cy="14.8" r="1"/>'},
   {id:'growth',name:'Саморазвитие',ic:'<path d="M12 3l1.9 5.3L19.2 10l-5.3 1.9L12 17.2l-1.9-5.3L4.8 10l5.3-1.7z"/><path d="M19 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>'},
-  {id:'business',name:'Бизнес',ic:'<rect x="3" y="7" width="18" height="13" rx="3.5"/><path d="M9 7V5.5A2.5 2.5 0 0111.5 3h1A2.5 2.5 0 0115 5.5V7M3 13h18"/>'}
+  {id:'business',name:'Бизнес',ic:'<rect x="3" y="7" width="18" height="13" rx="3.5"/><path d="M9 7V5.5A2.5 2.5 0 0111.5 3h1A2.5 2.5 0 0115 5.5V7M3 13h18"/>'},
+  {id:'stats',name:'Статистика',ic:'<path d="M5 20V11M12 20V4M19 20v-7"/><path d="M3 20.5h18"/>'}
 ];
 const CATS={out:['Еда','Транспорт','Жильё','Развлечения','Здоровье','Покупки','Другое'],in:['Зарплата','Бизнес','Подарок','Другое']};
 const PAL=['#0a84ff','#30d158','#ff9f0a','#bf5af2','#ff375f','#64d2ff','#ffd60a'];
@@ -620,6 +648,32 @@ business(){
     S.projects.length?S.projects.map(p=>`<div class="item"><div class="top"><span>${esc(p.name)}</span><span class="val"><span data-lbl>${p.p}%</span> ${delBtn('projects',p.id)}</span></div>${rangeIn('projects',p.id,p.p,100)}</div>`).join(''):'<p class="empty">Проектов пока нет</p>'
   }<form class="add" data-f="addProject"><input name="name" placeholder="Новый проект" autocomplete="off" required><button class="btn">Добавить</button></form></section>
   ${listCard('ideas','Задачи и идеи','Идея или задача','c12')}
+  </div>`;
+},
+
+stats(){
+  const t=today(),cur=t.slice(0,7),[y,mi]=habMonth.split('-').map(Number),m=mi-1,dim=new Date(y,m+1,0).getDate();
+  const elapsed=habMonth<cur?dim:habMonth===cur?+t.slice(8):0;
+  const rows=S.habits.map(h=>{
+    const ms=monthStats(h,y,m),alt=(h.freq||'daily')==='alt',plan=ms.plan!=null?ms.plan:Math.ceil(elapsed/2);
+    return {h,ms,plan,pct:plan?Math.min(100,ms.done/plan*100):0,best:bestStreak(h),now:habStreak(h),wd:weekdayStats(h,y,m),total:Object.keys(h.days).length,alt};
+  });
+  const done=rows.reduce((a,r)=>a+r.ms.done,0),skip=rows.reduce((a,r)=>a+r.ms.skip,0),plan=rows.reduce((a,r)=>a+r.plan,0);
+  const pct=plan?Math.min(100,done/plan*100):0,bestRow=rows.slice().sort((a,b)=>b.best-a.best)[0];
+  const fl=h=>{const f=h.freq||'daily';return f==='daily'?'каждый день':f==='alt'?'через день':((h.dow||[]).map(i=>WD[i]).join(', ')||'—')};
+  return `<div class="grid">
+  <section class="card c12"><h3>Статистика привычек<small>${MONTHS[m]} ${y}</small></h3>${monthChipsHtml()}</section>
+  ${rows.length?`
+  <section class="card c3 half"><div class="lbl">Выполнено</div><div class="big sm">${done}</div><div class="delta lbl">отметок за месяц</div></section>
+  <section class="card c3 half"><div class="lbl">Пропущено</div><div class="big sm ${skip?'down':''}">${skip}</div><div class="delta lbl">отмечено крестиком</div></section>
+  <section class="card c3 half"><div class="lbl">Выполнение</div><div class="big sm">${Math.round(pct)}%</div><div class="delta lbl">от запланированного</div></section>
+  <section class="card c3 half"><div class="lbl">Лучшая серия</div><div class="big sm">${bestRow.best}</div><div class="delta lbl">${esc(bestRow.h.name)}</div></section>
+  ${rows.map(r=>`<section class="card c6"><div class="shead"><div><h3 style="margin:0">${esc(r.h.name)}</h3><div class="lbl">${fl(r.h)}</div></div><div class="sring">${ring(r.pct,84)}</div></div>
+    <div class="kv"><div><b>${r.ms.done}${r.plan?' из '+r.plan:''}</b><span>выполнено за месяц</span></div><div><b>${r.ms.skip}</b><span>пропусков</span></div><div><b>${r.now}</b><span>серия сейчас</span></div><div><b>${r.best}</b><span>лучшая серия</span></div></div>
+    <div class="lbl" style="margin-top:16px">По дням недели</div>
+    <div class="wbars">${WDL.map((l,i)=>{const p=r.wd.plan[i]?r.wd.done[i]/r.wd.plan[i]*100:0;return `<div class="col" title="${WD[i]}: ${r.wd.done[i]} из ${r.wd.plan[i]}"><div class="b" style="height:${p}%"></div><small>${l}</small></div>`}).join('')}</div>
+    <div class="lbl" style="margin-top:10px">За всё время отмечено: ${r.total}</div></section>`).join('')}`
+  :'<section class="card c12"><p class="empty">Добавьте привычки на вкладке «Личное», и здесь появится статистика.</p></section>'}
   </div>`;
 }};
 
