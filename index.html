@@ -44,10 +44,10 @@ body{margin:0;min-height:100vh;color:var(--tx);
   font-size:15px;line-height:1.4;letter-spacing:-.011em;-webkit-font-smoothing:antialiased;
   background:linear-gradient(160deg,var(--bg1),var(--bg2));background-attachment:fixed}
 .bg{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none}
-.bg i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;transition:background 1s}
-.bg i:nth-child(1){width:48vmax;height:48vmax;left:-12vmax;top:-14vmax;background:var(--accent);animation:f1 28s ease-in-out infinite alternate}
-.bg i:nth-child(2){width:40vmax;height:40vmax;right:-14vmax;top:18vh;background:#5e5ce6;opacity:.38;animation:f2 34s ease-in-out infinite alternate}
-.bg i:nth-child(3){width:38vmax;height:38vmax;left:20vw;bottom:-22vmax;background:#ff6bb5;opacity:.30;animation:f1 40s ease-in-out infinite alternate-reverse}
+.bg i{position:absolute;border-radius:50%;opacity:.5}
+.bg i:nth-child(1){width:48vmax;height:48vmax;left:-12vmax;top:-14vmax;background:radial-gradient(closest-side,var(--accent),transparent)}
+.bg i:nth-child(2){width:40vmax;height:40vmax;right:-14vmax;top:18vh;background:radial-gradient(closest-side,#5e5ce6,transparent);opacity:.38}
+.bg i:nth-child(3){width:38vmax;height:38vmax;left:20vw;bottom:-22vmax;background:radial-gradient(closest-side,#ff6bb5,transparent);opacity:.30}
 @keyframes f1{to{transform:translate(8vmax,6vmax) scale(1.1)}}
 @keyframes f2{to{transform:translate(-8vmax,-5vmax) scale(.92)}}
 @media (prefers-reduced-motion:reduce){.bg i{animation:none}*{transition:none!important}}
@@ -57,7 +57,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
 #date{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--tx2)}
 h1{margin:2px 0 0;font-size:clamp(30px,5vw,44px);font-weight:700;letter-spacing:-.035em;line-height:1.05}
 .hdr-r{display:flex;align-items:center;gap:10px}
-.glass{background:var(--glass);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);border:1px solid var(--stroke);box-shadow:var(--sh)}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);border:1px solid var(--stroke);box-shadow:var(--sh)}
 .pill{display:flex;align-items:center;gap:7px;padding:7px 13px;border-radius:99px;font-size:13px;font-weight:600}
 .pill b{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(48,209,88,.25)}
 .pill.off b{background:var(--orange);box-shadow:0 0 0 3px rgba(255,159,10,.28)}
@@ -69,7 +69,7 @@ h1{margin:2px 0 0;font-size:clamp(30px,5vw,44px);font-weight:700;letter-spacing:
 @media (max-width:1000px){.c3{grid-column:span 6}.c4,.c5{grid-column:span 6}.c7,.c8{grid-column:span 12}}
 @media (max-width:640px){.hero .big{font-size:30px}.hero{gap:10px}.stats{gap:16px}.ring{transform:scale(.85);transform-origin:right center}.grid{gap:12px}.c3,.c4,.c5,.c6,.c7,.c8{grid-column:span 12}.c3.half{grid-column:span 6}}
 
-.card{border-radius:28px;padding:20px 22px;background:var(--glass);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);border:1px solid var(--stroke);box-shadow:var(--sh);animation:rise .55s cubic-bezier(.2,.8,.2,1) both}
+.card{border-radius:28px;padding:20px 22px;background:var(--glass);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);border:1px solid var(--stroke);box-shadow:var(--sh);animation:rise .55s cubic-bezier(.2,.8,.2,1) both}
 .grid>.card:nth-child(2){animation-delay:.04s}.grid>.card:nth-child(3){animation-delay:.08s}.grid>.card:nth-child(4){animation-delay:.12s}.grid>.card:nth-child(5){animation-delay:.16s}.grid>.card:nth-child(n+6){animation-delay:.2s}
 @keyframes rise{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
 .card h3{margin:0 0 12px;font-size:17px;font-weight:650;letter-spacing:-.02em;display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -295,7 +295,7 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border:0;border-radiu
 .hedit{margin-top:10px}
 
 nav.tabs{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);z-index:20;display:flex;gap:4px;padding:6px;border-radius:99px;
-  background:var(--glass);-webkit-backdrop-filter:blur(36px) saturate(200%);backdrop-filter:blur(36px) saturate(200%);border:1px solid var(--stroke);
+  background:var(--glass);-webkit-backdrop-filter:blur(16px) saturate(150%);backdrop-filter:blur(16px) saturate(150%);border:1px solid var(--stroke);
   box-shadow:0 10px 36px rgba(30,40,100,.14),0 1px 0 rgba(255,255,255,.6) inset;max-width:calc(100vw - 20px)}
 nav.tabs button{display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:transparent;color:var(--tx2);font:inherit;font-size:11px;font-weight:600;
   padding:9px 20px 7px;border-radius:99px;cursor:pointer;transition:.3s cubic-bezier(.2,.8,.2,1);min-width:0}
@@ -304,7 +304,7 @@ nav.tabs button.on{background:var(--fill);color:var(--accent)}
 @media (max-width:520px){nav.tabs button{padding:8px 7px 6px;font-size:10px}nav.tabs{gap:0}}
 @media (min-width:900px){nav.tabs button{flex-direction:row;gap:8px;font-size:14px;padding:11px 22px}}
 
-.sheet-bg{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.32);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;animation:fade .25s both}
+.sheet-bg{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.32);;display:flex;align-items:flex-end;justify-content:center;animation:fade .25s both}
 @keyframes fade{from{opacity:0}}
 .sheet{width:min(520px,100%);max-height:88vh;overflow:auto;border-radius:32px 32px 0 0;padding:22px 22px max(26px,env(safe-area-inset-bottom));background:var(--glass-hi);-webkit-backdrop-filter:blur(40px) saturate(180%);backdrop-filter:blur(40px) saturate(180%);border:1px solid var(--stroke);animation:up .4s cubic-bezier(.2,.8,.2,1) both}
 @media (min-width:640px){.sheet-bg{align-items:center}.sheet{border-radius:32px}}
