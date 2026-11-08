@@ -181,6 +181,41 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border:0;border-radiu
 .deal .m button:disabled{opacity:.3;cursor:default}
 .more{font-size:12px;color:var(--tx2);text-align:center;padding:4px}
 
+.mbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.yr{display:flex;align-items:center;gap:8px;font-weight:650;font-size:16px}
+.mchips{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none;margin:0 -2px 6px}
+.mchips::-webkit-scrollbar{display:none}
+.mchips button{flex:none;border:0;background:var(--fill);color:var(--tx);font:inherit;font-weight:560;font-size:14px;padding:8px 15px;border-radius:99px;cursor:pointer;transition:.2s}
+.mchips button.on{background:var(--accent);color:#fff;box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 40%,transparent)}
+.mchips button.cur:not(.on){box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent) 60%,transparent)}
+.htiles{display:grid;align-items:start;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.htile{background:var(--fill);border-radius:22px;padding:14px 14px 12px}
+.htop{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px}
+.htop .nm{flex:1;min-width:0;font-weight:640;font-size:16px;overflow-wrap:anywhere}
+.htop .nm small{display:block;font-size:12px;color:var(--tx2);font-weight:500;margin-top:1px}
+.chk.lg{width:32px;height:32px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal b{font-size:10px;color:var(--tx2);text-align:center;font-weight:600;text-transform:uppercase;padding-bottom:2px}
+.cal button,.cal span{aspect-ratio:1;border-radius:50%}
+.cal button{border:0;background:var(--glass-hi);color:var(--tx2);font:inherit;font-size:11px;cursor:pointer;padding:0;transition:.2s;display:grid;place-items:center}
+.cal button.on{background:var(--accent);color:#fff;font-weight:650;box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 45%,transparent)}
+.cal button.rest{background:transparent;box-shadow:inset 0 0 0 1.5px var(--sep)}
+.cal button.off{opacity:.45}
+.cal button.t{outline:2px solid color-mix(in srgb,var(--accent) 65%,transparent);outline-offset:1px}
+.cal button:disabled{opacity:.22;cursor:default}
+.hfoot{margin-top:11px;font-size:12px;color:var(--tx2)}
+.hfoot .bar{margin-top:6px;height:6px}
+.hedit{background:var(--glass-hi);border-radius:16px;padding:10px;margin-bottom:10px}
+.hedit .seg button{font-size:12px;padding:6px 4px}
+.wds{display:flex;gap:4px;margin-top:8px}
+.wds button{flex:1;border:0;background:var(--fill);color:var(--tx);font:inherit;font-size:12px;font-weight:560;padding:6px 0;border-radius:9px;cursor:pointer}
+.wds button.on{background:var(--accent);color:#fff}
+.hadd{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.hadd input{flex:1 1 180px}
+.hadd .seg{flex:0 1 270px}
+.hadd .seg button{font-size:13px;padding:7px 8px}
+.hadd .wds{flex:1 1 100%;margin:0}
+
 nav.tabs{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);z-index:20;display:flex;gap:4px;padding:6px;border-radius:99px;
   background:var(--glass);-webkit-backdrop-filter:blur(36px) saturate(200%);backdrop-filter:blur(36px) saturate(200%);border:1px solid var(--stroke);
   box-shadow:0 10px 36px rgba(30,40,100,.14),0 1px 0 rgba(255,255,255,.6) inset;max-width:calc(100vw - 20px)}
@@ -239,6 +274,66 @@ const fmtK=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1000?(n/1000).toFixed(n>=1e4?0:1)
 const dshort=d=>new Date(d+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const streak=has=>{let n=0,d=new Date();if(!has(iso(d)))d=addDays(d,-1);while(has(iso(d))){n++;d=addDays(d,-1)}return n};
+
+/* ---------- привычки: расписание, серии, месяцы ---------- */
+const WD=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],WDL=['П','В','С','Ч','П','С','В'];
+const MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const FREQS=[['daily','Ежедневно'],['alt','Через день'],['dow','По дням']];
+let habMonth=today().slice(0,7),editHab=null,newFreq='daily',newDow=[],newHabName='';
+const dkey=(y,m,d)=>y+'-'+pad(m+1)+'-'+pad(d);
+const kdate=k=>new Date(k+'T00:00:00');
+const wdMon=dt=>(dt.getDay()+6)%7;
+const prevKey=k=>iso(addDays(kdate(k),-1));
+function isDue(h,k){
+  const f=h.freq||'daily';
+  if(f==='daily')return true;
+  if(f==='dow')return (h.dow||[]).includes(wdMon(kdate(k)));
+  return !h.days[prevKey(k)];            // «через день»: после выполненного дня — отдых
+}
+function habStreak(h){
+  const f=h.freq||'daily',t=today();
+  if(f==='alt'){
+    let cur=null;
+    for(let i=0;i<=2;i++){const d=addDays(kdate(t),-i);if(h.days[iso(d)]){cur=d;break}}
+    if(!cur)return 0;
+    let n=0;
+    while(cur){n++;let nx=null;for(let i=1;i<=2;i++){const d=addDays(cur,-i);if(h.days[iso(d)]){nx=d;break}}cur=nx}
+    return n;
+  }
+  let n=0,d=kdate(t);
+  for(let i=0;i<800;i++){const k=iso(d);
+    if(h.days[k])n++;else if(isDue(h,k)&&k!==t)break;
+    d=addDays(d,-1)}
+  return n;
+}
+function monthStats(h,y,m){
+  const dim=new Date(y,m+1,0).getDate(),t=today();let done=0,plan=0;
+  for(let d=1;d<=dim;d++){const k=dkey(y,m,d);if(k>t)break;if(h.days[k])done++;if((h.freq||'daily')!=='alt'&&(isDue(h,k)||h.days[k]))plan++}
+  return {done,plan:(h.freq||'daily')==='alt'?null:plan};
+}
+function habTile(h){
+  const [y,mm]=habMonth.split('-').map(Number),m=mm-1,t=today(),isCur=habMonth===t.slice(0,7),f=h.freq||'daily';
+  const flabel=f==='daily'?'каждый день':f==='alt'?'через день':((h.dow||[]).map(i=>WD[i]).join(', ')||'дни не выбраны');
+  const st=habStreak(h),ms=monthStats(h,y,m),pct=ms.plan?ms.done/ms.plan*100:0;
+  const first=wdMon(new Date(y,m,1)),dim=new Date(y,m+1,0).getDate();
+  let cells=WDL.map(l=>`<b>${l}</b>`).join('')+'<span></span>'.repeat(first);
+  for(let d=1;d<=dim;d++){
+    const k=dkey(y,m,d),done=!!h.days[k],future=k>t;
+    const cls=done?'on':(!isDue(h,k)?(f==='alt'?'rest':'off'):'');
+    cells+=`<button class="${cls} ${k===t?'t':''}" ${future?'disabled':''} data-a="hd" data-id="${h.id}" data-v="${k}" aria-label="${k}">${d}</button>`;
+  }
+  const hint=isCur&&!h.days[t]&&!isDue(h,t)?(f==='alt'?'сегодня день отдыха':'сегодня не по расписанию'):'';
+  const edit=editHab===h.id?`<div class="hedit"><div class="seg">${FREQS.map(([k,n])=>`<button class="${f===k?'on':''}" data-a="hfreq" data-id="${h.id}" data-v="${k}">${n}</button>`).join('')}</div>${f==='dow'?`<div class="wds">${WD.map((n,i)=>`<button class="${(h.dow||[]).includes(i)?'on':''}" data-a="hdow" data-id="${h.id}" data-v="${i}">${n}</button>`).join('')}</div>`:''}</div>`:'';
+  return `<div class="htile"><div class="htop"><div class="nm">${esc(h.name)}<small>${flabel} · 🔥 ${st}${hint?' · '+hint:''}</small></div>${isCur?`<button class="chk lg ${h.days[t]?'on':''}" data-a="hd" data-id="${h.id}" data-v="${t}" aria-label="Сегодня">${CHECK}</button>`:''}<button class="x" data-a="hedit" data-id="${h.id}" aria-label="Расписание" title="Расписание">✎</button>${delBtn('habits',h.id)}</div>${edit}<div class="cal">${cells}</div><div class="hfoot">${MONTHS[m]}: ${ms.done}${ms.plan!=null?' из '+ms.plan:''}${ms.plan?' · '+Math.round(pct)+'%':''}${ms.plan?bar(pct):''}</div></div>`;
+}
+function habitsCard(){
+  const t=today(),y=+habMonth.slice(0,4),cur=t.slice(0,7);
+  return `<section class="card c12"><h3>Привычки<small>${MONTHS[+habMonth.slice(5)-1]} ${y}</small></h3>
+  <div class="mbar"><div class="yr"><button class="btn ghost sm" data-a="hyear" data-v="-1" aria-label="Прошлый год">‹</button><span>${y}</span><button class="btn ghost sm" data-a="hyear" data-v="1" aria-label="Следующий год">›</button></div>${habMonth!==cur?'<button class="btn ghost sm" data-a="hmonth" data-v="'+cur+'">К текущему месяцу</button>':''}</div>
+  <div class="mchips">${MONTHS.map((n,i)=>{const key=y+'-'+pad(i+1);return `<button class="${key===habMonth?'on':''} ${key===cur?'cur':''}" data-a="hmonth" data-v="${key}">${n}</button>`}).join('')}</div>
+  ${S.habits.length?`<div class="htiles">${S.habits.map(habTile).join('')}</div>`:'<p class="empty">Добавьте первую привычку</p>'}
+  <form class="hadd" data-f="addHabit"><input name="name" data-bind="newHab" placeholder="Новая привычка" autocomplete="off" value="${esc(newHabName)}" required><div class="seg">${FREQS.map(([k,n])=>`<button type="button" class="${newFreq===k?'on':''}" data-a="nfreq" data-v="${k}">${n}</button>`).join('')}</div>${newFreq==='dow'?`<div class="wds">${WD.map((n,i)=>`<button type="button" class="${newDow.includes(i)?'on':''}" data-a="ndow" data-v="${i}">${n}</button>`).join('')}</div>`:''}<button class="btn">Добавить</button></form></section>`;
+}
 const CHECK='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 
 /* ---------- state ---------- */
@@ -254,7 +349,8 @@ function seed(){
     habits:[
       {id:uid(),name:'Вода с утра',days:{[ago(0)]:1,[ago(1)]:1,[ago(2)]:1,[ago(4)]:1}},
       {id:uid(),name:'Зарядка',days:{[ago(1)]:1,[ago(2)]:1,[ago(3)]:1}},
-      {id:uid(),name:'Чтение 20 минут',days:{[ago(0)]:1,[ago(2)]:1}}],
+      {id:uid(),name:'Чтение 20 минут',days:{[ago(0)]:1,[ago(2)]:1}},
+      {id:uid(),name:'Бег',freq:'alt',days:{[ago(1)]:1,[ago(3)]:1,[ago(5)]:1}}],
     events:[{id:uid(),t:'День рождения друга',d:iso(new Date(y,m,dd+9))},{id:uid(),t:'Визит к врачу',d:iso(new Date(y,m,dd+3))}],
     notes:'',mood:{date:'',v:0},water:{date:'',n:0},
     tx:[
@@ -391,27 +487,24 @@ const getMood=()=>S.mood.date===today()?S.mood.v:0;
 const views={
 personal(){
   const t=today(),dn=S.tasks.filter(x=>x.done).length,tt=S.tasks.length;
-  const hd=S.habits.filter(h=>h.days[t]).length;
+  const hd=S.habits.filter(h=>h.days[t]).length,hdue=S.habits.filter(h=>h.days[t]||isDue(h,t)).length;
   const week=[...Array(7)].map((_,i)=>addDays(new Date(),i-6));
   const pct=tt?dn/tt*100:0;
   const evs=[...S.events].sort((a,b)=>a.d.localeCompare(b.d));
   const left=d=>{const n=Math.round((new Date(d)-new Date(t))/864e5);return n===0?'сегодня':n===1?'завтра':n>1?`через ${n} дн.`:'прошло'};
   return `<div class="grid">
   <section class="card c8"><div class="hero"><div><div class="lbl">Сегодня</div><div class="big">${tt?`${dn} из ${tt} задач`:'Нет задач'}</div>
-    <div class="stats"><div><b>${hd}/${S.habits.length}</b><span class="lbl">привычки</span></div><div><b>${getWater()}/8</b><span class="lbl">стаканов воды</span></div><div><b>${S.events.filter(e=>e.d>=t).length}</b><span class="lbl">событий впереди</span></div></div></div>${ring(pct,128)}</div></section>
+    <div class="stats"><div><b>${hd}/${hdue}</b><span class="lbl">привычки сегодня</span></div><div><b>${getWater()}/8</b><span class="lbl">стаканов воды</span></div><div><b>${S.events.filter(e=>e.d>=t).length}</b><span class="lbl">событий впереди</span></div></div></div>${ring(pct,128)}</div></section>
   <section class="card c4"><h3>Самочувствие</h3><div class="lbl" style="margin-bottom:8px">Настроение</div>
     <div class="moods">${['😞','😕','😐','🙂','😄'].map((e,i)=>`<button class="${getMood()===i+1?'on':''}" data-a="mood" data-v="${i+1}" aria-label="Настроение ${i+1}">${e}</button>`).join('')}</div>
     <div class="lbl" style="margin:16px 0 4px">Вода · ${getWater()} из 8</div>
     <div class="water">${[...Array(8)].map((_,i)=>`<button class="${i<getWater()?'on':''}" data-a="water" data-v="${i+1}" aria-label="Стакан ${i+1}"></button>`).join('')}</div></section>
+  ${habitsCard()}
   ${listCard('tasks','Задачи','Новая задача','c6')}
-  <section class="card c6"><h3>Привычки<small>серия дней</small></h3>${
-    S.habits.length?S.habits.map(h=>`<div class="hab"><div class="nm">${esc(h.name)}<small>🔥 ${streak(d=>h.days[d])} дн. подряд</small></div>
-      <div class="days">${week.map(d=>{const k=iso(d);return `<div class="d ${k===t?'t':''}"><button class="${h.days[k]?'on':''}" data-a="hd" data-id="${h.id}" data-v="${k}" aria-label="${k}"></button>${d.toLocaleDateString('ru-RU',{weekday:'narrow'})}</div>`}).join('')}</div>${delBtn('habits',h.id)}</div>`).join(''):'<p class="empty">Добавьте первую привычку</p>'
-  }<form class="add" data-f="addHabit"><input name="name" placeholder="Новая привычка" autocomplete="off" required><button class="btn">Добавить</button></form></section>
   <section class="card c6"><h3>Важные даты</h3>${
     evs.length?evs.map(e=>`<div class="row" style="${e.d<t?'opacity:.5':''}"><span class="grow">${esc(e.t)}<small class="lbl" style="display:block">${dshort(e.d)}</small></span><span class="val acc" style="font-weight:600">${left(e.d)}</span>${delBtn('events',e.id)}</div>`).join(''):'<p class="empty">Нет предстоящих событий</p>'
   }<form class="add" data-f="addEvent"><input name="t" placeholder="Событие" autocomplete="off" required><input type="date" name="d" value="${t}" required><button class="btn">Добавить</button></form></section>
-  <section class="card c6"><h3>Заметки<small>сохраняются автоматически</small></h3><textarea data-bind="notes" placeholder="Мысли, идеи, списки…">${esc(S.notes)}</textarea></section>
+  <section class="card c12"><h3>Заметки<small>сохраняются автоматически</small></h3><textarea data-bind="notes" placeholder="Мысли, идеи, списки…">${esc(S.notes)}</textarea></section>
   </div>`;
 },
 
@@ -536,12 +629,20 @@ function render(){
   anim=false;
   $('#tabs').innerHTML=TABS.map(t=>`<button class="${S.tab===t.id?'on':''}" data-a="tab" data-v="${t.id}" aria-label="${t.name}"><svg viewBox="0 0 24 24">${t.ic}</svg><span>${t.name}</span></button>`).join('');
   $('#sheet').innerHTML=sheetHtml();
+  const on=document.querySelector('.mchips .on');if(on){const c=on.parentElement;c.scrollLeft=on.offsetLeft-c.clientWidth/2+on.clientWidth/2}
   head();
 }
 
 /* ---------- actions ---------- */
 const A={
   tab:d=>{S.tab=d.v;anim=true;window.scrollTo({top:0,behavior:'smooth'});return 'skip-save'},
+  hmonth:d=>{habMonth=d.v;return 'skip-save'},
+  hyear:d=>{const y=+habMonth.slice(0,4)+ +d.v;habMonth=y+'-'+habMonth.slice(5);return 'skip-save'},
+  nfreq:d=>{newFreq=d.v;return 'skip-save'},
+  ndow:d=>{const i=+d.v;newDow=newDow.includes(i)?newDow.filter(x=>x!==i):[...newDow,i]; return 'skip-save'},
+  hedit:d=>{editHab=editHab===d.id?null:d.id;return 'skip-save'},
+  hfreq:d=>{const h=S.habits.find(x=>x.id===d.id);h.freq=d.v;if(d.v==='dow'&&!(h.dow||[]).length)h.dow=[0,2,4]},
+  hdow:d=>{const h=S.habits.find(x=>x.id===d.id),i=+d.v;h.dow=(h.dow||[]).includes(i)?h.dow.filter(x=>x!==i):[...(h.dow||[]),i]},
   tg:d=>{const i=S[d.k].find(x=>x.id===d.id);if(i)i.done=!i.done},
   dl:d=>{S[d.k]=S[d.k].filter(x=>x.id!==d.id)},
   hd:d=>{const h=S.habits.find(x=>x.id===d.id);if(h.days[d.v])delete h.days[d.v];else h.days[d.v]=1},
@@ -591,7 +692,10 @@ document.addEventListener('click',e=>{
 
 const F={
   addItem:(fd,d)=>{if(fd.t.trim())S[d.k].push({id:uid(),t:fd.t.trim(),done:false})},
-  addHabit:fd=>{S.habits.push({id:uid(),name:fd.name.trim(),days:{}})},
+  addHabit:fd=>{
+    const dow=newDow.slice().sort(),f=newFreq==='dow'&&!dow.length?'daily':newFreq;
+    S.habits.push({id:uid(),name:fd.name.trim(),days:{},freq:f,dow:f==='dow'?dow:[]});
+    newFreq='daily';newDow=[];newHabName='';},
   addEvent:fd=>{S.events.push({id:uid(),t:fd.t.trim(),d:fd.d})},
   addTx:fd=>{const a=num(fd.amt);if(a>0)S.tx.push({id:uid(),type:txType,amt:a,cat:fd.cat,note:fd.note.trim(),date:today()})},
   addSave:fd=>{S.saves.push({id:uid(),name:fd.name.trim(),target:num(fd.target),saved:0})},
@@ -621,6 +725,7 @@ document.addEventListener('input',e=>{
     save();
   }else if(el.dataset.bind){
     const b=el.dataset.bind;
+    if(b==='newHab'){newHabName=el.value;return}
     if(b==='refl')S.refl[today()]=el.value;else S[b]=el.value;
     save();
   }
