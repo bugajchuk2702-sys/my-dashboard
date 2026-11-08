@@ -466,7 +466,7 @@ function seed(){
   return {
     tab:'personal',theme:'light',name:'',cur:'₴',
     tasks:[{id:uid(),t:'Спланировать неделю',done:true,d:iso(new Date(y,m,dd))},{id:uid(),t:'Позвонить родителям',done:false,d:iso(new Date(y,m,dd+1))},{id:uid(),t:'Прогулка 30 минут',done:false,d:iso(new Date(y,m,dd))}],
-    moodLog:{},waterLog:{},weekNotes:{},weekBudget:7000,
+    moodLog:{},waterLog:{},weekNotes:{},weekBudget:7000,cats:{out:[],in:[]},
     habits:[
       {id:uid(),name:'Вода с утра',days:{[ago(0)]:1,[ago(1)]:1,[ago(2)]:1,[ago(4)]:1}},
       {id:uid(),name:'Зарядка',days:{[ago(1)]:1,[ago(2)]:1,[ago(3)]:1}},
@@ -582,6 +582,7 @@ const TABS=[
   {id:'business',name:'Бизнес',ic:'<rect x="3" y="7" width="18" height="13" rx="3.5"/><path d="M9 7V5.5A2.5 2.5 0 0111.5 3h1A2.5 2.5 0 0115 5.5V7M3 13h18"/>'}
 ];
 const CI={'Еда':'<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 1.5-3 4-3 7h3v11M17 3v7"/>','Транспорт':'<rect x="4" y="3.5" width="16" height="14" rx="3"/><path d="M4 11h16M8 21v-3.5M16 21v-3.5"/><circle cx="8" cy="14.5" r=".8"/><circle cx="16" cy="14.5" r=".8"/>','Жильё':'<path d="M3.5 11L12 4l8.5 7M5.5 9.5V20h13V9.5M10 20v-5h4v5"/>','Развлечения':'<rect x="3.5" y="6" width="17" height="14" rx="2.5"/><path d="M3.5 10.5h17M7 6l3 4.5M12 6l3 4.5M17 6l3 4.5"/>','Здоровье':'<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.5 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>','Покупки':'<path d="M5 8h14l-1 12H6L5 8zM9 8V6.5a3 3 0 0 1 6 0V8"/>','Зарплата':'<rect x="3" y="6.5" width="18" height="11" rx="2.5"/><circle cx="12" cy="12" r="2.5"/>','Бизнес':'<rect x="3.5" y="7.5" width="17" height="12" rx="2.5"/><path d="M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5M3.5 13h17"/>','Подарок':'<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M3.5 9h17v3h-17zM12 9v11M12 9c-1-3-4.5-3.5-4.5-1.5S10 9 12 9zM12 9c1-3 4.5-3.5 4.5-1.5S14 9 12 9z"/>'};
+const allCats=t=>[...CATS[t],...(((S.cats||{})[t])||[]).filter(c=>!CATS[t].includes(c))];
 const catIco=c=>`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${CI[c]||'<circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/>'}</svg>`;
 const CATS={out:['Еда','Транспорт','Жильё','Развлечения','Здоровье','Покупки','Другое'],in:['Зарплата','Бизнес','Подарок','Другое']};
 const PAL=['#0a84ff','#30d158','#ff9f0a','#bf5af2','#ff375f','#64d2ff','#ffd60a'];
@@ -682,8 +683,8 @@ finance(){
   <section class="card c6"><h3>По категориям · ${MONTHS[mi].toLowerCase()}</h3><div class="seg" style="margin-bottom:12px"><button class="${txType==='out'?'on':''}" data-a="txtype" data-v="out">Расходы</button><button class="${txType==='in'?'on':''}" data-a="txtype" data-v="in">Доходы</button></div>${donut}</section>
   <section class="card c7 tx"><h3>Операции · ${MONTHS[mi].toLowerCase()}<small>${list.length}</small></h3>
     <div class="seg" style="margin-bottom:12px"><button class="${txType==='out'?'on':''}" data-a="txtype" data-v="out">Расход</button><button class="${txType==='in'?'on':''}" data-a="txtype" data-v="in">Доход</button></div>
-    <form class="add" data-f="addTx" style="margin:0 0 8px"><input type="number" name="amt" placeholder="Сумма" min="0" step="any" inputmode="decimal" required><select name="cat">${CATS[txType].map(c=>`<option>${c}</option>`).join('')}</select><input name="note" placeholder="Заметка" autocomplete="off"><input type="date" name="date" value="${defDate}" required><button class="btn">Добавить</button></form>
-    ${list.length?list.map(x=>{const ci=Math.max(0,(x.type==='out'?CATS.out:CATS.in).indexOf(x.cat));return `<div class="row"><div class="badge" style="background:${x.type==='in'?'var(--green)':PAL[ci%PAL.length]}">${catIco(x.cat)}</div><div class="grow">${esc(x.note||x.cat)}<small>${esc(x.cat)} · ${dshort(x.date)}</small></div><span class="amt ${x.type}">${x.type==='in'?'+':'−'}${fmt(x.amt)}</span>${delBtn('tx',x.id)}</div>`}).join(''):'<p class="empty">Операций за эту неделю нет</p>'}</section>
+    <form class="add" data-f="addTx" style="margin:0 0 8px"><input type="number" name="amt" placeholder="Сумма" min="0" step="any" inputmode="decimal" required><select name="cat">${allCats(txType).map(c=>`<option>${esc(c)}</option>`).join('')}<option value="__new">＋ Своя категория…</option></select><input name="newcat" placeholder="Название категории" maxlength="24" autocomplete="off" style="display:none"><input name="note" placeholder="Заметка" autocomplete="off"><input type="date" name="date" value="${defDate}" required><button class="btn">Добавить</button></form>
+    ${list.length?list.map(x=>{const ci=Math.max(0,allCats(x.type).indexOf(x.cat));return `<div class="row"><div class="badge" style="background:${x.type==='in'?'var(--green)':PAL[ci%PAL.length]}">${catIco(x.cat)}</div><div class="grow">${esc(x.note||x.cat)}<small>${esc(x.cat)} · ${dshort(x.date)}</small></div><span class="amt ${x.type}">${x.type==='in'?'+':'−'}${fmt(x.amt)}</span>${delBtn('tx',x.id)}</div>`}).join(''):'<p class="empty">Операций за эту неделю нет</p>'}</section>
   <section class="card c5"><h3>Накопления<small>${fmt(totalSaved)}</small></h3>${
     S.saves.length?S.saves.map(g=>{const p=g.target?g.saved/g.target*100:0;return `<div class="item"><div class="top"><span>${esc(g.name)}</span><span class="val">${Math.round(p)}% ${delBtn('saves',g.id)}</span></div>${bar(p)}
       <div class="top" style="margin:8px 0 0"><span class="val">${fmt(g.saved)} из ${fmt(g.target)}</span>
@@ -857,7 +858,7 @@ const F={
     newFreq='daily';newDow=[];newHabName='';},
   addTask:(fd,d)=>{if(fd.t.trim())S.tasks.push({id:uid(),t:fd.t.trim(),done:false,d:d.d})},
   addEvent:fd=>{S.events.push({id:uid(),t:fd.t.trim(),d:fd.d})},
-  addTx:fd=>{const a=num(fd.amt);if(a>0)S.tx.push({id:uid(),type:txType,amt:a,cat:fd.cat,note:fd.note.trim(),date:fd.date||today()})},
+  addTx:fd=>{let cat=fd.cat;if(cat==='__new'){cat=(fd.newcat||'').trim().slice(0,24);if(!cat)return 'skip';S.cats=S.cats||{out:[],in:[]};if(!allCats(txType).includes(cat))(S.cats[txType]=S.cats[txType]||[]).push(cat)}const a=num(fd.amt);if(a>0)S.tx.push({id:uid(),type:txType,amt:a,cat,note:fd.note.trim(),date:fd.date||today()})},
   addSave:fd=>{S.saves.push({id:uid(),name:fd.name.trim(),target:num(fd.target),saved:0})},
   deposit:(fd,d)=>{const g=S.saves.find(x=>x.id===d.id);if(g)g.saved=Math.max(0,g.saved+num(fd.amt))},
   addGoal:fd=>{S.goals.push({id:uid(),name:fd.name.trim(),p:0})},
@@ -892,6 +893,7 @@ document.addEventListener('input',e=>{
 });
 document.addEventListener('change',e=>{
   const el=e.target;
+  if(el.name==='cat'&&el.form&&el.form.dataset.f==='addTx'){const n=el.form.elements.newcat;if(n){const on=el.value==='__new';n.style.display=on?'':'none';n.required=on;if(on)n.focus()}return}
   if(el.dataset.set){S[el.dataset.set]=Math.max(0,num(el.value));save();render()}
   else if(el.dataset.r||(el.dataset.bind==='name')){save();render()}
   else if(el.id==='imp'&&el.files[0]){
