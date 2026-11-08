@@ -98,9 +98,11 @@ form.add{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 input,select,textarea{font:inherit;color:inherit;background:var(--fill);border:0;border-radius:13px;padding:10px 13px;outline:none;min-width:0}
 input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2.5px color-mix(in srgb,var(--accent) 55%,transparent)}
 input::placeholder,textarea::placeholder{color:var(--tx2)}
-form.add input[type=text],form.add input:not([type]){flex:1 1 130px}
-form.add input[type=number]{flex:0 1 110px}
-form.add input[type=date]{flex:0 1 150px}
+form.add input[type=text],form.add input:not([type]){flex:1 1 90px;min-width:0}
+form.add input[type=number]{flex:0 1 90px;min-width:0}
+form.add input[type=date]{flex:0 1 140px;min-width:0}
+form.add select{flex:0 1 105px;min-width:0}
+form.add .btn{flex:0 0 auto}
 textarea{width:100%;resize:vertical;min-height:130px;line-height:1.5}
 select{appearance:none;-webkit-appearance:none;padding-right:13px}
 .btn{border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:10px 17px;border-radius:99px;cursor:pointer;transition:transform .15s,filter .15s;white-space:nowrap}
@@ -269,29 +271,27 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border:0;border-radiu
 .sw .col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:100%}
 .sw .b{width:12px;border-radius:4px;background:var(--accent)}
 .sw small{font-size:9px;color:var(--tx2)}
-.wnav{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-.wnav .btn:disabled{opacity:.35;cursor:default}
-.wlab{min-width:130px;text-align:center}
-.wlab b{display:block;font-size:17px;font-weight:700;letter-spacing:-.02em}
-.wlab small{font-size:12px;color:var(--tx2)}
-.wr{display:grid;grid-template-columns:minmax(96px,200px) repeat(7,minmax(0,1fr));gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--sep)}
-.wr:last-of-type{border-bottom:0}
-.wr .hn{position:static;width:auto;background:transparent;padding:0;margin:0}
-.wh{padding:0 0 6px}
-.wd{text-align:center;line-height:1.2}
-.wd small{display:block;font-size:11px;color:var(--tx2);text-transform:uppercase}
-.wd b{font-size:15px;font-weight:650}
-.wd.t b{color:var(--accent)}
-.wc{justify-self:center;width:100%;max-width:46px;aspect-ratio:1;border-radius:50%;border:0;padding:0;background:var(--fill);color:#fff;cursor:pointer;transition:.2s;display:grid;place-items:center}
-.wc svg{width:55%;height:55%}
-.wc.on{background:var(--accent);box-shadow:0 3px 10px color-mix(in srgb,var(--accent) 40%,transparent)}
-.wc.rest{background:transparent;box-shadow:inset 0 0 0 1.5px var(--sep)}
-.wc.off{opacity:.4}
-.wc.sk{background:rgba(255,69,58,.14);box-shadow:inset 0 0 0 1.5px rgba(255,69,58,.35)}
-.wc.sk::after{content:'✕';color:var(--red);font-size:15px;font-weight:700;line-height:1}
-.wc.t{outline:2px solid color-mix(in srgb,var(--accent) 65%,transparent);outline-offset:2px}
-.wc:disabled{opacity:.2;cursor:default}
-@media (max-width:520px){.wr{grid-template-columns:84px repeat(7,minmax(0,1fr));gap:4px}.wr .hn b{font-size:13px}}
+.wbar{display:flex;align-items:center;justify-content:center;gap:10px;width:fit-content;max-width:100%;margin:-6px auto 18px;padding:7px 12px;border-radius:99px}
+.wbar .btn:disabled{opacity:.35;cursor:default}
+.wlab{min-width:120px;text-align:center;line-height:1.2}
+.wlab b{display:block;font-size:16px;font-weight:700;letter-spacing:-.02em}
+.wlab small{font-size:11px;color:var(--tx2)}
+.plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px}
+.pcol{background:var(--fill);border-radius:18px;padding:10px 12px 8px;min-height:120px}
+.pcol.t{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent) 55%,transparent)}
+.pcol h4{margin:0 0 6px;display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em}
+.pcol h4 b{font-size:17px;color:var(--tx);letter-spacing:-.02em}
+.pcol.t h4 b{color:var(--accent)}
+.pcol .row{padding:6px 0;gap:8px;font-size:14px}
+.pcol .chk{width:20px;height:20px}
+.pcol form.add{margin-top:6px}
+.pcol form.add input{padding:7px 10px;font-size:13px;flex:1 1 100%;background:var(--glass-hi)}
+.wk7{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:14px;text-align:center}
+.wk7 div{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--tx2);padding:4px 0;border-radius:10px}
+.wk7 div.t{background:var(--fill)}
+.wk7 span{font-size:17px;line-height:1.2}
+.wk7 em{font-style:normal;font-size:11px;font-variant-numeric:tabular-nums;min-height:13px}
+.chart .col.sel{cursor:pointer}
 .hedit{margin-top:10px}
 
 nav.tabs{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);z-index:20;display:flex;gap:4px;padding:6px;border-radius:99px;
@@ -329,6 +329,7 @@ nav.tabs button.on{background:var(--fill);color:var(--accent)}
       </button>
     </div>
   </header>
+  <div id="wk"></div>
   <main id="view"></main>
 </div>
 <nav class="tabs" id="tabs" aria-label="Разделы"></nav>
@@ -413,50 +414,45 @@ function monthKeys(){
   for(let d=new Date(sy,sm-1,1);d<=end;d=new Date(d.getFullYear(),d.getMonth()+1,1))out.push(d.getFullYear()+'-'+pad(d.getMonth()+1));
   return out;
 }
-const mondayOf=k=>iso(addDays(kdate(k),-wdMon(kdate(k))));
-const START_KEY=HAB_START+'-01';
-let habWeek=mondayOf(today()),habView='marks';
-const weekDays=mon=>[...Array(7)].map((_,i)=>iso(addDays(kdate(mon),i)));
-function weekLabel(mon){
-  const a=kdate(mon),b=addDays(a,6),mo=d=>d.toLocaleDateString('ru-RU',{month:'short'}).replace('.','');
-  return a.getMonth()===b.getMonth()?`${a.getDate()}–${b.getDate()} ${mo(b)}`:`${a.getDate()} ${mo(a)} – ${b.getDate()} ${mo(b)}`;
+function habRow(h,y,m,dim,t,isCur){
+  const f=h.freq||'daily',st=habStreak(h),ms=monthStats(h,y,m);
+  const flabel=f==='daily'?'каждый день':f==='alt'?'через день':((h.dow||[]).map(i=>WD[i]).join(',')||'—');
+  let cells='';
+  for(let d=1;d<=dim;d++){
+    const k=dkey(y,m,d),done=!!h.days[k],skp=!!(h.skip&&h.skip[k]),cls=done?'on':skp?'sk':(!isDue(h,k)?(f==='alt'?'rest':'off'):'');
+    cells+=`<button class="c ${cls} ${k===t?'t':''}" ${k>t?'disabled':''} data-a="hd" data-id="${h.id}" data-v="${k}" aria-label="${k}"></button>`;
+  }
+  return `<div class="hr"><div class="hn" data-a="hedit" data-id="${h.id}" title="Настроить расписание"><b>${esc(h.name)}</b><small>${flabel}</small></div>${cells}</div>`;
 }
-function rangeStats(h,days){
-  const t=today(),alt=(h.freq||'daily')==='alt';let done=0,skip=0,plan=0,elapsed=0;
-  days.forEach(k=>{if(k>t||k<START_KEY)return;elapsed++;if(h.days[k])done++;if(h.skip&&h.skip[k])skip++;if(!alt&&(isDue(h,k)||h.days[k]))plan++});
-  return {done,skip,plan:alt?Math.ceil(elapsed/2):plan};
-}
-const freqLabel=h=>{const f=h.freq||'daily';return f==='daily'?'каждый день':f==='alt'?'через день':((h.dow||[]).map(i=>WD[i]).join(', ')||'—')};
-function habRow(h,days,t){
-  const f=h.freq||'daily';
-  const cells=days.map(k=>{
-    const done=!!h.days[k],skp=!!(h.skip&&h.skip[k]),cls=done?'on':skp?'sk':(!isDue(h,k)?(f==='alt'?'rest':'off'):''),dis=k>t||k<START_KEY;
-    return `<button class="wc ${cls} ${k===t?'t':''}" ${dis?'disabled':''} data-a="hd" data-id="${h.id}" data-v="${k}" aria-label="${k}">${done?CHECK:''}</button>`;
-  }).join('');
-  return `<div class="wr"><div class="hn" data-a="hedit" data-id="${h.id}" title="Настроить расписание"><b>${esc(h.name)}</b><small>${freqLabel(h)}</small></div>${cells}</div>`;
-}
-function habStatsBody(days){
+let habView='marks';
+function habStatsBody(){
+  const t=today(),cur=t.slice(0,7),[y,mi]=habMonth.split('-').map(Number),m=mi-1,dim=new Date(y,m+1,0).getDate();
   if(!S.habits.length)return '<p class="empty">Добавьте привычки — здесь появится статистика.</p>';
-  const rows=S.habits.map(h=>{const rs=rangeStats(h,days);return {h,rs,pct:rs.plan?Math.min(100,rs.done/rs.plan*100):0,best:bestStreak(h),now:habStreak(h)}});
-  const done=rows.reduce((a,r)=>a+r.rs.done,0),skip=rows.reduce((a,r)=>a+r.rs.skip,0),plan=rows.reduce((a,r)=>a+r.rs.plan,0);
+  const elapsed=habMonth<cur?dim:habMonth===cur?+t.slice(8):0;
+  const rows=S.habits.map(h=>{
+    const ms=monthStats(h,y,m),plan=ms.plan!=null?ms.plan:Math.ceil(elapsed/2);
+    return {h,ms,plan,pct:plan?Math.min(100,ms.done/plan*100):0,best:bestStreak(h),now:habStreak(h),wd:weekdayStats(h,y,m)};
+  });
+  const done=rows.reduce((a,r)=>a+r.ms.done,0),skip=rows.reduce((a,r)=>a+r.ms.skip,0),plan=rows.reduce((a,r)=>a+r.plan,0);
   const pct=plan?Math.min(100,done/plan*100):0,best=rows.reduce((a,r)=>Math.max(a,r.best),0);
+  const fl=h=>{const f=h.freq||'daily';return f==='daily'?'каждый день':f==='alt'?'через день':((h.dow||[]).map(i=>WD[i]).join(', ')||'—')};
   return `<div class="ssum"><div><b>${done}</b><span>выполнено</span></div><div><b class="${skip?'down':''}">${skip}</b><span>пропущено ✕</span></div><div><b>${Math.round(pct)}%</b><span>выполнение</span></div><div><b>${best}</b><span>лучшая серия</span></div></div>
-  ${rows.map(r=>`<div class="srow"><div class="sn"><b>${esc(r.h.name)}</b><small>${freqLabel(r.h)}</small></div>
-    <div class="sp"><div class="l"><span>${r.rs.done}${r.rs.plan?' из '+r.rs.plan:''}</span><span>${Math.round(r.pct)}%</span></div>${bar(r.pct)}</div>
-    <div class="sv"><b>${r.rs.skip}</b><span>пропусков</span></div><div class="sv"><b>${r.now}</b><span>серия</span></div><div class="sv"><b>${r.best}</b><span>лучшая</span></div></div>`).join('')}`;
+  ${rows.map(r=>`<div class="srow"><div class="sn"><b>${esc(r.h.name)}</b><small>${fl(r.h)}</small></div>
+    <div class="sp"><div class="l"><span>${r.ms.done}${r.plan?' из '+r.plan:''}</span><span>${Math.round(r.pct)}%</span></div>${bar(r.pct)}</div>
+    <div class="sv"><b>${r.ms.skip}</b><span>пропусков</span></div><div class="sv"><b>${r.now}</b><span>серия</span></div><div class="sv"><b>${r.best}</b><span>лучшая</span></div>
+    <div class="sw" title="Выполнение по дням недели">${WDL.map((l,i)=>{const p=r.wd.plan[i]?r.wd.done[i]/r.wd.plan[i]*100:0;return `<div class="col" title="${WD[i]}: ${r.wd.done[i]} из ${r.wd.plan[i]}"><div class="b" style="height:${Math.max(3,p*.28)}px"></div><small>${l}</small></div>`}).join('')}</div></div>`).join('')}`;
 }
 function habitsCard(){
-  const t=today(),days=weekDays(habWeek),curWeek=mondayOf(t),minW=mondayOf(START_KEY),maxW=iso(addDays(kdate(curWeek),28));
+  const t=today(),y=+habMonth.slice(0,4),m=+habMonth.slice(5)-1,cur=t.slice(0,7),isCur=habMonth===cur,dim=new Date(y,m+1,0).getDate();
+  let head='';for(let d=1;d<=dim;d++){head+=`<span class="dn ${dkey(y,m,d)===t?'t':''}">${d}</span>`}
   const eh=S.habits.find(x=>x.id===editHab),f=eh&&(eh.freq||'daily');
   const edit=eh?`<div class="hedit"><div class="lbl" style="margin-bottom:6px">Расписание: <b>${esc(eh.name)}</b></div><div class="seg">${FREQS.map(([k,n])=>`<button class="${f===k?'on':''}" data-a="hfreq" data-id="${eh.id}" data-v="${k}">${n}</button>`).join('')}</div>${f==='dow'?`<div class="wds">${WD.map((n,i)=>`<button class="${(eh.dow||[]).includes(i)?'on':''}" data-a="hdow" data-id="${eh.id}" data-v="${i}">${n}</button>`).join('')}</div>`:''}<div class="acts" style="margin-top:10px"><button class="btn sm" data-a="hedit" data-id="${eh.id}">Готово</button><button class="btn danger sm" data-a="hdel" data-id="${eh.id}">Удалить привычку</button></div></div>`:'';
-  const head=`<div class="wr wh"><div></div>${days.map((k,i)=>`<div class="wd ${k===t?'t':''}"><small>${WD[i]}</small><b>${kdate(k).getDate()}</b></div>`).join('')}</div>`;
-  const marks=`${S.habits.length?`${head}${S.habits.map(h=>habRow(h,days,t)).join('')}<p class="lbl" style="margin:8px 0 0;font-size:12px">Нажатие по дню: ✓ выполнено → ✕ пропуск → снять отметку</p>`:'<p class="empty">Добавьте первую привычку</p>'}
+  const marks=`${S.habits.length?`<div class="hscroll"><div class="hm"><div class="hr hh"><div class="hn"></div>${head}</div>${S.habits.map(h=>habRow(h,y,m,dim,t,isCur)).join('')}</div></div><p class="lbl" style="margin:6px 0 0;font-size:12px">Нажатие по дню: ✓ выполнено → ✕ пропуск → снять отметку</p>`:'<p class="empty">Добавьте первую привычку</p>'}
   ${edit}
   <form class="hadd" data-f="addHabit"><input name="name" data-bind="newHab" placeholder="Новая привычка" autocomplete="off" value="${esc(newHabName)}" required><div class="seg">${FREQS.map(([k,n])=>`<button type="button" class="${newFreq===k?'on':''}" data-a="nfreq" data-v="${k}">${n}</button>`).join('')}</div>${newFreq==='dow'?`<div class="wds">${WD.map((n,i)=>`<button type="button" class="${newDow.includes(i)?'on':''}" data-a="ndow" data-v="${i}">${n}</button>`).join('')}</div>`:''}<button class="btn">Добавить</button></form>`;
-  const nav=`<div class="wnav"><button class="btn ghost sm" data-a="hwk" data-v="-1" ${habWeek<=minW?'disabled':''} aria-label="Прошлая неделя">‹</button><div class="wlab"><b>${weekLabel(habWeek)}</b><small>${habWeek===curWeek?'эта неделя':kdate(habWeek).getFullYear()}</small></div><button class="btn ghost sm" data-a="hwk" data-v="1" ${habWeek>=maxW?'disabled':''} aria-label="Следующая неделя">›</button>${habWeek===curWeek?'':'<button class="btn ghost sm" data-a="hnow">Эта неделя</button>'}</div>`;
   return `<section class="card c12"><h3>Привычки<div class="seg hview">${[['marks','Отметки'],['stats','Статистика']].map(([k,n])=>`<button class="${habView===k?'on':''}" data-a="hview" data-v="${k}">${n}</button>`).join('')}</div></h3>
-  ${nav}
-  ${habView==='stats'?habStatsBody(days):marks}</section>`;
+  ${monthChipsHtml()}
+  ${habView==='stats'?habStatsBody():marks}</section>`;
 }
 const CHECK='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 
@@ -469,7 +465,8 @@ function seed(){
   const pm=(k,day)=>iso(new Date(y,m-k,day));
   return {
     tab:'personal',theme:'light',name:'',cur:'₴',
-    tasks:[{id:uid(),t:'Спланировать неделю',done:true},{id:uid(),t:'Позвонить родителям',done:false},{id:uid(),t:'Прогулка 30 минут',done:false}],
+    tasks:[{id:uid(),t:'Спланировать неделю',done:true,d:iso(new Date(y,m,dd))},{id:uid(),t:'Позвонить родителям',done:false,d:iso(new Date(y,m,dd+1))},{id:uid(),t:'Прогулка 30 минут',done:false,d:iso(new Date(y,m,dd))}],
+    moodLog:{},waterLog:{},weekNotes:{},weekBudget:7000,
     habits:[
       {id:uid(),name:'Вода с утра',days:{[ago(0)]:1,[ago(1)]:1,[ago(2)]:1,[ago(4)]:1}},
       {id:uid(),name:'Зарядка',days:{[ago(1)]:1,[ago(2)]:1,[ago(3)]:1}},
@@ -608,57 +605,86 @@ const getWater=()=>S.water.date===today()?S.water.n:0;
 const getMood=()=>S.mood.date===today()?S.mood.v:0;
 
 /* ---------- views ---------- */
+/* ---------- недельный режим всего дашборда ---------- */
+const START_KEY=HAB_START+'-01';
+const mondayOf=k=>iso(addDays(kdate(k),-wdMon(kdate(k))));
+const weekDays=mon=>[...Array(7)].map((_,i)=>iso(addDays(kdate(mon),i)));
+let W=mondayOf(today()),selDay='';
+const wk=()=>weekDays(W);
+const effSel=()=>{const d=wk();return d.includes(selDay)?selDay:(d.includes(today())?today():d[0])};
+function weekLabel(mon){
+  const a=kdate(mon),b=addDays(a,6),mo=d=>d.toLocaleDateString('ru-RU',{month:'short'}).replace('.','');
+  return a.getMonth()===b.getMonth()?`${a.getDate()}–${b.getDate()} ${mo(b)}`:`${a.getDate()} ${mo(a)} – ${b.getDate()} ${mo(b)}`;
+}
+function weekBar(){
+  const cur=mondayOf(today()),lo=iso(addDays(kdate(cur),-7*26)),hi=iso(addDays(kdate(cur),7*8));
+  return `<div class="wbar glass"><button class="btn ghost sm" data-a="wk" data-v="-1" ${W<=lo?'disabled':''} aria-label="Прошлая неделя">‹</button><div class="wlab"><b>${weekLabel(W)}</b><small>${W===cur?'эта неделя':kdate(W).getFullYear()}</small></div><button class="btn ghost sm" data-a="wk" data-v="1" ${W>=hi?'disabled':''} aria-label="Следующая неделя">›</button>${W===cur?'':'<button class="btn ghost sm" data-a="wnow">Эта неделя</button>'}</div>`;
+}
+function rangeStats(h,days){
+  const t=today(),alt=(h.freq||'daily')==='alt';let done=0,skip=0,plan=0,elapsed=0;
+  days.forEach(k=>{if(k>t||k<START_KEY)return;elapsed++;if(h.days[k])done++;if(h.skip&&h.skip[k])skip++;if(!alt&&(isDue(h,k)||h.days[k]))plan++});
+  return {done,skip,plan:alt?Math.ceil(elapsed/2):plan};
+}
+const MOODS=['😞','😕','😐','🙂','😄'];
+const sumBy=(arr,f)=>arr.reduce((a,x)=>a+f(x),0);
+
 const views={
 personal(){
-  const t=today(),dn=S.tasks.filter(x=>x.done).length,tt=S.tasks.length;
-  const hd=S.habits.filter(h=>h.days[t]).length,hdue=S.habits.filter(h=>h.days[t]||(isDue(h,t)&&!(h.skip&&h.skip[t]))).length;
-  const week=[...Array(7)].map((_,i)=>addDays(new Date(),i-6));
-  const pct=tt?dn/tt*100:0;
+  const t=today(),days=wk();
+  const tw=S.tasks.filter(x=>x.d&&days.includes(x.d)),dn=tw.filter(x=>x.done).length,tt=tw.length,pct=tt?dn/tt*100:0;
+  let hDone=0,hPlan=0;S.habits.forEach(h=>{const r=rangeStats(h,days);hDone+=r.done;hPlan+=r.plan});
+  const hp=hPlan?Math.round(Math.min(100,hDone/hPlan*100)):0;
+  const wv=days.map(k=>k===t?getWater():(S.waterLog[k]||0)),wl=wv.filter(x=>x>0);
+  const avgW=wl.length?(wl.reduce((a,b)=>a+b,0)/wl.length).toFixed(1).replace('.0',''):'—';
   const evs=[...S.events].sort((a,b)=>a.d.localeCompare(b.d));
   const left=d=>{const n=Math.round((new Date(d)-new Date(t))/864e5);return n===0?'сегодня':n===1?'завтра':n>1?`через ${n} дн.`:'прошло'};
+  const undated=S.tasks.filter(x=>!x.d);
+  const trow=x=>`<div class="row ${x.done?'done':''}"><button class="chk ${x.done?'on':''}" data-a="tg" data-k="tasks" data-id="${x.id}" aria-label="Отметить">${CHECK}</button><span class="grow">${esc(x.t)}</span><button class="x" data-a="dl" data-k="tasks" data-id="${x.id}" aria-label="Удалить">×</button></div>`;
+  const col=(k,i)=>`<div class="pcol ${k===t?'t':''}"><h4><span>${WD[i]}</span><b>${kdate(k).getDate()}</b></h4>${S.tasks.filter(x=>x.d===k).map(trow).join('')}<form class="add padd" data-f="addTask" data-d="${k}"><input name="t" placeholder="+ задача" autocomplete="off" required></form></div>`;
   return `<div class="grid">
-  <section class="card c8"><div class="hero"><div><div class="lbl">Сегодня</div><div class="big">${tt?`${dn} из ${tt} задач`:'Нет задач'}</div>
-    <div class="stats"><div><b>${hd}/${hdue}</b><span class="lbl">привычки сегодня</span></div><div><b>${getWater()}/8</b><span class="lbl">стаканов воды</span></div><div><b>${S.events.filter(e=>e.d>=t).length}</b><span class="lbl">событий впереди</span></div></div></div>${ring(pct,128)}</div></section>
-  <section class="card c4"><h3>Самочувствие</h3><div class="lbl" style="margin-bottom:8px">Настроение</div>
-    <div class="moods">${['😞','😕','😐','🙂','😄'].map((e,i)=>`<button class="${getMood()===i+1?'on':''}" data-a="mood" data-v="${i+1}" aria-label="Настроение ${i+1}">${e}</button>`).join('')}</div>
-    <div class="lbl" style="margin:16px 0 4px">Вода · ${getWater()} из 8</div>
-    <div class="water">${[...Array(8)].map((_,i)=>`<button class="${i<getWater()?'on':''}" data-a="water" data-v="${i+1}" aria-label="Стакан ${i+1}"></button>`).join('')}</div></section>
+  <section class="card c8"><div class="hero"><div><div class="lbl">Неделя ${weekLabel(W)}</div><div class="big">${tt?`${dn} из ${tt} задач`:'Нет задач'}</div>
+    <div class="stats"><div><b>${hp}%</b><span class="lbl">привычки</span></div><div><b>${avgW}${avgW==='—'?'':'/8'}</b><span class="lbl">вода в день</span></div><div><b>${S.events.filter(e=>days.includes(e.d)).length}</b><span class="lbl">событий на неделе</span></div></div></div>${ring(pct,128)}</div></section>
+  <section class="card c4"><h3>Самочувствие<small>сегодня</small></h3><div class="moods">${MOODS.map((e,i)=>`<button class="${getMood()===i+1?'on':''}" data-a="mood" data-v="${i+1}" aria-label="Настроение ${i+1}">${e}</button>`).join('')}</div>
+    <div class="lbl" style="margin:14px 0 4px">Вода · ${getWater()} из 8</div>
+    <div class="water">${[...Array(8)].map((_,i)=>`<button class="${i<getWater()?'on':''}" data-a="water" data-v="${i+1}" aria-label="Стакан ${i+1}"></button>`).join('')}</div>
+    <div class="wk7">${days.map((k,i)=>{const mv=k===t?getMood():(S.moodLog[k]||0);return `<div class="${k===t?'t':''}"><small>${WD[i]}</small><span>${mv?MOODS[mv-1]:'·'}</span><em>${wv[i]||''}</em></div>`}).join('')}</div></section>
+  <section class="card c12"><h3>Задачи недели<small>${dn}/${tt}</small></h3><div class="plan">${undated.length?`<div class="pcol"><h4><span>Без дня</span></h4>${undated.map(trow).join('')}</div>`:''}${days.map(col).join('')}</div></section>
   ${habitsCard()}
-  ${listCard('tasks','Задачи','Новая задача','c6')}
   <section class="card c6"><h3>Важные даты</h3>${
     evs.length?evs.map(e=>`<div class="row" style="${e.d<t?'opacity:.5':''}"><span class="grow">${esc(e.t)}<small class="lbl" style="display:block">${dshort(e.d)}</small></span><span class="val acc" style="font-weight:600">${left(e.d)}</span>${delBtn('events',e.id)}</div>`).join(''):'<p class="empty">Нет предстоящих событий</p>'
   }<form class="add" data-f="addEvent"><input name="t" placeholder="Событие" autocomplete="off" required><input type="date" name="d" value="${t}" required><button class="btn">Добавить</button></form></section>
+  <section class="card c6"><h3>Итоги недели<small>${weekLabel(W)}</small></h3><textarea data-bind="wnote" placeholder="Что получилось на этой неделе, что улучшить…">${esc(S.weekNotes[W]||'')}</textarea></section>
   <section class="card c12"><h3>Заметки<small>сохраняются автоматически</small></h3><textarea data-bind="notes" placeholder="Мысли, идеи, списки…">${esc(S.notes)}</textarea></section>
   </div>`;
 },
 
 finance(){
-  const t=today(),mo=t.slice(0,7);
-  const txm=S.tx.filter(x=>x.date.startsWith(mo));
-  const inc=txm.filter(x=>x.type==='in').reduce((a,x)=>a+x.amt,0);
-  const exp=txm.filter(x=>x.type==='out').reduce((a,x)=>a+x.amt,0);
-  const bal=inc-exp,bp=S.budget?exp/S.budget*100:0;
+  const t=today(),days=wk(),prev=weekDays(iso(addDays(kdate(W),-7)));
+  const txm=S.tx.filter(x=>days.includes(x.date));
+  const inc=sumBy(txm.filter(x=>x.type==='in'),x=>x.amt),exp=sumBy(txm.filter(x=>x.type==='out'),x=>x.amt),bal=inc-exp;
+  const expPrev=sumBy(S.tx.filter(x=>x.type==='out'&&prev.includes(x.date)),x=>x.amt);
+  const wb=S.weekBudget||0,bp=wb?exp/wb*100:0;
   const bc=bp>=100?'var(--red)':bp>=75?'var(--orange)':'var(--green)';
   const byCat={};txm.filter(x=>x.type==='out').forEach(x=>byCat[x.cat]=(byCat[x.cat]||0)+x.amt);
   const cats=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
   const R=44,C=2*Math.PI*R;let off=0;
   const donut=cats.length?`<div class="donut"><svg width="130" height="130" viewBox="0 0 110 110"><circle cx="55" cy="55" r="${R}" stroke="var(--fill)"/>${cats.map(([c,v],i)=>{const len=v/exp*C;const s=`<circle cx="55" cy="55" r="${R}" stroke="${PAL[i%PAL.length]}" stroke-dasharray="${Math.max(len-2,0.5)} ${C}" stroke-dashoffset="${-off}" stroke-linecap="round"/>`;off+=len;return s}).join('')}</svg>
-    <div class="leg">${cats.map(([c,v],i)=>`<div><i style="background:${PAL[i%PAL.length]}"></i><span>${c}</span><span>${fmt(v)}</span></div>`).join('')}</div></div>`:'<p class="empty">В этом месяце расходов пока нет</p>';
-  const list=[...S.tx].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,8);
-  const totalSaved=S.saves.reduce((a,x)=>a+x.saved,0);
-  const mn=new Date().toLocaleDateString('ru-RU',{month:'long'});
+    <div class="leg">${cats.map(([c,v],i)=>`<div><i style="background:${PAL[i%PAL.length]}"></i><span>${c}</span><span>${fmt(v)}</span></div>`).join('')}</div></div>`:'<p class="empty">На этой неделе расходов нет</p>';
+  const list=[...txm].sort((a,b)=>b.date.localeCompare(a.date));
+  const totalSaved=sumBy(S.saves,x=>x.saved),defDate=days.includes(t)?t:days[6],dl=days.filter(k=>k>=t).length;
+  const dlt=expPrev?Math.round((exp-expPrev)/expPrev*100):null;
   return `<div class="grid">
-  <section class="card c4"><div class="lbl">Баланс · ${mn}</div><div class="big ${bal<0?'down':''}">${fmt(bal)}</div><div class="delta lbl">доходы минус расходы</div></section>
+  <section class="card c4"><div class="lbl">Баланс недели</div><div class="big ${bal<0?'down':''}">${fmt(bal)}</div><div class="delta lbl">доходы минус расходы</div></section>
   <section class="card c4"><div class="lbl">Доходы</div><div class="big up">${fmt(inc)}</div><div class="delta lbl">${txm.filter(x=>x.type==='in').length} поступл.</div></section>
-  <section class="card c4"><div class="lbl">Расходы</div><div class="big">${fmt(exp)}</div><div class="delta lbl">${txm.filter(x=>x.type==='out').length} трат</div></section>
-  <section class="card c6"><h3>Бюджет месяца<small>лимит <input type="number" min="0" data-set="budget" value="${S.budget}" style="width:96px;padding:5px 9px;text-align:right"></small></h3>
+  <section class="card c4"><div class="lbl">Расходы</div><div class="big">${fmt(exp)}</div>${dlt===null?`<div class="delta lbl">${txm.filter(x=>x.type==='out').length} трат</div>`:`<div class="delta ${dlt<=0?'up':'down'}">${dlt<=0?'▼':'▲'} ${Math.abs(dlt)}% к прошлой неделе</div>`}</section>
+  <section class="card c6"><h3>Бюджет недели<small>лимит <input type="number" min="0" data-set="weekBudget" value="${wb}" style="width:96px;padding:5px 9px;text-align:right"></small></h3>
     <div class="big sm">${Math.round(bp)}%</div>${bar(bp,bc)}
-    <p class="lbl" style="margin:10px 0 0">${exp>S.budget?`Превышено на <b class="down">${fmt(exp-S.budget)}</b>`:`Осталось <b>${fmt(S.budget-exp)}</b> · ${Math.max(0,new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate()-new Date().getDate())} дн. до конца месяца`}</p></section>
+    <p class="lbl" style="margin:10px 0 0">${exp>wb?`Превышено на <b class="down">${fmt(exp-wb)}</b>`:`Осталось <b>${fmt(wb-exp)}</b>${dl&&days.includes(t)?` · ${dl} дн. до конца недели`:''}`}</p></section>
   <section class="card c6"><h3>Расходы по категориям</h3>${donut}</section>
-  <section class="card c7 tx"><h3>Операции</h3>
+  <section class="card c7 tx"><h3>Операции недели<small>${list.length}</small></h3>
     <div class="seg" style="margin-bottom:12px"><button class="${txType==='out'?'on':''}" data-a="txtype" data-v="out">Расход</button><button class="${txType==='in'?'on':''}" data-a="txtype" data-v="in">Доход</button></div>
-    <form class="add" data-f="addTx" style="margin:0 0 8px"><input type="number" name="amt" placeholder="Сумма" min="0" step="any" inputmode="decimal" required><select name="cat">${CATS[txType].map(c=>`<option>${c}</option>`).join('')}</select><input name="note" placeholder="Заметка" autocomplete="off"><button class="btn">Добавить</button></form>
-    ${list.length?list.map(x=>{const ci=Math.max(0,(x.type==='out'?CATS.out:CATS.in).indexOf(x.cat));return `<div class="row"><div class="badge" style="background:${x.type==='in'?'var(--green)':PAL[ci%PAL.length]}">${esc(x.cat.slice(0,2))}</div><div class="grow">${esc(x.note||x.cat)}<small>${esc(x.cat)} · ${dshort(x.date)}</small></div><span class="amt ${x.type}">${x.type==='in'?'+':'−'}${fmt(x.amt)}</span>${delBtn('tx',x.id)}</div>`}).join(''):'<p class="empty">Операций пока нет</p>'}</section>
+    <form class="add" data-f="addTx" style="margin:0 0 8px"><input type="number" name="amt" placeholder="Сумма" min="0" step="any" inputmode="decimal" required><select name="cat">${CATS[txType].map(c=>`<option>${c}</option>`).join('')}</select><input name="note" placeholder="Заметка" autocomplete="off"><input type="date" name="date" value="${defDate}" required><button class="btn">Добавить</button></form>
+    ${list.length?list.map(x=>{const ci=Math.max(0,(x.type==='out'?CATS.out:CATS.in).indexOf(x.cat));return `<div class="row"><div class="badge" style="background:${x.type==='in'?'var(--green)':PAL[ci%PAL.length]}">${esc(x.cat.slice(0,2))}</div><div class="grow">${esc(x.note||x.cat)}<small>${esc(x.cat)} · ${dshort(x.date)}</small></div><span class="amt ${x.type}">${x.type==='in'?'+':'−'}${fmt(x.amt)}</span>${delBtn('tx',x.id)}</div>`}).join(''):'<p class="empty">Операций за эту неделю нет</p>'}</section>
   <section class="card c5"><h3>Накопления<small>${fmt(totalSaved)}</small></h3>${
     S.saves.length?S.saves.map(g=>{const p=g.target?g.saved/g.target*100:0;return `<div class="item"><div class="top"><span>${esc(g.name)}</span><span class="val">${Math.round(p)}% ${delBtn('saves',g.id)}</span></div>${bar(p)}
       <div class="top" style="margin:8px 0 0"><span class="val">${fmt(g.saved)} из ${fmt(g.target)}</span>
@@ -668,49 +694,49 @@ finance(){
 },
 
 growth(){
-  const t=today();
-  const week=[...Array(7)].map((_,i)=>addDays(new Date(),i-6));
-  const mins=week.map(d=>S.learn[iso(d)]||0),wk=mins.reduce((a,b)=>a+b,0),mx=Math.max(...mins,30);
-  const wp=S.learnGoal?wk/S.learnGoal*100:0;
-  const rs=streak(d=>(S.refl[d]||'').trim());
+  const t=today(),days=wk(),sd=effSel();
+  const mins=days.map(k=>S.learn[k]||0),wkm=mins.reduce((a,b)=>a+b,0),mx=Math.max(...mins,30);
+  const wp=S.learnGoal?wkm/S.learnGoal*100:0;
+  const rs=streak(d=>(S.refl[d]||'').trim()),rw=days.filter(k=>(S.refl[k]||'').trim()).length;
   const done=S.books.filter(b=>b.read>=b.pages).length;
   return `<div class="grid">
-  <section class="card c8"><div class="hero"><div><div class="lbl">Обучение за неделю</div><div class="big">${Math.floor(wk/60)} ч ${wk%60} мин</div>
-    <div class="stats"><div><b>🔥 ${rs}</b><span class="lbl">дней рефлексии</span></div><div><b>${done}/${S.books.length}</b><span class="lbl">книг прочитано</span></div><div><b>${S.goals.filter(g=>g.p>=100).length}/${S.goals.length}</b><span class="lbl">целей достигнуто</span></div></div></div>${ring(wp,128)}</div></section>
-  <section class="card c4"><h3>Сегодня<small>${S.learn[t]||0} мин</small></h3><div class="lbl" style="margin-bottom:10px">Записать время учёбы</div>
+  <section class="card c8"><div class="hero"><div><div class="lbl">Обучение · ${weekLabel(W)}</div><div class="big">${Math.floor(wkm/60)} ч ${wkm%60} мин</div>
+    <div class="stats"><div><b>${rw}/7</b><span class="lbl">дней с рефлексией</span></div><div><b>${rs}</b><span class="lbl">дней рефлексии подряд</span></div><div><b>${done}/${S.books.length}</b><span class="lbl">книг прочитано</span></div></div></div>${ring(wp,128)}</div></section>
+  <section class="card c4"><h3>День<small>${dshort(sd)}${sd===t?' · сегодня':''}</small></h3><div class="big sm" style="margin-bottom:8px">${S.learn[sd]||0} мин</div><div class="lbl" style="margin-bottom:10px">Записать время учёбы</div>
     <div class="acts" style="margin:0"><button class="btn sm" data-a="learn" data-v="15">+15</button><button class="btn sm" data-a="learn" data-v="30">+30</button><button class="btn sm" data-a="learn" data-v="60">+60</button><button class="btn sm ghost" data-a="learnclr">Сброс</button></div>
     <div class="set" style="margin-top:12px"><span class="lbl">Цель в неделю, мин</span><input type="number" min="0" data-set="learnGoal" value="${S.learnGoal}" style="width:90px;text-align:right"></div></section>
+  <section class="card c5"><h3>Неделя<small>нажмите на день</small></h3><div class="chart">${days.map((k,i)=>`<div class="col sel ${k===sd?'':'dim'}" data-a="sday" data-v="${k}" title="${dshort(k)}"><em>${mins[i]||''}</em><div class="b" style="height:${mins[i]/mx*100}%"></div><small>${WD[i]}</small></div>`).join('')}</div></section>
+  <section class="card c7"><h3>Рефлексия дня<small>${dshort(sd)}</small></h3><textarea data-bind="refl" placeholder="Что получилось? За что благодарна? Чему научилась?">${esc(S.refl[sd]||'')}</textarea></section>
   <section class="card c6"><h3>Цели</h3>${
     S.goals.length?S.goals.map(g=>`<div class="item"><div class="top"><span>${esc(g.name)}</span><span class="val"><span data-lbl>${g.p}%</span> ${delBtn('goals',g.id)}</span></div>${rangeIn('goals',g.id,g.p,100)}</div>`).join(''):'<p class="empty">Добавьте свою первую цель</p>'
   }<form class="add" data-f="addGoal"><input name="name" placeholder="Новая цель" autocomplete="off" required><button class="btn">Добавить</button></form></section>
   <section class="card c6"><h3>Книги</h3>${
     S.books.length?S.books.map(b=>`<div class="item"><div class="top"><span>${esc(b.name)}</span><span class="val"><span data-lbl>${b.read} / ${b.pages} стр.</span> ${delBtn('books',b.id)}</span></div>${rangeIn('books',b.id,b.read,b.pages)}</div>`).join(''):'<p class="empty">Список для чтения пуст</p>'
   }<form class="add" data-f="addBook"><input name="name" placeholder="Название книги" autocomplete="off" required><input type="number" name="pages" placeholder="Страниц" min="1" inputmode="numeric" required><button class="btn">Добавить</button></form></section>
-  <section class="card c5"><h3>Неделя<small>минут в день</small></h3><div class="chart">${week.map((d,i)=>`<div class="col ${iso(d)===t?'':'dim'}"><em>${mins[i]||''}</em><div class="b" style="height:${mins[i]/mx*100}%"></div><small>${d.toLocaleDateString('ru-RU',{weekday:'short'})}</small></div>`).join('')}</div></section>
-  <section class="card c7"><h3>Рефлексия дня<small>${dshort(t)}</small></h3><textarea data-bind="refl" placeholder="Что получилось сегодня? За что благодарна? Чему научилась?">${esc(S.refl[t]||'')}</textarea></section>
   </div>`;
 },
 
 business(){
-  const t=today(),mo=t.slice(0,7);
+  const t=today(),days=wk(),prevDays=weekDays(iso(addDays(kdate(W),-7)));
   const paid=S.deals.filter(d=>d.stage===2&&d.paid);
-  const months=[...Array(6)].map((_,i)=>{const d=new Date(new Date().getFullYear(),new Date().getMonth()-(5-i),1);return iso(d).slice(0,7)});
-  const rev=months.map(m=>paid.filter(d=>d.paid.startsWith(m)).reduce((a,d)=>a+d.amt,0));
-  const cur=rev[5],prev=rev[4],mx=Math.max(...rev,1);
+  const revOf=ds=>sumBy(paid.filter(d=>ds.includes(d.paid)),d=>d.amt);
+  const weeks=[...Array(8)].map((_,i)=>iso(addDays(kdate(W),-7*(7-i))));
+  const rev=weeks.map(m=>revOf(weekDays(m)));
+  const cur=rev[7],prev=revOf(prevDays),mx=Math.max(...rev,1);
   const dlt=prev?Math.round((cur-prev)/prev*100):null;
-  const pipe=S.deals.filter(d=>d.stage<2).reduce((a,d)=>a+d.amt,0);
+  const pipe=sumBy(S.deals.filter(d=>d.stage<2),d=>d.amt);
   const conv=S.deals.length?Math.round(paid.length/S.deals.length*100):0;
-  const avg=paid.length?paid.reduce((a,d)=>a+d.amt,0)/paid.length:0;
-  const colHtml=s=>{const ds=S.deals.filter(d=>d.stage===s);const shown=s===2?[...ds].sort((a,b)=>(b.paid||'').localeCompare(a.paid||'')).slice(0,4):ds;
-    return `<div class="col-k"><h4><span>${STAGES[s]}</span><span>${ds.length}</span></h4>${shown.map(d=>`<div class="deal"><b>${esc(d.name)}</b><div class="m"><span>${fmt(d.amt)}</span><div><button data-a="mv" data-id="${d.id}" data-v="-1" ${s===0?'disabled':''} aria-label="Назад">‹</button><button data-a="mv" data-id="${d.id}" data-v="1" ${s===2?'disabled':''} aria-label="Вперёд">›</button><button data-a="dl" data-k="deals" data-id="${d.id}" aria-label="Удалить">×</button></div></div></div>`).join('')||'<div class="more">Пусто</div>'}${ds.length>shown.length?`<div class="more">и ещё ${ds.length-shown.length}</div>`:''}</div>`};
+  const paidW=paid.filter(d=>days.includes(d.paid)),avg=paidW.length?cur/paidW.length:0;
+  const colHtml=s=>{const ds=s===2?paidW:S.deals.filter(d=>d.stage===s);
+    return `<div class="col-k"><h4><span>${STAGES[s]}${s===2?' · неделя':''}</span><span>${ds.length}</span></h4>${ds.map(d=>`<div class="deal"><b>${esc(d.name)}</b><div class="m"><span>${fmt(d.amt)}</span><div><button data-a="mv" data-id="${d.id}" data-v="-1" ${s===0?'disabled':''} aria-label="Назад">‹</button><button data-a="mv" data-id="${d.id}" data-v="1" ${s===2?'disabled':''} aria-label="Вперёд">›</button><button data-a="dl" data-k="deals" data-id="${d.id}" aria-label="Удалить">×</button></div></div></div>`).join('')||'<div class="more">Пусто</div>'}</div>`};
   return `<div class="grid">
-  <section class="card c3 half"><div class="lbl">Выручка · месяц</div><div class="big sm">${fmt(cur)}</div>${dlt===null?'':`<div class="delta ${dlt>=0?'up':'down'}">${dlt>=0?'▲':'▼'} ${Math.abs(dlt)}% к прошлому</div>`}</section>
+  <section class="card c3 half"><div class="lbl">Выручка недели</div><div class="big sm">${fmt(cur)}</div>${dlt===null?'':`<div class="delta ${dlt>=0?'up':'down'}">${dlt>=0?'▲':'▼'} ${Math.abs(dlt)}% к прошлой</div>`}</section>
   <section class="card c3 half"><div class="lbl">В воронке</div><div class="big sm">${fmt(pipe)}</div><div class="delta lbl">${S.deals.filter(d=>d.stage<2).length} сделок</div></section>
   <section class="card c3 half"><div class="lbl">Конверсия</div><div class="big sm">${conv}%</div><div class="delta lbl">${paid.length} из ${S.deals.length} оплачено</div></section>
-  <section class="card c3 half"><div class="lbl">Средний чек</div><div class="big sm">${fmt(avg)}</div><div class="delta lbl">по оплаченным</div></section>
-  <section class="card c12"><h3>Воронка продаж</h3><div class="kan">${[0,1,2].map(colHtml).join('')}</div>
+  <section class="card c3 half"><div class="lbl">Средний чек</div><div class="big sm">${fmt(avg)}</div><div class="delta lbl">за неделю</div></section>
+  <section class="card c12"><h3>Воронка продаж<small>${weekLabel(W)}</small></h3><div class="kan">${[0,1,2].map(colHtml).join('')}</div>
     <form class="add" data-f="addDeal"><input name="name" placeholder="Клиент или проект" autocomplete="off" required><input type="number" name="amt" placeholder="Сумма" min="0" step="any" inputmode="decimal" required><button class="btn">Новая сделка</button></form></section>
-  <section class="card c6"><h3>Выручка за 6 месяцев</h3><div class="chart">${rev.map((v,i)=>`<div class="col ${i===5?'':'dim'}" title="${fmt(v)}"><em>${v?fmtK(v):''}</em><div class="b" style="height:${v/mx*100}%"></div><small>${new Date(months[i]+'-01T00:00:00').toLocaleDateString('ru-RU',{month:'short'})}</small></div>`).join('')}</div></section>
+  <section class="card c6"><h3>Выручка по неделям<small>8 недель</small></h3><div class="chart">${rev.map((v,i)=>`<div class="col ${i===7?'':'dim'}" title="${weekLabel(weeks[i])}: ${fmt(v)}"><em>${v?fmtK(v):''}</em><div class="b" style="height:${v/mx*100}%"></div><small>${kdate(weeks[i]).getDate()}.${pad(kdate(weeks[i]).getMonth()+1)}</small></div>`).join('')}</div></section>
   <section class="card c6"><h3>Проекты</h3>${
     S.projects.length?S.projects.map(p=>`<div class="item"><div class="top"><span>${esc(p.name)}</span><span class="val"><span data-lbl>${p.p}%</span> ${delBtn('projects',p.id)}</span></div>${rangeIn('projects',p.id,p.p,100)}</div>`).join(''):'<p class="empty">Проектов пока нет</p>'
   }<form class="add" data-f="addProject"><input name="name" placeholder="Новый проект" autocomplete="off" required><button class="btn">Добавить</button></form></section>
@@ -754,6 +780,7 @@ function render(){
   if(!anim)v.querySelectorAll('.card').forEach(c=>c.style.animation='none');
   anim=false;
   $('#tabs').innerHTML=TABS.map(t=>`<button class="${S.tab===t.id?'on':''}" data-a="tab" data-v="${t.id}" aria-label="${t.name}"><svg viewBox="0 0 24 24">${t.ic}</svg><span>${t.name}</span></button>`).join('');
+  $('#wk').innerHTML=weekBar();
   $('#sheet').innerHTML=sheetHtml();
   const hs=document.querySelector('.hscroll');
   if(hs){if(keepS!==null)hs.scrollLeft=keepS;else{const t=today();hs.scrollLeft=habMonth===t.slice(0,7)?Math.max(0,(+t.slice(8)-8)*28):0}renderedMonth=habMonth}
@@ -764,8 +791,6 @@ function render(){
 /* ---------- actions ---------- */
 const A={
   tab:d=>{S.tab=d.v;anim=true;window.scrollTo({top:0,behavior:'smooth'});return 'skip-save'},
-  hwk:d=>{const mon=iso(addDays(kdate(habWeek),7*+d.v)),lo=mondayOf(START_KEY),hi=iso(addDays(kdate(mondayOf(today())),28));habWeek=mon<lo?lo:mon>hi?hi:mon;return 'skip-save'},
-  hnow:()=>{habWeek=mondayOf(today());return 'skip-save'},
   hview:d=>{habView=d.v;return 'skip-save'},
   hmonth:d=>{habMonth=d.v;return 'skip-save'},
   hyear:d=>{const y=+habMonth.slice(0,4)+ +d.v;habMonth=y+'-'+habMonth.slice(5);return 'skip-save'},
@@ -778,11 +803,14 @@ const A={
   tg:d=>{const i=S[d.k].find(x=>x.id===d.id);if(i)i.done=!i.done},
   dl:d=>{S[d.k]=S[d.k].filter(x=>x.id!==d.id)},
   hd:d=>{const h=S.habits.find(x=>x.id===d.id);h.skip=h.skip||{};const k=d.v;if(h.days[k]){delete h.days[k];h.skip[k]=1}else if(h.skip[k]){delete h.skip[k]}else{h.days[k]=1}},
-  mood:d=>{S.mood={date:today(),v:getMood()===+d.v?0:+d.v}},
-  water:d=>{const n=+d.v;S.water={date:today(),n:getWater()===n?n-1:n}},
+  mood:d=>{const v=getMood()===+d.v?0:+d.v;S.mood={date:today(),v};S.moodLog=S.moodLog||{};S.moodLog[today()]=v},
+  water:d=>{const n=+d.v,v=getWater()===n?n-1:n;S.water={date:today(),n:v};S.waterLog=S.waterLog||{};S.waterLog[today()]=v},
   txtype:d=>{txType=d.v},
-  learn:d=>{S.learn[today()]=(S.learn[today()]||0)+ +d.v},
-  learnclr:()=>{delete S.learn[today()]},
+  learn:d=>{const k=effSel();S.learn[k]=(S.learn[k]||0)+ +d.v},
+  learnclr:()=>{delete S.learn[effSel()]},
+  sday:d=>{selDay=d.v;return 'skip-save'},
+  wk:d=>{const cur=mondayOf(today()),lo=iso(addDays(kdate(cur),-7*26)),hi=iso(addDays(kdate(cur),7*8)),m=iso(addDays(kdate(W),7*+d.v));W=m<lo?lo:m>hi?hi:m;selDay='';return 'skip-save'},
+  wnow:()=>{W=mondayOf(today());selDay='';return 'skip-save'},
   mv:d=>{const x=S.deals.find(q=>q.id===d.id);x.stage=clamp(x.stage+ +d.v,0,2);x.paid=x.stage===2?(x.paid||today()):null},
   settings:()=>{sheet=true;sheetMsg='';resetArm=false;bkText='';return 'skip-save'},
   close:()=>{sheet=false;return 'skip-save'},
@@ -828,8 +856,9 @@ const F={
     const dow=newDow.slice().sort(),f=newFreq==='dow'&&!dow.length?'daily':newFreq;
     S.habits.push({id:uid(),name:fd.name.trim(),days:{},freq:f,dow:f==='dow'?dow:[]});
     newFreq='daily';newDow=[];newHabName='';},
+  addTask:(fd,d)=>{if(fd.t.trim())S.tasks.push({id:uid(),t:fd.t.trim(),done:false,d:d.d})},
   addEvent:fd=>{S.events.push({id:uid(),t:fd.t.trim(),d:fd.d})},
-  addTx:fd=>{const a=num(fd.amt);if(a>0)S.tx.push({id:uid(),type:txType,amt:a,cat:fd.cat,note:fd.note.trim(),date:today()})},
+  addTx:fd=>{const a=num(fd.amt);if(a>0)S.tx.push({id:uid(),type:txType,amt:a,cat:fd.cat,note:fd.note.trim(),date:fd.date||today()})},
   addSave:fd=>{S.saves.push({id:uid(),name:fd.name.trim(),target:num(fd.target),saved:0})},
   deposit:(fd,d)=>{const g=S.saves.find(x=>x.id===d.id);if(g)g.saved=Math.max(0,g.saved+num(fd.amt))},
   addGoal:fd=>{S.goals.push({id:uid(),name:fd.name.trim(),p:0})},
@@ -858,7 +887,7 @@ document.addEventListener('input',e=>{
   }else if(el.dataset.bind){
     const b=el.dataset.bind;
     if(b==='newHab'){newHabName=el.value;return}
-    if(b==='refl')S.refl[today()]=el.value;else S[b]=el.value;
+    if(b==='refl')S.refl[effSel()]=el.value;else if(b==='wnote'){S.weekNotes=S.weekNotes||{};S.weekNotes[W]=el.value}else S[b]=el.value;
     save();
   }
 });
