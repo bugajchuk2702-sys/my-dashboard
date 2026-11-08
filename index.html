@@ -670,7 +670,7 @@ finance(){
   const R=44,C=2*Math.PI*R;let off=0;
   const donut=cats.length?`<div class="donut"><svg width="130" height="130" viewBox="0 0 110 110"><circle cx="55" cy="55" r="${R}" stroke="var(--fill)"/>${cats.map(([c,v],i)=>{const len=v/exp*C;const s=`<circle cx="55" cy="55" r="${R}" stroke="${PAL[i%PAL.length]}" stroke-dasharray="${Math.max(len-2,0.5)} ${C}" stroke-dashoffset="${-off}" stroke-linecap="round"/>`;off+=len;return s}).join('')}</svg>
     <div class="leg">${cats.map(([c,v],i)=>`<div><i style="background:${PAL[i%PAL.length]}"></i><span>${c}</span><span>${fmt(v)}</span></div>`).join('')}</div></div>`:'<p class="empty">На этой неделе расходов нет</p>';
-  const list=[...txm].sort((a,b)=>b.date.localeCompare(a.date));
+  const list=txm.filter(x=>x.type===txType).sort((a,b)=>b.date.localeCompare(a.date));
   const totalSaved=sumBy(S.saves,x=>x.saved),defDate=days.includes(t)?t:days[6],dl=days.filter(k=>k>=t).length;
   const dlt=expPrev?Math.round((exp-expPrev)/expPrev*100):null;
   return `<div class="grid">
