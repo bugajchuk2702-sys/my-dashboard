@@ -644,7 +644,6 @@ personal(){
     <div class="water">${[...Array(8)].map((_,i)=>`<button class="${i<getWater()?'on':''}" data-a="water" data-v="${i+1}" aria-label="Стакан ${i+1}"></button>`).join('')}</div>
     <div class="wk7">${days.map((k,i)=>{const mv=k===t?getMood():(S.moodLog[k]||0);return `<div class="${k===t?'t':''}"><small>${WD[i]}</small><span>${mv?MOODS[mv-1]:'·'}</span><em>${wv[i]||''}</em></div>`}).join('')}</div></section>
   <section class="card c12"><h3>Задачи недели<small>${dn}/${tt}</small></h3><div class="plan">${undated.length?`<div class="pcol"><h4><span>Без дня</span></h4>${undated.map(trow).join('')}</div>`:''}${days.map(col).join('')}</div></section>
-  ${habitsCard()}
   <section class="card c6"><h3>Важные даты</h3>${
     evs.length?evs.map(e=>`<div class="row" style="${e.d<t?'opacity:.5':''}"><span class="grow">${esc(e.t)}<small class="lbl" style="display:block">${dshort(e.d)}</small></span><span class="val acc" style="font-weight:600">${left(e.d)}</span>${delBtn('events',e.id)}</div>`).join(''):'<p class="empty">Нет предстоящих событий</p>'
   }<form class="add" data-f="addEvent"><input name="t" placeholder="Событие" autocomplete="off" required><input type="date" name="d" value="${t}" required><button class="btn">Добавить</button></form></section>
@@ -711,6 +710,7 @@ growth(){
   ${sec('fin','Финский язык','<path d="M4 5h9M8.5 3v2M6 5c0 4 3 7 7 8M12 5c0 3-2.5 6-7 8M13 21l4-9 4 9M14.5 18h5"/>','мин','#0a84ff','finGoal',[15,30,60],1)}
   ${sec('run','Бег','<circle cx="14" cy="4.5" r="1.8"/><path d="M7 21l3-5 3 1.5 1.5 3.5M10 16l1.5-5 3 1 2.5 3M8 11l3.5-3.5 3 1"/>','км','#ff9f0a','runGoal',[1,3,5],0.1)}
   ${sec('read','Чтение','<path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/>','стр.','#30d158','readGoal',[10,20,50],1)}
+  ${habitsCard()}
   <section class="card c6" style="--accent:#0a84ff"><h3>Финский · слова<small>${wt} за неделю</small></h3>
     <div class="big sm">${(S.words||{})[sd]||0} <span class="lbl" style="font-size:15px">слов · ${dshort(sd)}</span></div>
     <div class="acts" style="margin:10px 0 0"><button class="btn sm" data-a="log" data-k="words" data-v="5">+5</button><button class="btn sm" data-a="log" data-k="words" data-v="10">+10</button><button class="btn sm ghost" data-a="logclr" data-k="words">Сброс</button></div>
