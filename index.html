@@ -662,15 +662,15 @@ finance(){
   const ref=days.includes(t)?t:days[3],mo=ref.slice(0,7),mi=+mo.slice(5)-1;
   const pmo=iso(addDays(kdate(mo+'-01'),-1)).slice(0,7);
   const txMo=S.tx.filter(x=>x.date.slice(0,7)===mo);
-  const incM=sumBy(txMo.filter(x=>x.type==='in'),x=>x.amt),expM=sumBy(txMo.filter(x=>x.type==='out'),x=>x.amt),svM=sumBy(txMo.filter(x=>x.type==='sv'),x=>x.amt),bal=incM-expM-svM;const dt=txType==='in'?'in':'out';
+  const incM=sumBy(txMo.filter(x=>x.type==='in'),x=>x.amt),expM=sumBy(txMo.filter(x=>x.type==='out'),x=>x.amt),svM=sumBy(txMo.filter(x=>x.type==='sv'),x=>x.amt),bal=incM-expM-svM;const dt=txType;
   const expPrev=sumBy(S.tx.filter(x=>x.type==='out'&&x.date.slice(0,7)===pmo),x=>x.amt);
   const wb=S.weekBudget||0,bp=wb?exp/wb*100:0;
   const bc=bp>=100?'var(--red)':bp>=75?'var(--orange)':'var(--green)';
   const byCat={};txMo.filter(x=>x.type===dt).forEach(x=>byCat[x.cat]=(byCat[x.cat]||0)+x.amt);
   const cats=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
   const R=44,C=2*Math.PI*R;let off=0;
-  const donut=cats.length?`<div class="donut"><svg width="130" height="130" viewBox="0 0 110 110"><circle cx="55" cy="55" r="${R}" stroke="var(--fill)"/>${cats.map(([c,v],i)=>{const len=v/(dt==='in'?incM:expM)*C;const s=`<circle cx="55" cy="55" r="${R}" stroke="${PAL[i%PAL.length]}" stroke-dasharray="${Math.max(len-2,0.5)} ${C}" stroke-dashoffset="${-off}" stroke-linecap="round"/>`;off+=len;return s}).join('')}</svg>
-    <div class="leg">${cats.map(([c,v],i)=>`<div><i style="background:${PAL[i%PAL.length]}"></i><span>${c}</span><span>${fmt(v)}</span></div>`).join('')}</div></div>`:`<p class="empty">В этом месяце ${dt==='in'?'доходов':'расходов'} нет</p>`;
+  const donut=cats.length?`<div class="donut"><svg width="130" height="130" viewBox="0 0 110 110"><circle cx="55" cy="55" r="${R}" stroke="var(--fill)"/>${cats.map(([c,v],i)=>{const len=v/(dt==='in'?incM:dt==='sv'?svM:expM)*C;const s=`<circle cx="55" cy="55" r="${R}" stroke="${PAL[i%PAL.length]}" stroke-dasharray="${Math.max(len-2,0.5)} ${C}" stroke-dashoffset="${-off}" stroke-linecap="round"/>`;off+=len;return s}).join('')}</svg>
+    <div class="leg">${cats.map(([c,v],i)=>`<div><i style="background:${PAL[i%PAL.length]}"></i><span>${c}</span><span>${fmt(v)}</span></div>`).join('')}</div></div>`:`<p class="empty">В этом месяце ${dt==='in'?'доходов':dt==='sv'?'отложенного':'расходов'} нет</p>`;
   const list=txMo.filter(x=>x.type===txType).sort((a,b)=>b.date.localeCompare(a.date));
   const totalSaved=sumBy(S.saves,x=>x.saved),defDate=days.includes(t)?t:days[6],dl=days.filter(k=>k>=t).length;
   const dlt=expPrev?Math.round((expM-expPrev)/expPrev*100):null;
@@ -681,7 +681,7 @@ finance(){
   <section class="card c6"><h3>Бюджет недели<small>лимит <input type="number" min="0" data-set="weekBudget" value="${wb}" style="width:96px;padding:5px 9px;text-align:right"></small></h3>
     <div class="big sm">${Math.round(bp)}%</div>${bar(bp,bc)}
     <p class="lbl" style="margin:10px 0 0">${exp>wb?`Превышено на <b class="down">${fmt(exp-wb)}</b>`:`Осталось <b>${fmt(wb-exp)}</b>${dl&&days.includes(t)?` · ${dl} дн. до конца недели`:''}`}</p></section>
-  <section class="card c6"><h3>По категориям · ${MONTHS[mi].toLowerCase()}</h3><div class="seg" style="margin-bottom:12px"><button class="${txType==='out'?'on':''}" data-a="txtype" data-v="out">Расходы</button><button class="${txType==='in'?'on':''}" data-a="txtype" data-v="in">Доходы</button></div>${donut}</section>
+  <section class="card c6"><h3>По категориям · ${MONTHS[mi].toLowerCase()}</h3><div class="seg" style="margin-bottom:12px"><button class="${txType==='out'?'on':''}" data-a="txtype" data-v="out">Расходы</button><button class="${txType==='in'?'on':''}" data-a="txtype" data-v="in">Доходы</button><button class="${txType==='sv'?'on':''}" data-a="txtype" data-v="sv">Отложено</button></div>${donut}</section>
   <section class="card c7 tx"><h3>Операции · ${MONTHS[mi].toLowerCase()}<small>${list.length}</small></h3>
     <div class="seg" style="margin-bottom:12px"><button class="${txType==='out'?'on':''}" data-a="txtype" data-v="out">Расход</button><button class="${txType==='in'?'on':''}" data-a="txtype" data-v="in">Доход</button><button class="${txType==='sv'?'on':''}" data-a="txtype" data-v="sv">Отложено</button></div>
     <form class="add" data-f="addTx" style="margin:0 0 8px"><input type="number" name="amt" placeholder="Сумма" min="0" step="any" inputmode="decimal" required>${txType==='sv'?`<select name="goal"><option value="">Без цели</option>${S.saves.map(g=>`<option value="${g.id}">${esc(g.name)}</option>`).join('')}</select>`:`<select name="cat">${allCats(txType).map(c=>`<option>${esc(c)}</option>`).join('')}<option value="__new">＋ Своя категория…</option></select><input name="newcat" placeholder="Название категории" maxlength="24" autocomplete="off" style="display:none">`}<input name="note" placeholder="Заметка" autocomplete="off"><input type="date" name="date" value="${defDate}" required><button class="btn">Добавить</button></form>
