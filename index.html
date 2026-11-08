@@ -661,8 +661,12 @@ personal(){
 finance(){
   const t=today(),days=wk(),prev=weekDays(iso(addDays(kdate(W),-7)));
   const txm=S.tx.filter(x=>days.includes(x.date));
-  const inc=sumBy(txm.filter(x=>x.type==='in'),x=>x.amt),exp=sumBy(txm.filter(x=>x.type==='out'),x=>x.amt),bal=inc-exp;
-  const expPrev=sumBy(S.tx.filter(x=>x.type==='out'&&prev.includes(x.date)),x=>x.amt);
+  const exp=sumBy(txm.filter(x=>x.type==='out'),x=>x.amt);
+  const ref=days.includes(t)?t:days[3],mo=ref.slice(0,7),mi=+mo.slice(5)-1;
+  const pmo=iso(addDays(kdate(mo+'-01'),-1)).slice(0,7);
+  const txMo=S.tx.filter(x=>x.date.slice(0,7)===mo);
+  const incM=sumBy(txMo.filter(x=>x.type==='in'),x=>x.amt),expM=sumBy(txMo.filter(x=>x.type==='out'),x=>x.amt),bal=incM-expM;
+  const expPrev=sumBy(S.tx.filter(x=>x.type==='out'&&x.date.slice(0,7)===pmo),x=>x.amt);
   const wb=S.weekBudget||0,bp=wb?exp/wb*100:0;
   const bc=bp>=100?'var(--red)':bp>=75?'var(--orange)':'var(--green)';
   const byCat={};txm.filter(x=>x.type==='out').forEach(x=>byCat[x.cat]=(byCat[x.cat]||0)+x.amt);
@@ -672,11 +676,11 @@ finance(){
     <div class="leg">${cats.map(([c,v],i)=>`<div><i style="background:${PAL[i%PAL.length]}"></i><span>${c}</span><span>${fmt(v)}</span></div>`).join('')}</div></div>`:'<p class="empty">На этой неделе расходов нет</p>';
   const list=txm.filter(x=>x.type===txType).sort((a,b)=>b.date.localeCompare(a.date));
   const totalSaved=sumBy(S.saves,x=>x.saved),defDate=days.includes(t)?t:days[6],dl=days.filter(k=>k>=t).length;
-  const dlt=expPrev?Math.round((exp-expPrev)/expPrev*100):null;
+  const dlt=expPrev?Math.round((expM-expPrev)/expPrev*100):null;
   return `<div class="grid">
-  <section class="card c4"><div class="lbl">Баланс недели</div><div class="big ${bal<0?'down':''}">${fmt(bal)}</div><div class="delta lbl">доходы минус расходы</div></section>
-  <section class="card c4"><div class="lbl">Доходы</div><div class="big up">${fmt(inc)}</div><div class="delta lbl">${txm.filter(x=>x.type==='in').length} поступл.</div></section>
-  <section class="card c4"><div class="lbl">Расходы</div><div class="big">${fmt(exp)}</div>${dlt===null?`<div class="delta lbl">${txm.filter(x=>x.type==='out').length} трат</div>`:`<div class="delta ${dlt<=0?'up':'down'}">${dlt<=0?'▼':'▲'} ${Math.abs(dlt)}% к прошлой неделе</div>`}</section>
+  <section class="card c4"><div class="lbl">Баланс · ${MONTHS[mi].toLowerCase()}</div><div class="big ${bal<0?'down':''}">${fmt(bal)}</div><div class="delta lbl">доходы минус расходы за месяц</div></section>
+  <section class="card c4"><div class="lbl">Доходы · ${MONTHS[mi].toLowerCase()}</div><div class="big up">${fmt(incM)}</div><div class="delta lbl">${txMo.filter(x=>x.type==='in').length} поступл. за месяц</div></section>
+  <section class="card c4"><div class="lbl">Расходы · ${MONTHS[mi].toLowerCase()}</div><div class="big">${fmt(expM)}</div>${dlt===null?`<div class="delta lbl">${txMo.filter(x=>x.type==='out').length} трат за месяц</div>`:`<div class="delta ${dlt<=0?'up':'down'}">${dlt<=0?'▼':'▲'} ${Math.abs(dlt)}% к прошлому месяцу</div>`}</section>
   <section class="card c6"><h3>Бюджет недели<small>лимит <input type="number" min="0" data-set="weekBudget" value="${wb}" style="width:96px;padding:5px 9px;text-align:right"></small></h3>
     <div class="big sm">${Math.round(bp)}%</div>${bar(bp,bc)}
     <p class="lbl" style="margin:10px 0 0">${exp>wb?`Превышено на <b class="down">${fmt(exp-wb)}</b>`:`Осталось <b>${fmt(wb-exp)}</b>${dl&&days.includes(t)?` · ${dl} дн. до конца недели`:''}`}</p></section>
