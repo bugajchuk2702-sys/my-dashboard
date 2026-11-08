@@ -269,6 +269,29 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border:0;border-radiu
 .sw .col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:100%}
 .sw .b{width:12px;border-radius:4px;background:var(--accent)}
 .sw small{font-size:9px;color:var(--tx2)}
+.wnav{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.wnav .btn:disabled{opacity:.35;cursor:default}
+.wlab{min-width:130px;text-align:center}
+.wlab b{display:block;font-size:17px;font-weight:700;letter-spacing:-.02em}
+.wlab small{font-size:12px;color:var(--tx2)}
+.wr{display:grid;grid-template-columns:minmax(96px,200px) repeat(7,minmax(0,1fr));gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--sep)}
+.wr:last-of-type{border-bottom:0}
+.wr .hn{position:static;width:auto;background:transparent;padding:0;margin:0}
+.wh{padding:0 0 6px}
+.wd{text-align:center;line-height:1.2}
+.wd small{display:block;font-size:11px;color:var(--tx2);text-transform:uppercase}
+.wd b{font-size:15px;font-weight:650}
+.wd.t b{color:var(--accent)}
+.wc{justify-self:center;width:100%;max-width:46px;aspect-ratio:1;border-radius:50%;border:0;padding:0;background:var(--fill);color:#fff;cursor:pointer;transition:.2s;display:grid;place-items:center}
+.wc svg{width:55%;height:55%}
+.wc.on{background:var(--accent);box-shadow:0 3px 10px color-mix(in srgb,var(--accent) 40%,transparent)}
+.wc.rest{background:transparent;box-shadow:inset 0 0 0 1.5px var(--sep)}
+.wc.off{opacity:.4}
+.wc.sk{background:rgba(255,69,58,.14);box-shadow:inset 0 0 0 1.5px rgba(255,69,58,.35)}
+.wc.sk::after{content:'✕';color:var(--red);font-size:15px;font-weight:700;line-height:1}
+.wc.t{outline:2px solid color-mix(in srgb,var(--accent) 65%,transparent);outline-offset:2px}
+.wc:disabled{opacity:.2;cursor:default}
+@media (max-width:520px){.wr{grid-template-columns:84px repeat(7,minmax(0,1fr));gap:4px}.wr .hn b{font-size:13px}}
 .hedit{margin-top:10px}
 
 nav.tabs{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);z-index:20;display:flex;gap:4px;padding:6px;border-radius:99px;
@@ -390,45 +413,50 @@ function monthKeys(){
   for(let d=new Date(sy,sm-1,1);d<=end;d=new Date(d.getFullYear(),d.getMonth()+1,1))out.push(d.getFullYear()+'-'+pad(d.getMonth()+1));
   return out;
 }
-function habRow(h,y,m,dim,t,isCur){
-  const f=h.freq||'daily',st=habStreak(h),ms=monthStats(h,y,m);
-  const flabel=f==='daily'?'каждый день':f==='alt'?'через день':((h.dow||[]).map(i=>WD[i]).join(',')||'—');
-  let cells='';
-  for(let d=1;d<=dim;d++){
-    const k=dkey(y,m,d),done=!!h.days[k],skp=!!(h.skip&&h.skip[k]),cls=done?'on':skp?'sk':(!isDue(h,k)?(f==='alt'?'rest':'off'):'');
-    cells+=`<button class="c ${cls} ${k===t?'t':''}" ${k>t?'disabled':''} data-a="hd" data-id="${h.id}" data-v="${k}" aria-label="${k}"></button>`;
-  }
-  return `<div class="hr"><div class="hn" data-a="hedit" data-id="${h.id}" title="Настроить расписание"><b>${esc(h.name)}</b><small>${flabel}</small></div>${cells}</div>`;
+const mondayOf=k=>iso(addDays(kdate(k),-wdMon(kdate(k))));
+const START_KEY=HAB_START+'-01';
+let habWeek=mondayOf(today()),habView='marks';
+const weekDays=mon=>[...Array(7)].map((_,i)=>iso(addDays(kdate(mon),i)));
+function weekLabel(mon){
+  const a=kdate(mon),b=addDays(a,6),mo=d=>d.toLocaleDateString('ru-RU',{month:'short'}).replace('.','');
+  return a.getMonth()===b.getMonth()?`${a.getDate()}–${b.getDate()} ${mo(b)}`:`${a.getDate()} ${mo(a)} – ${b.getDate()} ${mo(b)}`;
 }
-let habView='marks';
-function habStatsBody(){
-  const t=today(),cur=t.slice(0,7),[y,mi]=habMonth.split('-').map(Number),m=mi-1,dim=new Date(y,m+1,0).getDate();
+function rangeStats(h,days){
+  const t=today(),alt=(h.freq||'daily')==='alt';let done=0,skip=0,plan=0,elapsed=0;
+  days.forEach(k=>{if(k>t||k<START_KEY)return;elapsed++;if(h.days[k])done++;if(h.skip&&h.skip[k])skip++;if(!alt&&(isDue(h,k)||h.days[k]))plan++});
+  return {done,skip,plan:alt?Math.ceil(elapsed/2):plan};
+}
+const freqLabel=h=>{const f=h.freq||'daily';return f==='daily'?'каждый день':f==='alt'?'через день':((h.dow||[]).map(i=>WD[i]).join(', ')||'—')};
+function habRow(h,days,t){
+  const f=h.freq||'daily';
+  const cells=days.map(k=>{
+    const done=!!h.days[k],skp=!!(h.skip&&h.skip[k]),cls=done?'on':skp?'sk':(!isDue(h,k)?(f==='alt'?'rest':'off'):''),dis=k>t||k<START_KEY;
+    return `<button class="wc ${cls} ${k===t?'t':''}" ${dis?'disabled':''} data-a="hd" data-id="${h.id}" data-v="${k}" aria-label="${k}">${done?CHECK:''}</button>`;
+  }).join('');
+  return `<div class="wr"><div class="hn" data-a="hedit" data-id="${h.id}" title="Настроить расписание"><b>${esc(h.name)}</b><small>${freqLabel(h)}</small></div>${cells}</div>`;
+}
+function habStatsBody(days){
   if(!S.habits.length)return '<p class="empty">Добавьте привычки — здесь появится статистика.</p>';
-  const elapsed=habMonth<cur?dim:habMonth===cur?+t.slice(8):0;
-  const rows=S.habits.map(h=>{
-    const ms=monthStats(h,y,m),plan=ms.plan!=null?ms.plan:Math.ceil(elapsed/2);
-    return {h,ms,plan,pct:plan?Math.min(100,ms.done/plan*100):0,best:bestStreak(h),now:habStreak(h),wd:weekdayStats(h,y,m)};
-  });
-  const done=rows.reduce((a,r)=>a+r.ms.done,0),skip=rows.reduce((a,r)=>a+r.ms.skip,0),plan=rows.reduce((a,r)=>a+r.plan,0);
+  const rows=S.habits.map(h=>{const rs=rangeStats(h,days);return {h,rs,pct:rs.plan?Math.min(100,rs.done/rs.plan*100):0,best:bestStreak(h),now:habStreak(h)}});
+  const done=rows.reduce((a,r)=>a+r.rs.done,0),skip=rows.reduce((a,r)=>a+r.rs.skip,0),plan=rows.reduce((a,r)=>a+r.rs.plan,0);
   const pct=plan?Math.min(100,done/plan*100):0,best=rows.reduce((a,r)=>Math.max(a,r.best),0);
-  const fl=h=>{const f=h.freq||'daily';return f==='daily'?'каждый день':f==='alt'?'через день':((h.dow||[]).map(i=>WD[i]).join(', ')||'—')};
   return `<div class="ssum"><div><b>${done}</b><span>выполнено</span></div><div><b class="${skip?'down':''}">${skip}</b><span>пропущено ✕</span></div><div><b>${Math.round(pct)}%</b><span>выполнение</span></div><div><b>${best}</b><span>лучшая серия</span></div></div>
-  ${rows.map(r=>`<div class="srow"><div class="sn"><b>${esc(r.h.name)}</b><small>${fl(r.h)}</small></div>
-    <div class="sp"><div class="l"><span>${r.ms.done}${r.plan?' из '+r.plan:''}</span><span>${Math.round(r.pct)}%</span></div>${bar(r.pct)}</div>
-    <div class="sv"><b>${r.ms.skip}</b><span>пропусков</span></div><div class="sv"><b>${r.now}</b><span>серия</span></div><div class="sv"><b>${r.best}</b><span>лучшая</span></div>
-    <div class="sw" title="Выполнение по дням недели">${WDL.map((l,i)=>{const p=r.wd.plan[i]?r.wd.done[i]/r.wd.plan[i]*100:0;return `<div class="col" title="${WD[i]}: ${r.wd.done[i]} из ${r.wd.plan[i]}"><div class="b" style="height:${Math.max(3,p*.28)}px"></div><small>${l}</small></div>`}).join('')}</div></div>`).join('')}`;
+  ${rows.map(r=>`<div class="srow"><div class="sn"><b>${esc(r.h.name)}</b><small>${freqLabel(r.h)}</small></div>
+    <div class="sp"><div class="l"><span>${r.rs.done}${r.rs.plan?' из '+r.rs.plan:''}</span><span>${Math.round(r.pct)}%</span></div>${bar(r.pct)}</div>
+    <div class="sv"><b>${r.rs.skip}</b><span>пропусков</span></div><div class="sv"><b>${r.now}</b><span>серия</span></div><div class="sv"><b>${r.best}</b><span>лучшая</span></div></div>`).join('')}`;
 }
 function habitsCard(){
-  const t=today(),y=+habMonth.slice(0,4),m=+habMonth.slice(5)-1,cur=t.slice(0,7),isCur=habMonth===cur,dim=new Date(y,m+1,0).getDate();
-  let head='';for(let d=1;d<=dim;d++){head+=`<span class="dn ${dkey(y,m,d)===t?'t':''}">${d}</span>`}
+  const t=today(),days=weekDays(habWeek),curWeek=mondayOf(t),minW=mondayOf(START_KEY),maxW=iso(addDays(kdate(curWeek),28));
   const eh=S.habits.find(x=>x.id===editHab),f=eh&&(eh.freq||'daily');
   const edit=eh?`<div class="hedit"><div class="lbl" style="margin-bottom:6px">Расписание: <b>${esc(eh.name)}</b></div><div class="seg">${FREQS.map(([k,n])=>`<button class="${f===k?'on':''}" data-a="hfreq" data-id="${eh.id}" data-v="${k}">${n}</button>`).join('')}</div>${f==='dow'?`<div class="wds">${WD.map((n,i)=>`<button class="${(eh.dow||[]).includes(i)?'on':''}" data-a="hdow" data-id="${eh.id}" data-v="${i}">${n}</button>`).join('')}</div>`:''}<div class="acts" style="margin-top:10px"><button class="btn sm" data-a="hedit" data-id="${eh.id}">Готово</button><button class="btn danger sm" data-a="hdel" data-id="${eh.id}">Удалить привычку</button></div></div>`:'';
-  const marks=`${S.habits.length?`<div class="hscroll"><div class="hm"><div class="hr hh"><div class="hn"></div>${head}</div>${S.habits.map(h=>habRow(h,y,m,dim,t,isCur)).join('')}</div></div><p class="lbl" style="margin:6px 0 0;font-size:12px">Нажатие по дню: ✓ выполнено → ✕ пропуск → снять отметку</p>`:'<p class="empty">Добавьте первую привычку</p>'}
+  const head=`<div class="wr wh"><div></div>${days.map((k,i)=>`<div class="wd ${k===t?'t':''}"><small>${WD[i]}</small><b>${kdate(k).getDate()}</b></div>`).join('')}</div>`;
+  const marks=`${S.habits.length?`${head}${S.habits.map(h=>habRow(h,days,t)).join('')}<p class="lbl" style="margin:8px 0 0;font-size:12px">Нажатие по дню: ✓ выполнено → ✕ пропуск → снять отметку</p>`:'<p class="empty">Добавьте первую привычку</p>'}
   ${edit}
   <form class="hadd" data-f="addHabit"><input name="name" data-bind="newHab" placeholder="Новая привычка" autocomplete="off" value="${esc(newHabName)}" required><div class="seg">${FREQS.map(([k,n])=>`<button type="button" class="${newFreq===k?'on':''}" data-a="nfreq" data-v="${k}">${n}</button>`).join('')}</div>${newFreq==='dow'?`<div class="wds">${WD.map((n,i)=>`<button type="button" class="${newDow.includes(i)?'on':''}" data-a="ndow" data-v="${i}">${n}</button>`).join('')}</div>`:''}<button class="btn">Добавить</button></form>`;
+  const nav=`<div class="wnav"><button class="btn ghost sm" data-a="hwk" data-v="-1" ${habWeek<=minW?'disabled':''} aria-label="Прошлая неделя">‹</button><div class="wlab"><b>${weekLabel(habWeek)}</b><small>${habWeek===curWeek?'эта неделя':kdate(habWeek).getFullYear()}</small></div><button class="btn ghost sm" data-a="hwk" data-v="1" ${habWeek>=maxW?'disabled':''} aria-label="Следующая неделя">›</button>${habWeek===curWeek?'':'<button class="btn ghost sm" data-a="hnow">Эта неделя</button>'}</div>`;
   return `<section class="card c12"><h3>Привычки<div class="seg hview">${[['marks','Отметки'],['stats','Статистика']].map(([k,n])=>`<button class="${habView===k?'on':''}" data-a="hview" data-v="${k}">${n}</button>`).join('')}</div></h3>
-  ${monthChipsHtml()}
-  ${habView==='stats'?habStatsBody():marks}</section>`;
+  ${nav}
+  ${habView==='stats'?habStatsBody(days):marks}</section>`;
 }
 const CHECK='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 
@@ -736,6 +764,8 @@ function render(){
 /* ---------- actions ---------- */
 const A={
   tab:d=>{S.tab=d.v;anim=true;window.scrollTo({top:0,behavior:'smooth'});return 'skip-save'},
+  hwk:d=>{const mon=iso(addDays(kdate(habWeek),7*+d.v)),lo=mondayOf(START_KEY),hi=iso(addDays(kdate(mondayOf(today())),28));habWeek=mon<lo?lo:mon>hi?hi:mon;return 'skip-save'},
+  hnow:()=>{habWeek=mondayOf(today());return 'skip-save'},
   hview:d=>{habView=d.v;return 'skip-save'},
   hmonth:d=>{habMonth=d.v;return 'skip-save'},
   hyear:d=>{const y=+habMonth.slice(0,4)+ +d.v;habMonth=y+'-'+habMonth.slice(5);return 'skip-save'},
