@@ -34,7 +34,6 @@
 body[data-tab=personal]{--accent:#0a84ff}
 body[data-tab=finance]{--accent:#30d158}
 body[data-tab=growth]{--accent:#bf5af2}
-body[data-tab=business]{--accent:#ff9f0a}
 body[data-tab=stats]{--accent:#ff375f}
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -480,7 +479,7 @@ function seed(){
     saves:[{id:uid(),name:'Отпуск',target:80000,saved:24000},{id:uid(),name:'Подушка безопасности',target:150000,saved:61000}],
     goals:[{id:uid(),name:'Английский до уровня B2',p:35},{id:uid(),name:'Пробежать 10 км',p:60}],
     books:[{id:uid(),name:'Atomic Habits',pages:320,read:140},{id:uid(),name:'Deep Work',pages:300,read:300}],
-    learn:{[ago(0)]:30,[ago(1)]:45,[ago(2)]:60,[ago(4)]:25},learnGoal:300,
+    learn:{},learnGoal:300,fin:{},run:{},read:{},words:{},finGoal:150,runGoal:15,readGoal:140,finNote:'',
     refl:{[ago(1)]:'Хороший день, закончила важную задачу.',[ago(2)]:'Благодарна за поддержку близких.'},
     deals:[
       {id:uid(),name:'Лендинг для кофейни',amt:30000,stage:0,paid:null},
@@ -579,8 +578,7 @@ let sheet=false,sheetMsg='',resetArm=false,bkText='',txType='out',anim=true;
 const TABS=[
   {id:'personal',name:'Личное',ic:'<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5"/>'},
   {id:'finance',name:'Финансы',ic:'<rect x="3" y="6" width="18" height="13" rx="3.5"/><path d="M3 10.5h18"/><circle cx="16.5" cy="14.8" r="1"/>'},
-  {id:'growth',name:'Саморазвитие',ic:'<path d="M12 3l1.9 5.3L19.2 10l-5.3 1.9L12 17.2l-1.9-5.3L4.8 10l5.3-1.7z"/><path d="M19 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>'},
-  {id:'business',name:'Бизнес',ic:'<rect x="3" y="7" width="18" height="13" rx="3.5"/><path d="M9 7V5.5A2.5 2.5 0 0111.5 3h1A2.5 2.5 0 0115 5.5V7M3 13h18"/>'}
+  {id:'growth',name:'Саморазвитие',ic:'<path d="M12 3l1.9 5.3L19.2 10l-5.3 1.9L12 17.2l-1.9-5.3L4.8 10l5.3-1.7z"/><path d="M19 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>'}
 ];
 const CI={'Еда':'<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 1.5-3 4-3 7h3v11M17 3v7"/>','Транспорт':'<rect x="4" y="3.5" width="16" height="14" rx="3"/><path d="M4 11h16M8 21v-3.5M16 21v-3.5"/><circle cx="8" cy="14.5" r=".8"/><circle cx="16" cy="14.5" r=".8"/>','Жильё':'<path d="M3.5 11L12 4l8.5 7M5.5 9.5V20h13V9.5M10 20v-5h4v5"/>','Развлечения':'<rect x="3.5" y="6" width="17" height="14" rx="2.5"/><path d="M3.5 10.5h17M7 6l3 4.5M12 6l3 4.5M17 6l3 4.5"/>','Здоровье':'<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.5 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>','Покупки':'<path d="M5 8h14l-1 12H6L5 8zM9 8V6.5a3 3 0 0 1 6 0V8"/>','Накопления':'<ellipse cx="12" cy="7" rx="7" ry="3"/><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/>','Зарплата':'<rect x="3" y="6.5" width="18" height="11" rx="2.5"/><circle cx="12" cy="12" r="2.5"/>','Бизнес':'<rect x="3.5" y="7.5" width="17" height="12" rx="2.5"/><path d="M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5M3.5 13h17"/>','Подарок':'<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M3.5 9h17v3h-17zM12 9v11M12 9c-1-3-4.5-3.5-4.5-1.5S10 9 12 9zM12 9c1-3 4.5-3.5 4.5-1.5S14 9 12 9z"/>'};
 const allCats=t=>[...CATS[t],...(((S.cats||{})[t])||[]).filter(c=>!CATS[t].includes(c))];
@@ -696,52 +694,30 @@ finance(){
 
 growth(){
   const t=today(),days=wk(),sd=effSel();
-  const mins=days.map(k=>S.learn[k]||0),wkm=mins.reduce((a,b)=>a+b,0),mx=Math.max(...mins,30);
-  const wp=S.learnGoal?wkm/S.learnGoal*100:0;
-  const rs=streak(d=>(S.refl[d]||'').trim()),rw=days.filter(k=>(S.refl[k]||'').trim()).length;
+  const r1=n=>Math.round(n*10)/10;
+  const sec=(k,title,ico,unit,color,goalKey,quick,step)=>{
+    const m=S[k]||{},vals=days.map(d=>m[d]||0),tot=r1(sumBy(vals,x=>x)),mx=Math.max(...vals,1);
+    const goal=S[goalKey]||0,p=goal?tot/goal*100:0,act=vals.filter(x=>x>0).length,st=streak(d=>(m[d]||0)>0);
+    return `<section class="card c4" style="--accent:${color}"><h3><span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color:${color}">${ico}</svg>${title}</span><small>${dshort(sd)}${sd===t?' · сегодня':''}</small></h3>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><div><div class="big sm">${tot} <span class="lbl" style="font-size:15px">${unit}</span></div><div class="lbl">за неделю${goal?` из ${goal}`:''} · ${act}/7 дн. · серия ${st}</div></div>${ring(p,74)}</div>
+      <div class="chart" style="height:120px;margin:12px 0 10px">${days.map((d,i)=>`<div class="col sel ${d===sd?'':'dim'}" data-a="sday" data-v="${d}" title="${dshort(d)}"><em>${vals[i]?r1(vals[i]):''}</em><div class="b" style="height:${vals[i]/mx*100}%"></div><small>${WD[i]}</small></div>`).join('')}</div>
+      <div class="lbl" style="margin-bottom:8px">Сегодня за ${dshort(sd)}: <b>${r1(m[sd]||0)} ${unit}</b></div>
+      <div class="acts" style="margin:0">${quick.map(q=>`<button class="btn sm" data-a="log" data-k="${k}" data-v="${q}">+${q}</button>`).join('')}<button class="btn sm ghost" data-a="logclr" data-k="${k}">Сброс</button></div>
+      <form class="add" data-f="logAdd" data-k="${k}" style="margin-top:8px;flex-wrap:nowrap"><input type="number" name="v" placeholder="Своё значение" min="0" step="${step}" inputmode="decimal" required style="flex:1 1 auto;min-width:0"><button class="btn sm">Добавить</button></form>
+      <div class="set" style="margin-top:12px"><span class="lbl">Цель в неделю, ${unit}</span><input type="number" min="0" data-set="${goalKey}" value="${goal}" style="width:90px;text-align:right"></div></section>`};
+  const wd=days.map(d=>(S.words||{})[d]||0),wt=sumBy(wd,x=>x);
   const done=S.books.filter(b=>b.read>=b.pages).length;
   return `<div class="grid">
-  <section class="card c8"><div class="hero"><div><div class="lbl">Обучение · ${weekLabel(W)}</div><div class="big">${Math.floor(wkm/60)} ч ${wkm%60} мин</div>
-    <div class="stats"><div><b>${rw}/7</b><span class="lbl">дней с рефлексией</span></div><div><b>${rs}</b><span class="lbl">дней рефлексии подряд</span></div><div><b>${done}/${S.books.length}</b><span class="lbl">книг прочитано</span></div></div></div>${ring(wp,128)}</div></section>
-  <section class="card c4"><h3>День<small>${dshort(sd)}${sd===t?' · сегодня':''}</small></h3><div class="big sm" style="margin-bottom:8px">${S.learn[sd]||0} мин</div><div class="lbl" style="margin-bottom:10px">Записать время учёбы</div>
-    <div class="acts" style="margin:0"><button class="btn sm" data-a="learn" data-v="15">+15</button><button class="btn sm" data-a="learn" data-v="30">+30</button><button class="btn sm" data-a="learn" data-v="60">+60</button><button class="btn sm ghost" data-a="learnclr">Сброс</button></div>
-    <div class="set" style="margin-top:12px"><span class="lbl">Цель в неделю, мин</span><input type="number" min="0" data-set="learnGoal" value="${S.learnGoal}" style="width:90px;text-align:right"></div></section>
-  <section class="card c5"><h3>Неделя<small>нажмите на день</small></h3><div class="chart">${days.map((k,i)=>`<div class="col sel ${k===sd?'':'dim'}" data-a="sday" data-v="${k}" title="${dshort(k)}"><em>${mins[i]||''}</em><div class="b" style="height:${mins[i]/mx*100}%"></div><small>${WD[i]}</small></div>`).join('')}</div></section>
-  <section class="card c7"><h3>Рефлексия дня<small>${dshort(sd)}</small></h3><textarea data-bind="refl" placeholder="Что получилось? За что благодарна? Чему научилась?">${esc(S.refl[sd]||'')}</textarea></section>
-  <section class="card c6"><h3>Цели</h3>${
-    S.goals.length?S.goals.map(g=>`<div class="item"><div class="top"><span>${esc(g.name)}</span><span class="val"><span data-lbl>${g.p}%</span> ${delBtn('goals',g.id)}</span></div>${rangeIn('goals',g.id,g.p,100)}</div>`).join(''):'<p class="empty">Добавьте свою первую цель</p>'
-  }<form class="add" data-f="addGoal"><input name="name" placeholder="Новая цель" autocomplete="off" required><button class="btn">Добавить</button></form></section>
-  <section class="card c6"><h3>Книги</h3>${
+  ${sec('fin','Финский язык','<path d="M4 5h9M8.5 3v2M6 5c0 4 3 7 7 8M12 5c0 3-2.5 6-7 8M13 21l4-9 4 9M14.5 18h5"/>','мин','#0a84ff','finGoal',[15,30,60],1)}
+  ${sec('run','Бег','<circle cx="14" cy="4.5" r="1.8"/><path d="M7 21l3-5 3 1.5 1.5 3.5M10 16l1.5-5 3 1 2.5 3M8 11l3.5-3.5 3 1"/>','км','#ff9f0a','runGoal',[1,3,5],0.1)}
+  ${sec('read','Чтение','<path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/>','стр.','#30d158','readGoal',[10,20,50],1)}
+  <section class="card c6" style="--accent:#0a84ff"><h3>Финский · слова<small>${wt} за неделю</small></h3>
+    <div class="big sm">${(S.words||{})[sd]||0} <span class="lbl" style="font-size:15px">слов · ${dshort(sd)}</span></div>
+    <div class="acts" style="margin:10px 0 0"><button class="btn sm" data-a="log" data-k="words" data-v="5">+5</button><button class="btn sm" data-a="log" data-k="words" data-v="10">+10</button><button class="btn sm ghost" data-a="logclr" data-k="words">Сброс</button></div>
+    <textarea data-bind="finNote" placeholder="Тема урока, новые слова, фразы…" style="margin-top:12px">${esc(S.finNote||'')}</textarea></section>
+  <section class="card c6" style="--accent:#30d158"><h3>Книги<small>${done}/${S.books.length} прочитано</small></h3>${
     S.books.length?S.books.map(b=>`<div class="item"><div class="top"><span>${esc(b.name)}</span><span class="val"><span data-lbl>${b.read} / ${b.pages} стр.</span> ${delBtn('books',b.id)}</span></div>${rangeIn('books',b.id,b.read,b.pages)}</div>`).join(''):'<p class="empty">Список для чтения пуст</p>'
   }<form class="add" data-f="addBook"><input name="name" placeholder="Название книги" autocomplete="off" required><input type="number" name="pages" placeholder="Страниц" min="1" inputmode="numeric" required><button class="btn">Добавить</button></form></section>
-  </div>`;
-},
-
-business(){
-  const t=today(),days=wk(),prevDays=weekDays(iso(addDays(kdate(W),-7)));
-  const paid=S.deals.filter(d=>d.stage===2&&d.paid);
-  const revOf=ds=>sumBy(paid.filter(d=>ds.includes(d.paid)),d=>d.amt);
-  const weeks=[...Array(8)].map((_,i)=>iso(addDays(kdate(W),-7*(7-i))));
-  const rev=weeks.map(m=>revOf(weekDays(m)));
-  const cur=rev[7],prev=revOf(prevDays),mx=Math.max(...rev,1);
-  const dlt=prev?Math.round((cur-prev)/prev*100):null;
-  const pipe=sumBy(S.deals.filter(d=>d.stage<2),d=>d.amt);
-  const conv=S.deals.length?Math.round(paid.length/S.deals.length*100):0;
-  const paidW=paid.filter(d=>days.includes(d.paid)),avg=paidW.length?cur/paidW.length:0;
-  const colHtml=s=>{const ds=s===2?paidW:S.deals.filter(d=>d.stage===s);
-    return `<div class="col-k"><h4><span>${STAGES[s]}${s===2?' · неделя':''}</span><span>${ds.length}</span></h4>${ds.map(d=>`<div class="deal"><b>${esc(d.name)}</b><div class="m"><span>${fmt(d.amt)}</span><div><button data-a="mv" data-id="${d.id}" data-v="-1" ${s===0?'disabled':''} aria-label="Назад">‹</button><button data-a="mv" data-id="${d.id}" data-v="1" ${s===2?'disabled':''} aria-label="Вперёд">›</button><button data-a="dl" data-k="deals" data-id="${d.id}" aria-label="Удалить">×</button></div></div></div>`).join('')||'<div class="more">Пусто</div>'}</div>`};
-  return `<div class="grid">
-  <section class="card c3 half"><div class="lbl">Выручка недели</div><div class="big sm">${fmt(cur)}</div>${dlt===null?'':`<div class="delta ${dlt>=0?'up':'down'}">${dlt>=0?'▲':'▼'} ${Math.abs(dlt)}% к прошлой</div>`}</section>
-  <section class="card c3 half"><div class="lbl">В воронке</div><div class="big sm">${fmt(pipe)}</div><div class="delta lbl">${S.deals.filter(d=>d.stage<2).length} сделок</div></section>
-  <section class="card c3 half"><div class="lbl">Конверсия</div><div class="big sm">${conv}%</div><div class="delta lbl">${paid.length} из ${S.deals.length} оплачено</div></section>
-  <section class="card c3 half"><div class="lbl">Средний чек</div><div class="big sm">${fmt(avg)}</div><div class="delta lbl">за неделю</div></section>
-  <section class="card c12"><h3>Воронка продаж<small>${weekLabel(W)}</small></h3><div class="kan">${[0,1,2].map(colHtml).join('')}</div>
-    <form class="add" data-f="addDeal"><input name="name" placeholder="Клиент или проект" autocomplete="off" required><input type="number" name="amt" placeholder="Сумма" min="0" step="any" inputmode="decimal" required><button class="btn">Новая сделка</button></form></section>
-  <section class="card c6"><h3>Выручка по неделям<small>8 недель</small></h3><div class="chart">${rev.map((v,i)=>`<div class="col ${i===7?'':'dim'}" title="${weekLabel(weeks[i])}: ${fmt(v)}"><em>${v?fmtK(v):''}</em><div class="b" style="height:${v/mx*100}%"></div><small>${kdate(weeks[i]).getDate()}.${pad(kdate(weeks[i]).getMonth()+1)}</small></div>`).join('')}</div></section>
-  <section class="card c6"><h3>Проекты</h3>${
-    S.projects.length?S.projects.map(p=>`<div class="item"><div class="top"><span>${esc(p.name)}</span><span class="val"><span data-lbl>${p.p}%</span> ${delBtn('projects',p.id)}</span></div>${rangeIn('projects',p.id,p.p,100)}</div>`).join(''):'<p class="empty">Проектов пока нет</p>'
-  }<form class="add" data-f="addProject"><input name="name" placeholder="Новый проект" autocomplete="off" required><button class="btn">Добавить</button></form></section>
-  ${listCard('ideas','Задачи и идеи','Идея или задача','c12')}
   </div>`;
 }};
 
@@ -808,8 +784,8 @@ const A={
   mood:d=>{const v=getMood()===+d.v?0:+d.v;S.mood={date:today(),v};S.moodLog=S.moodLog||{};S.moodLog[today()]=v},
   water:d=>{const n=+d.v,v=getWater()===n?n-1:n;S.water={date:today(),n:v};S.waterLog=S.waterLog||{};S.waterLog[today()]=v},
   txtype:d=>{txType=d.v},
-  learn:d=>{const k=effSel();S.learn[k]=(S.learn[k]||0)+ +d.v},
-  learnclr:()=>{delete S.learn[effSel()]},
+  log:d=>{const k=effSel();S[d.k]=S[d.k]||{};S[d.k][k]=Math.round(((S[d.k][k]||0)+ +d.v)*10)/10},
+  logclr:d=>{if(S[d.k])delete S[d.k][effSel()]},
   sday:d=>{selDay=d.v;return 'skip-save'},
   wk:d=>{const cur=mondayOf(today()),lo=iso(addDays(kdate(cur),-7*26)),hi=iso(addDays(kdate(cur),7*8)),m=iso(addDays(kdate(W),7*+d.v));W=m<lo?lo:m>hi?hi:m;selDay='';return 'skip-save'},
   wnow:()=>{W=mondayOf(today());selDay='';return 'skip-save'},
@@ -864,6 +840,7 @@ const F={
   addSave:fd=>{S.saves.push({id:uid(),name:fd.name.trim(),target:num(fd.target),saved:0})},
   deposit:(fd,d)=>{const g=S.saves.find(x=>x.id===d.id);if(g)g.saved=Math.max(0,g.saved+num(fd.amt))},
   addGoal:fd=>{S.goals.push({id:uid(),name:fd.name.trim(),p:0})},
+  logAdd:(fd,d)=>{const v=num(fd.v);if(v>0){const k=effSel();S[d.k]=S[d.k]||{};S[d.k][k]=Math.round(((S[d.k][k]||0)+v)*10)/10}},
   addBook:fd=>{S.books.push({id:uid(),name:fd.name.trim(),pages:Math.max(1,num(fd.pages)),read:0})},
   addDeal:fd=>{S.deals.push({id:uid(),name:fd.name.trim(),amt:num(fd.amt),stage:0,paid:null})},
   addProject:fd=>{S.projects.push({id:uid(),name:fd.name.trim(),p:0})}
