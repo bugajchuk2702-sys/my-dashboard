@@ -7,7 +7,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Дашборд">
 <title>Мой дашборд</title>
-<script src="config.js"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -289,78 +288,79 @@ function seed(){
 let S;
 try{const r=localStorage.getItem(KEY);S=r?Object.assign(seed(),JSON.parse(r)):seed()}catch(e){S=seed()}
 if(S.theme!=='dark')S.theme='light';
-/* ---------- сохранение: устройство + облако Supabase ---------- */
-const CFG=window.SUPABASE||{};const SB=String(CFG.url||'').replace(/\/+$/,'');const sbOn=!!(SB&&CFG.anon);
-const SKEY='my-dashboard-sb';
-let sess=null;try{sess=JSON.parse(localStorage.getItem(SKEY)||'null')}catch(e){}
-let syncState=sbOn&&sess?'saving':'local',pushT=null,pushing=false,pushAgain=false,lastSync=0,cloudMsg='',sbEmail='';
+/* ---------- сохранение: устройство + облако (приватный репозиторий GitHub) ---------- */
+const GKEY='my-dashboard-gh',GPATH='dashboard-data.json',GAPI=window.GH_API||'https://api.github.com';
+let gh=null;try{gh=JSON.parse(localStorage.getItem(GKEY)||'null')}catch(e){}
+let syncState=gh?'saving':'local',pushT=null,pushing=false,pushAgain=false,lastSync=0,cloudMsg='',ghRepoIn='bugajchuk2702-sys/dashboard-data',remoteSha=null;
 const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const save=()=>{S._t=Date.now();saveLocal();schedulePush()};
-const hdr=t=>({apikey:CFG.anon,Authorization:'Bearer '+(t||CFG.anon),'Content-Type':'application/json'});
-function setSess(j){
-  sess={access_token:j.access_token,refresh_token:j.refresh_token,expires_at:j.expires_at||Math.floor(Date.now()/1000)+(j.expires_in||3600),user:{id:j.user.id,email:j.user.email}};
-  try{localStorage.setItem(SKEY,JSON.stringify(sess))}catch(e){}
-}
-function dropSess(){sess=null;syncState='local';try{localStorage.removeItem(SKEY)}catch(e){}}
-async function authCall(path,body){
-  const r=await fetch(SB+'/auth/v1/'+path,{method:'POST',headers:hdr(),body:JSON.stringify(body)});
-  const j=await r.json().catch(()=>({}));
-  if(!r.ok){const e=new Error(j.msg||j.error_description||j.message||('HTTP '+r.status));e.status=r.status;throw e}
-  return j;
-}
-async function getToken(){
-  if(!sess)throw Object.assign(new Error('no session'),{status:401});
-  if(sess.expires_at-60<Date.now()/1000){
-    try{setSess(await authCall('token?grant_type=refresh_token',{refresh_token:sess.refresh_token}))}
-    catch(e){if(e.status>=400&&e.status<500){dropSess();net()}throw e}
-  }
-  return sess.access_token;
-}
-async function rest(method,qs,body,extra){
-  const t=await getToken();
-  const r=await fetch(SB+'/rest/v1/dash_state'+qs,{method,headers:Object.assign(hdr(t),extra||{}),body:body?JSON.stringify(body):undefined});
+const b64e=t=>{let x='';new TextEncoder().encode(t).forEach(c=>x+=String.fromCharCode(c));return btoa(x)};
+const b64d=t=>new TextDecoder().decode(Uint8Array.from(atob(t.replace(/\s/g,'')),c=>c.charCodeAt(0)));
+async function ghApi(method,path,body){
+  const r=await fetch(GAPI+'/repos/'+gh.repo+path,{method,cache:'no-store',
+    headers:Object.assign({Authorization:'Bearer '+gh.token,Accept:'application/vnd.github+json'},body?{'Content-Type':'application/json'}:{}),
+    body:body?JSON.stringify(body):undefined});
   if(!r.ok){const e=new Error('HTTP '+r.status);e.status=r.status;throw e}
-  return method==='GET'?r.json():null;
+  return r.json();
 }
-const failState=e=>!sess?'local':(e&&e.status>=400&&e.status<500?'error':'pending');
-function schedulePush(){if(!sbOn||!sess)return;syncState='saving';net();clearTimeout(pushT);pushT=setTimeout(push,1200)}
-async function push(){
+async function readRemote(){
+  try{const j=await ghApi('GET','/contents/'+GPATH);remoteSha=j.sha;return JSON.parse(b64d(j.content))}
+  catch(e){if(e.status===404){remoteSha=null;return null}throw e}
+}
+let retryT=null;
+function failState(e){
+  if(!gh)return 'local';
+  if(e&&e.status>=400&&e.status<500)return 'error';
+  if(!retryT)retryT=setTimeout(()=>{retryT=null;if(gh&&syncState==='pending'&&navigator.onLine)pull()},8000);
+  return 'pending';
+}
+function schedulePush(){if(!gh)return;syncState='saving';net();clearTimeout(pushT);pushT=setTimeout(()=>push(),4000)}
+async function push(noRetry){
   pushT=null;
-  if(!sbOn||!sess)return;
+  if(!gh)return;
   if(!navigator.onLine){syncState='pending';net();return}
   if(pushing){pushAgain=true;return}
   pushing=true;
   try{
     if(!S._t)S._t=Date.now();
-    await rest('POST','?on_conflict=user_id',{user_id:sess.user.id,data:S,updated_at:new Date(S._t).toISOString()},{Prefer:'resolution=merge-duplicates,return=minimal'});
-    syncState='synced';lastSync=Date.now();
-  }catch(e){syncState=failState(e)}
+    const body={message:'Сохранение '+new Date(S._t).toISOString(),content:b64e(JSON.stringify(S))};
+    if(remoteSha)body.sha=remoteSha;
+    const j=await ghApi('PUT','/contents/'+GPATH,body);
+    remoteSha=j.content.sha;syncState='synced';lastSync=Date.now();
+  }catch(e){
+    if((e.status===409||e.status===422)&&!noRetry){pushing=false;await pull();return}
+    syncState=failState(e);
+  }
   pushing=false;net();
   if(pushAgain){pushAgain=false;push()}
 }
 async function pull(){
-  if(!sbOn||!sess)return;
+  if(!gh)return;
   if(!navigator.onLine){syncState='pending';net();return}
   try{
-    const rows=await rest('GET','?select=data&user_id=eq.'+sess.user.id);
-    const r=rows[0]&&rows[0].data,rt=(r&&r._t)||0,lt=S._t||0;
+    const r=await readRemote(),rt=(r&&r._t)||0,lt=S._t||0;
     if(r&&rt>lt){S=Object.assign(seed(),r);if(S.theme!=='dark')S.theme='light';saveLocal();render();syncState='synced';lastSync=Date.now()}
-    else if(!r||rt<lt){await push();return}
+    else if(!r||rt<lt){await push(true);return}
     else{syncState='synced';lastSync=Date.now()}
   }catch(e){syncState=failState(e)}
   net();
 }
-const AUTH_ERR={'Invalid login credentials':'Неверная почта или пароль.','User already registered':'Такой аккаунт уже есть — нажмите «Войти».','Email not confirmed':'Почта не подтверждена: откройте письмо от Supabase и перейдите по ссылке.'};
-async function doAuth(path){
-  const email=($('#sbe')||{}).value||sbEmail,password=($('#sbp')||{}).value||'';
-  sbEmail=email.trim();
-  if(!sbEmail||!password){cloudMsg='Введите почту и пароль.';render();return}
-  cloudMsg='Подождите…';render();
+async function ghConnect(){
+  const repo=(($('#ghr')||{}).value||'').trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/\/+$/,'');
+  const token=(($('#ght')||{}).value||'').trim();
+  ghRepoIn=repo;
+  if(!/^[\w.-]+\/[\w.-]+$/.test(repo)||!token){cloudMsg='Введите репозиторий (владелец/название) и токен.';render();return}
+  cloudMsg='Проверяем…';render();
+  const prev=gh;gh={repo,token};
   try{
-    const j=await authCall(path,{email:sbEmail,password});
-    if(!j.access_token){cloudMsg='Аккаунт создан. Подтвердите почту по письму и нажмите «Войти».'}
-    else{setSess(j);cloudMsg='';syncState='saving';net();await pull()}
-  }catch(e){cloudMsg=AUTH_ERR[e.message]||(!navigator.onLine||e instanceof TypeError?'Нет связи с интернетом.':e.message)}
+    const info=await ghApi('GET','');
+    if(!info.private){gh=prev;cloudMsg='Этот репозиторий публичный — ваши данные видели бы все. Откройте его Settings → Danger Zone → Change visibility → Private и повторите.';render();return}
+    try{localStorage.setItem(GKEY,JSON.stringify(gh))}catch(e){}
+    cloudMsg='';syncState='saving';net();render();await pull();
+  }catch(e){
+    gh=prev;
+    cloudMsg=e.status===401?'Токен не подходит или истёк.':e.status===404?'Репозиторий не найден или у токена нет к нему доступа.':e instanceof TypeError?'Нет связи с интернетом.':'Ошибка: '+e.message;
+  }
   render();
 }
 let sheet=false,sheetMsg='',resetArm=false,bkText='',txType='out',anim=true;
@@ -504,10 +504,9 @@ business(){
 /* ---------- render ---------- */
 function cloudBlock(){
   const inp='style="width:100%;margin-bottom:8px"';
-  if(!sbOn)return '<div class="set"><span>Облако</span><span class="val">Не подключено</span></div>';
-  if(!sess)return `<h3 style="margin:14px 0 8px;font-size:15px">☁️ Облако — войдите, чтобы данные сохранялись</h3><input id="sbe" type="email" autocomplete="username" placeholder="Почта" value="${esc(sbEmail)}" ${inp}><input id="sbp" type="password" autocomplete="current-password" placeholder="Пароль (от 6 символов)" ${inp}><div class="acts" style="margin-top:0"><button class="btn sm" data-a="sbin">Войти</button><button class="btn ghost sm" data-a="sbup">Создать аккаунт</button></div>${cloudMsg?`<p class="note" style="color:var(--accent)">${esc(cloudMsg)}</p>`:''}`;
-  const st={saving:'Сохраняется…',synced:'Всё сохранено в облаке'+(lastSync?' · '+new Date(lastSync).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''),pending:'Ждёт интернета — отправится автоматически',error:'Ошибка облака — нажмите «Синхронизировать»',local:''}[syncState]||'';
-  return `<div class="set"><span>☁️ Облако</span><span class="val" style="white-space:normal;text-align:right">${esc(sess.user.email)}</span></div><p class="note" style="margin:0 0 8px">${st}</p><div class="acts" style="margin-top:0"><button class="btn ghost sm" data-a="sbsync">Синхронизировать сейчас</button><button class="btn ghost sm" data-a="sbout">Выйти</button></div>`;
+  if(!gh)return `<h3 style="margin:14px 0 6px;font-size:15px">☁️ Облако — сохранение в приватный репозиторий GitHub</h3><p class="note" style="margin:0 0 8px">Нужен приватный репозиторий и токен с правом Contents: Read and write только на него.</p><input id="ghr" placeholder="владелец/репозиторий" value="${esc(ghRepoIn)}" ${inp}><input id="ght" type="password" autocomplete="off" placeholder="Токен GitHub (github_pat_…)" ${inp}><div class="acts" style="margin-top:0"><button class="btn sm" data-a="ghon">Подключить</button></div>${cloudMsg?`<p class="note" style="color:var(--accent)">${esc(cloudMsg)}</p>`:''}`;
+  const st={saving:'Сохраняется…',synced:'Всё сохранено в облаке'+(lastSync?' · '+new Date(lastSync).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''),pending:'Ждёт интернета — отправится автоматически',error:'Ошибка облака: проверьте токен и доступ к репозиторию, затем «Синхронизировать»',local:''}[syncState]||'';
+  return `<div class="set"><span>☁️ Облако</span><span class="val" style="white-space:normal;text-align:right">${esc(gh.repo)}</span></div><p class="note" style="margin:0 0 8px">${st}</p><div class="acts" style="margin-top:0"><button class="btn ghost sm" data-a="ghsync">Синхронизировать сейчас</button><button class="btn ghost sm" data-a="ghoff">Отключить</button></div>`;
 }
 function sheetHtml(){
   if(!sheet)return '';
@@ -572,10 +571,9 @@ const A={
     const v=($('#bk').value||'').trim();
     try{const j=JSON.parse(v);if(typeof j!=='object'||!j||Array.isArray(j))throw 0;S=Object.assign(seed(),j);bkText='';sheetMsg='Данные восстановлены.'}
     catch(e){bkText=v;sheetMsg='Не удалось прочитать текст копии.';return 'skip-save'}},
-  sbin:()=>{doAuth('token?grant_type=password');return 'skip-save'},
-  sbup:()=>{doAuth('signup');return 'skip-save'},
-  sbout:()=>{dropSess();cloudMsg='';return 'skip-save'},
-  sbsync:()=>{syncState='saving';pull();return 'skip-save'},
+  ghon:()=>{ghConnect();return 'skip-save'},
+  ghoff:()=>{gh=null;syncState='local';try{localStorage.removeItem(GKEY)}catch(e){}cloudMsg='';return 'skip-save'},
+  ghsync:()=>{syncState='saving';pull();return 'skip-save'},
   import:()=>{$('#imp').click();return 'skip'},
   reset:()=>{
     if(!resetArm){resetArm=true;return 'skip-save'}
@@ -641,20 +639,19 @@ document.addEventListener('change',e=>{
 /* ---------- network status ---------- */
 function net(){
   const on=navigator.onLine,n=$('#net');let txt,warn=!on;
-  if(!on)txt=sbOn&&sess?'Офлайн · сохранится позже':'Офлайн';
-  else if(!sbOn)txt='Онлайн';
-  else if(!sess){txt='Войти в облако';warn=true}
+  if(!on)txt=gh?'Офлайн · сохранится позже':'Офлайн';
+  else if(!gh){txt='Подключить облако';warn=true}
   else if(syncState==='saving')txt='Сохранение…';
   else if(syncState==='pending'){txt='Ждёт сети';warn=true}
   else if(syncState==='error'){txt='Ошибка облака';warn=true}
   else txt='☁ Сохранено';
   n.classList.toggle('off',warn);n.querySelector('span').textContent=txt;
 }
-addEventListener('online',()=>{net();if(sess)pull()});addEventListener('offline',net);
-addEventListener('focus',()=>{if(sess&&!pushT&&!pushing)pull()});
-setInterval(()=>{if(sess&&syncState==='pending'&&navigator.onLine)pull()},30000);
+addEventListener('online',()=>{net();if(gh)setTimeout(pull,1200)});addEventListener('offline',net);
+addEventListener('focus',()=>{if(gh&&!pushT&&!pushing)pull()});
+setInterval(()=>{if(gh&&syncState==='pending'&&navigator.onLine)pull()},30000);
 setInterval(head,60000);
-net();render();if(sess)pull();
+net();render();if(gh)pull();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 })();
 </script>
