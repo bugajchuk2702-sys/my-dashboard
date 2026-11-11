@@ -376,6 +376,18 @@ nav.tabs button.on{background:var(--fill);color:var(--accent)}
 .colpick{display:flex;gap:10px;flex-wrap:wrap}
 .colpick button{width:32px;height:32px;border-radius:50%;border:0;cursor:pointer}
 .colpick button.on{box-shadow:0 0 0 3px var(--bg0,#fff),0 0 0 5px var(--tx)}
+
+.row2{display:flex;gap:8px}.row2 select{flex:0 0 auto}
+.trkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.trk{padding:16px;border-radius:24px;background:var(--fill);transition:.2s}
+.trk.fin{background:color-mix(in srgb,var(--hc) 13%,var(--fill))}
+.trkh{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.trkh b{font-size:16px;font-weight:650;overflow-wrap:anywhere}
+.trkp{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--hc)}
+.trk .bar{--c:var(--hc);height:12px;background:rgba(120,120,128,.22)}
+.trk .bar i{background:var(--hc)}
+.trange{width:100%;margin:12px 0 4px;accent-color:var(--hc);height:28px;cursor:pointer}
+.trkf{margin:6px 0 0}
 </style>
 </head>
 <body data-tab="personal">
@@ -510,7 +522,7 @@ function seed(){
   const n=new Date(),y=n.getFullYear(),m=n.getMonth(),dd=n.getDate();
   const ago=k=>iso(new Date(y,m,dd-k));
   return {
-    tab:'today',theme:'light',name:'',goalPct:80,reward:'',
+    tab:'today',theme:'light',name:'',goalPct:80,reward:'',trk:[],
     habits:[
       {id:uid(),name:'Вода с утра',icon:'water',color:'#0a84ff',days:{[ago(0)]:1,[ago(1)]:1,[ago(2)]:1,[ago(4)]:1}},
       {id:uid(),name:'Зарядка',icon:'fit',color:'#ff9f0a',days:{[ago(1)]:1,[ago(2)]:1,[ago(3)]:1}},
@@ -518,8 +530,8 @@ function seed(){
       {id:uid(),name:'Бег',icon:'run',color:'#ff375f',freq:'alt',days:{[ago(1)]:1,[ago(3)]:1,[ago(5)]:1}}]
   };
 }
-const KEEP=['tab','theme','name','goalPct','reward','habits','_t'];
-const norm=o=>{const r={};KEEP.forEach(k=>{if(o&&o[k]!==undefined)r[k]=o[k]});if(!['today','week','month','stats','habits'].includes(r.tab))r.tab='today';if(r.habits)r.habits=r.habits.map(h=>({...h,days:h.days||{},skip:h.skip||{}}));return r};
+const KEEP=['tab','theme','name','goalPct','reward','habits','trk','_t'];
+const norm=o=>{const r={};KEEP.forEach(k=>{if(o&&o[k]!==undefined)r[k]=o[k]});if(!['today','week','month','stats','habits','trk'].includes(r.tab))r.tab='today';if(r.trk)r.trk=r.trk.map(t=>({...t,total:+t.total||1,cur:Math.max(0,+t.cur||0)}));if(r.habits)r.habits=r.habits.map(h=>({...h,days:h.days||{},skip:h.skip||{}}));return r};
 const mk=o=>Object.assign(seed(),norm(o));
 let S;
 try{const r=localStorage.getItem(KEY);S=r?mk(JSON.parse(r)):seed()}catch(e){S=seed()}
@@ -606,6 +618,7 @@ const TABS=[
   {id:'week',name:'Неделя',ic:'<rect x="3.5" y="5" width="17" height="15" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'},
   {id:'month',name:'Месяц',ic:'<rect x="3.5" y="4.5" width="17" height="16" rx="3.5"/><path d="M8 9.5h.01M12 9.5h.01M16 9.5h.01M8 13.5h.01M12 13.5h.01M16 13.5h.01M8 17h.01M12 17h.01"/>'},
   {id:'stats',name:'Статистика',ic:'<path d="M5 20V11M12 20V5M19 20v-7"/>'},
+  {id:'trk',name:'Трекеры',ic:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'},
   {id:'habits',name:'Привычки',ic:'<path d="M9 6.5h11M9 12h11M9 17.5h11"/><path d="M3.8 6.5h.01M3.8 12h.01M3.8 17.5h.01"/>'}
 ];
 const FL=' fill="currentColor" fill-opacity=".22"';
@@ -652,7 +665,9 @@ const bar=(pct,color)=>`<div class="bar"><i style="width:${clamp(pct,0,100)}%;${
 const START_KEY=HAB_START+'-01';
 const mondayOf=k=>iso(addDays(kdate(k),-wdMon(kdate(k))));
 const weekDays=mon=>[...Array(7)].map((_,i)=>iso(addDays(kdate(mon),i)));
-let W=mondayOf(today()),tDay='',delArm=null;
+let W=mondayOf(today()),tDay='',delArm=null,editTrk=null,trkArm=null,newTrkUnit='стр.';
+const UNITS=['стр.','глав.','%','мин.','ч','км','шт.','уроков'];
+const tpct=t=>t.total?Math.min(100,t.cur/t.total*100):0;
 const dayKey=()=>{const t=today();return tDay&&tDay<=t&&tDay>=START_KEY?tDay:t};
 function weekLabel(mon){
   const a=kdate(mon),b=addDays(a,6),mo=d=>d.toLocaleDateString('ru-RU',{month:'short'}).replace('.','');
@@ -751,6 +766,23 @@ stats(){
   <section class="card c12"><h3>Награды<small>лучшая серия: ${best}</small></h3><div class="badges">${BAD.map(([n,l])=>`<div class="bdg ${best>=n?'on':''}">${hsvg('star',22)}<b>${l}</b><small>серия ${n}</small></div>`).join('')}</div>
     <div class="stats" style="margin-top:14px"><div><b>${total}</b><span class="lbl">всего отметок</span></div><div><b>${gw.streak}</b><span class="lbl">недель с целью подряд</span></div><div><b>${gw.total}</b><span class="lbl">недель с целью всего</span></div></div></section></div>`;
 },
+trk(){
+  const T=S.trk||[],doneN=T.filter(t=>t.cur>=t.total).length;
+  const card=t=>{
+    const p=tpct(t),col=t.color||PICK[0],fin=t.cur>=t.total,ed=editTrk===t.id;
+    return `<div class="trk ${fin?'fin':''}" style="--hc:${col}"><div class="trkh"><span class="hico">${hsvg(t.icon||'book')}</span><div class="grow"><b>${esc(t.name)}</b><small class="lbl" style="display:block" data-lbl>${t.cur} из ${t.total} ${esc(t.unit||'')}${fin?' · завершено':''}</small></div><div class="trkp" data-pct>${Math.round(p)}%</div></div>
+      <div data-bar>${bar(p,col)}</div>
+      <input type="range" class="trange" min="0" max="${t.total}" step="1" value="${t.cur}" data-trk="${t.id}" aria-label="Прогресс">
+      <form class="add trkf" data-f="setTrk" data-id="${t.id}"><input type="number" name="v" min="0" max="${t.total}" step="1" inputmode="numeric" placeholder="Сейчас: ${esc(t.unit||'')}" required style="flex:1 1 90px;min-width:0"><button class="btn sm">Обновить</button><button type="button" class="btn ghost sm" data-a="tdone" data-id="${t.id}">${fin?'Сначала':'Готово'}</button><button type="button" class="btn ghost sm" data-a="tedit" data-id="${t.id}">${ed?'Свернуть':'Изменить'}</button></form>
+      ${ed?`<div class="hedit"><div class="lbl" style="margin-bottom:6px">Название</div><input data-tf="name" data-id="${t.id}" value="${esc(t.name)}" maxlength="50" style="width:100%">
+      <div class="lbl" style="margin:12px 0 6px">Всего и единица</div><div class="row2"><input type="number" min="1" data-tf="total" data-id="${t.id}" value="${t.total}" style="flex:1 1 90px;min-width:0"><select data-tf="unit" data-id="${t.id}">${UNITS.map(u=>`<option ${u===t.unit?'selected':''}>${u}</option>`).join('')}</select></div>
+      <div class="lbl" style="margin:12px 0 6px">Иконка</div><div class="icopick">${Object.keys(HICONS).map(k=>`<button class="${(t.icon||'book')===k?'on':''}" style="--hc:${col}" data-a="ticon" data-id="${t.id}" data-v="${k}" aria-label="${k}">${hsvg(k,20)}</button>`).join('')}</div>
+      <div class="lbl" style="margin:12px 0 6px">Цвет</div><div class="colpick">${PICK.map(c=>`<button class="${col===c?'on':''}" style="background:${c}" data-a="tcolor" data-id="${t.id}" data-v="${c}" aria-label="${c}"></button>`).join('')}</div>
+      <div class="acts" style="margin-top:12px"><button class="btn danger sm" data-a="tdel" data-id="${t.id}">${trkArm===t.id?'Точно удалить? Нажмите ещё раз':'Удалить трекер'}</button></div></div>`:''}</div>`};
+  return `<div class="grid"><section class="card c12"><h3>Трекеры<small>${T.length?`${doneN} из ${T.length} завершено`:''}</small></h3>
+    ${T.length?`<div class="trkgrid">${T.map(card).join('')}</div>`:'<p class="empty">Здесь можно следить за прогрессом: книга на 300 страниц, курс, марафон. Добавь первый трекер ниже.</p>'}
+    <form class="hadd" data-f="addTrk" style="margin-top:14px"><input name="name" placeholder="Например: Атомные привычки" autocomplete="off" maxlength="50" required><div class="row2"><input type="number" name="total" min="1" step="1" inputmode="numeric" placeholder="Всего, например 300" required style="flex:1 1 auto;min-width:0"><select name="unit">${UNITS.map(u=>`<option ${u===newTrkUnit?'selected':''}>${u}</option>`).join('')}</select></div><button class="btn">Добавить трекер</button></form></section></div>`;
+},
 habits(){
   const eh=S.habits.find(x=>x.id===editHab);
   const edit=h=>{const f=h.freq||'daily';return `<div class="hedit"><div class="lbl" style="margin-bottom:6px">Название</div><input data-hname="${h.id}" value="${esc(h.name)}" maxlength="40" style="width:100%">
@@ -823,6 +855,11 @@ const A={
   hs:d=>{const h=S.habits.find(x=>x.id===d.id);h.skip=h.skip||{};const k=d.v;if(h.skip[k])delete h.skip[k];else{delete h.days[k];h.skip[k]=1}},
   dday:d=>{const t=today(),k=dayKey(),n=+d.v===0?t:iso(addDays(kdate(k),+d.v));tDay=n>t?t:n<START_KEY?START_KEY:n;return 'skip-save'},
   wk:d=>{const cur=mondayOf(today()),lo=iso(addDays(kdate(cur),-7*26)),hi=iso(addDays(kdate(cur),7*8)),m=iso(addDays(kdate(W),7*+d.v));W=m<lo?lo:m>hi?hi:m;return 'skip-save'},
+  tedit:d=>{editTrk=editTrk===d.id?null:d.id;trkArm=null;return 'skip-save'},
+  tdel:d=>{if(trkArm!==d.id){trkArm=d.id;return 'skip-save'}S.trk=S.trk.filter(x=>x.id!==d.id);editTrk=null;trkArm=null},
+  tdone:d=>{const t=S.trk.find(x=>x.id===d.id);t.cur=t.cur>=t.total?0:t.total},
+  ticon:d=>{S.trk.find(x=>x.id===d.id).icon=d.v},
+  tcolor:d=>{S.trk.find(x=>x.id===d.id).color=d.v},
   wnow:()=>{W=mondayOf(today());return 'skip-save'},
   settings:()=>{sheet=true;sheetMsg='';resetArm=false;bkText='';return 'skip-save'},
   close:()=>{sheet=false;return 'skip-save'},
@@ -862,6 +899,8 @@ document.addEventListener('click',e=>{
 });
 
 const F={
+  addTrk:fd=>{const total=Math.max(1,Math.round(num(fd.total)));S.trk=S.trk||[];const id=uid();S.trk.push({id,name:fd.name.trim(),total,cur:0,unit:fd.unit||'стр.',icon:'book',color:PICK[S.trk.length%PICK.length]});editTrk=id;newTrkUnit=fd.unit||'стр.'},
+  setTrk:(fd,d)=>{const t=S.trk.find(x=>x.id===d.id);if(t)t.cur=clamp(Math.round(num(fd.v)),0,t.total)},
   addHabit:fd=>{
     const dow=newDow.slice().sort(),f=newFreq==='dow'&&!dow.length?'daily':newFreq,id=uid();
     S.habits.push({id,name:fd.name.trim(),icon:'check',color:PICK[S.habits.length%PICK.length],days:{},skip:{},freq:f,dow:f==='dow'?dow:[]});
@@ -877,6 +916,7 @@ document.addEventListener('submit',e=>{
 /* live sliders / text binding */
 document.addEventListener('input',e=>{
   const el=e.target;
+  if(el.dataset.trk){const t=S.trk.find(x=>x.id===el.dataset.trk),box=el.closest('.trk');if(t&&box){t.cur=+el.value;const p=tpct(t);box.querySelector('[data-lbl]').textContent=`${t.cur} из ${t.total} ${t.unit||''}`+(t.cur>=t.total?' · завершено':'');box.querySelector('[data-pct]').textContent=Math.round(p)+'%';box.querySelector('.bar i').style.width=p+'%';box.classList.toggle('fin',t.cur>=t.total);save()}return}
   if(el.dataset.bind){
     const b=el.dataset.bind;
     if(b==='newHab'){newHabName=el.value;return}
@@ -886,6 +926,7 @@ document.addEventListener('input',e=>{
 document.addEventListener('change',e=>{
   const el=e.target;
   if(el.dataset.hname){const h=S.habits.find(x=>x.id===el.dataset.hname);if(h&&el.value.trim()){h.name=el.value.trim().slice(0,40);save();render()}return}
+  if(el.dataset.tf){const t=S.trk.find(x=>x.id===el.dataset.id);if(t){const f=el.dataset.tf;if(f==='name'){if(el.value.trim())t.name=el.value.trim().slice(0,50)}else if(f==='total'){t.total=Math.max(1,Math.round(num(el.value))||1);t.cur=Math.min(t.cur,t.total)}else t.unit=el.value;save();render()}return}
   if(el.dataset.set){S[el.dataset.set]=clamp(Math.round(num(el.value))||1,1,100);save();render()}
   else if(el.dataset.bind==='name'){save();render()}
   else if(el.id==='imp'&&el.files[0]){
