@@ -614,12 +614,12 @@ async function ghConnect(){
 let sheet=false,sheetMsg='',resetArm=false,bkText='',txType='out',anim=true;
 
 const TABS=[
+  {id:'trk',name:'Трекеры',ic:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'},
+  {id:'habits',name:'Привычки',ic:'<path d="M9 6.5h11M9 12h11M9 17.5h11"/><path d="M3.8 6.5h.01M3.8 12h.01M3.8 17.5h.01"/>'},
   {id:'today',name:'Сегодня',ic:'<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.3l2.5 2.5 4.5-5"/>'},
   {id:'week',name:'Неделя',ic:'<rect x="3.5" y="5" width="17" height="15" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'},
   {id:'month',name:'Месяц',ic:'<rect x="3.5" y="4.5" width="17" height="16" rx="3.5"/><path d="M8 9.5h.01M12 9.5h.01M16 9.5h.01M8 13.5h.01M12 13.5h.01M16 13.5h.01M8 17h.01M12 17h.01"/>'},
-  {id:'stats',name:'Статистика',ic:'<path d="M5 20V11M12 20V5M19 20v-7"/>'},
-  {id:'trk',name:'Трекеры',ic:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'},
-  {id:'habits',name:'Привычки',ic:'<path d="M9 6.5h11M9 12h11M9 17.5h11"/><path d="M3.8 6.5h.01M3.8 12h.01M3.8 17.5h.01"/>'}
+  {id:'stats',name:'Статистика',ic:'<path d="M5 20V11M12 20V5M19 20v-7"/>'}
 ];
 const FL=' fill="currentColor" fill-opacity=".22"';
 const HICONS={
