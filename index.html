@@ -827,7 +827,6 @@ week(){
   <section class="card c12"><div class="hero"><div><div class="lbl">Неделя · ${weekLabel(W)}</div><div class="big">${Math.round(wa.pct)}%</div>
     <div class="stats"><div><b>${wa.done}</b><span class="lbl">выполнено</span></div><div><b>${wa.plan}</b><span class="lbl">по плану</span></div><div><b class="${wa.skip?'down':''}">${wa.skip}</b><span class="lbl">пропусков</span></div></div></div>${ring(wa.pct,128)}</div></section>
   <section class="card c12"><h3>Отметки недели<small>нажми на день</small></h3>${S.habits.length?`<div class="wg"><span></span>${days.map((k,i)=>`<span class="wh ${k===t?'t':''}">${WD[i]}<small>${+k.slice(8)}</small></span>`).join('')}<span></span>${rows}</div><p class="lbl" style="margin:10px 0 0;font-size:12px">Нажатие по дню: ✓ выполнено → ✕ пропуск → снять отметку</p>`:'<p class="empty">Добавьте привычки во вкладке «Привычки».</p>'}</section>
-  ${goalCard(wa)}
   </div>`;
 },
 month(){
