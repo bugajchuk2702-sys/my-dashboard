@@ -692,7 +692,6 @@ let sheet=false,sheetMsg='',resetArm=false,bkText='',txType='out',anim=true;
 
 const TABS=[
   {id:'trk',name:'Трекеры',ic:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'},
-  {id:'habits',name:'Привычки',ic:'<path d="M9 6.5h11M9 12h11M9 17.5h11"/><path d="M3.8 6.5h.01M3.8 12h.01M3.8 17.5h.01"/>'},
   {id:'today',name:'Сегодня',ic:'<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.3l2.5 2.5 4.5-5"/>'},
   {id:'week',name:'Неделя',ic:'<rect x="3.5" y="5" width="17" height="15" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'},
   {id:'month',name:'Месяц',ic:'<rect x="3.5" y="4.5" width="17" height="16" rx="3.5"/><path d="M8 9.5h.01M12 9.5h.01M16 9.5h.01M8 13.5h.01M12 13.5h.01M16 13.5h.01M8 17h.01M12 17h.01"/>'},
@@ -793,6 +792,7 @@ function goalCard(wa){
 function streakLabel(h){const n=habStreak(h);return n?`серия ${n}`:'нет серии'}
 const freqLabel=h=>{const f=h.freq||'daily';return f==='daily'?'каждый день':f==='alt'?'через день':((h.dow||[]).map(i=>WD[i]).join(', ')||'—')};
 
+const addHabitForm=()=>`<form class="hadd" data-f="addHabit"><input name="name" data-bind="newHab" placeholder="Новая привычка" autocomplete="off" maxlength="40" value="${esc(newHabName)}" required><div class="seg">${FREQS.map(([k,n])=>`<button type="button" class="${newFreq===k?'on':''}" data-a="nfreq" data-v="${k}">${n}</button>`).join('')}</div>${newFreq==='dow'?`<div class="wds">${WD.map((n,i)=>`<button type="button" class="${newDow.includes(i)?'on':''}" data-a="ndow" data-v="${i}">${n}</button>`).join('')}</div>`:''}<button class="btn">Добавить</button></form>`;
 const views={
 today(){
   const t=today(),k=dayKey(),isT=k===t;
@@ -811,6 +811,7 @@ today(){
     <div class="stats"><div><b>${Math.round(wa.pct)}%</b><span class="lbl">неделя · цель ${S.goalPct}%</span></div><div><b>${S.habits.length?Math.max(...S.habits.map(habStreak)):0}</b><span class="lbl">лучшая серия сейчас</span></div></div></div>${ring(pct,128)}</div></section>
   ${S.habits.length?due.map(x=>`<div class="c4 hwrap">${card(x)}</div>`).join(''):`<section class="card c12"><p class="empty">Привычек пока нет. Добавь первую во вкладке «Привычки».</p><div class="acts" style="margin-top:8px"><button class="btn" data-a="tab" data-v="habits">Добавить привычку</button></div></section>`}
   ${rest.length?`<section class="card c12"><h3>Сегодня отдых<small>по расписанию</small></h3><div class="hlist">${rest.map(x=>card(x)).join('')}</div></section>`:''}
+  <section class="card c12">${addHabitForm()}<button class="btn ghost sm" data-a="tab" data-v="habits" style="margin-top:10px">Изменить привычки</button></section>
   </div>`;
 },
 week(){
