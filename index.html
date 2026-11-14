@@ -21,13 +21,13 @@
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme=light]){
-    --bg1:#0a0d22;--bg2:#1a1032;--glass:rgba(255,255,255,.07);--glass-hi:rgba(255,255,255,.12);--stroke:rgba(255,255,255,.10);
+    --bg1:#151618;--bg2:#222326;--glass:rgba(255,255,255,.07);--glass-hi:rgba(255,255,255,.12);--stroke:rgba(255,255,255,.10);
     --tx:#f5f5f7;--tx2:rgba(235,235,245,.62);--fill:rgba(255,255,255,.10);--sep:rgba(255,255,255,.10);
     --segon:rgba(255,255,255,.24);--sh:0 8px 28px rgba(0,0,0,.28),0 1px 0 rgba(255,255,255,.07) inset;--green:#30d158;color-scheme:dark;
   }
 }
 :root[data-theme=dark]{
-  --bg1:#0a0d22;--bg2:#1a1032;--glass:rgba(255,255,255,.07);--glass-hi:rgba(255,255,255,.12);--stroke:rgba(255,255,255,.10);
+  --bg1:#151618;--bg2:#222326;--glass:rgba(255,255,255,.07);--glass-hi:rgba(255,255,255,.12);--stroke:rgba(255,255,255,.10);
     --tx:#f5f5f7;--tx2:rgba(235,235,245,.62);--fill:rgba(255,255,255,.10);--sep:rgba(255,255,255,.10);
     --segon:rgba(255,255,255,.24);--sh:0 8px 28px rgba(0,0,0,.28),0 1px 0 rgba(255,255,255,.07) inset;--green:#30d158;color-scheme:dark;
 }
@@ -390,12 +390,12 @@ nav.tabs button.on{background:var(--fill);color:var(--accent)}
 .trkf{margin:6px 0 0}
 
 /* ---------- тёмная тема: глубокий градиент и матовое стекло ---------- */
-:root[data-theme=dark] body{background:linear-gradient(160deg,#080b1f 0%,#120e2c 55%,#1c0f2e 100%)}
-:root[data-theme=dark] .bg i:nth-child(1){opacity:.30}
-:root[data-theme=dark] .bg i:nth-child(2){opacity:.34}
-:root[data-theme=dark] .bg i:nth-child(3){opacity:.22}
+:root[data-theme=dark] body{background:linear-gradient(160deg,#141517 0%,#1f2023 55%,#2a2b2f 100%)}
+:root[data-theme=dark] .bg i:nth-child(1){background:radial-gradient(closest-side,rgba(200,205,220,.22),transparent);opacity:1}
+:root[data-theme=dark] .bg i:nth-child(2){background:radial-gradient(closest-side,rgba(150,155,175,.20),transparent);opacity:1}
+:root[data-theme=dark] .bg i:nth-child(3){background:radial-gradient(closest-side,rgba(120,125,140,.18),transparent);opacity:1}
 :root[data-theme=dark] .card,:root[data-theme=dark] .hcard{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.10);box-shadow:0 8px 28px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.07)}
-:root[data-theme=dark] #tabs{background:rgba(26,28,58,.62);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,.10);box-shadow:0 10px 34px rgba(0,0,0,.4)}
+:root[data-theme=dark] #tabs{background:rgba(44,45,48,.68);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,.10);box-shadow:0 10px 34px rgba(0,0,0,.4)}
 :root[data-theme=dark] #tabs button.on{background:rgba(255,255,255,.14)}
 :root[data-theme=dark] .hico{background:color-mix(in srgb,var(--hc,var(--accent)) 26%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--hc,var(--accent)) 30%,transparent);color:color-mix(in srgb,var(--hc,var(--accent)) 80%,#fff)}
 :root[data-theme=dark] .hcard.done{background:color-mix(in srgb,var(--hc) 20%,rgba(255,255,255,.05))}
@@ -405,7 +405,7 @@ nav.tabs button.on{background:var(--fill);color:var(--accent)}
 :root[data-theme=dark] .bar,:root[data-theme=dark] .trk .bar{background:rgba(255,255,255,.14)}
 :root[data-theme=dark] input:not([type=range]),:root[data-theme=dark] select,:root[data-theme=dark] textarea{background:rgba(255,255,255,.09)}
 :root[data-theme=dark] .seg .on{background:rgba(255,255,255,.22);color:#fff}
-:root[data-theme=dark] .colpick button.on{box-shadow:0 0 0 3px #15112d,0 0 0 5px #fff}
+:root[data-theme=dark] .colpick button.on{box-shadow:0 0 0 3px #26272a,0 0 0 5px #fff}
 </style>
 </head>
 <body data-tab="personal">
