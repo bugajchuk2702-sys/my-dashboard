@@ -431,16 +431,15 @@ nav.tabs button.on{background:var(--fill);color:var(--accent)}
 :root[data-style=hero] .card::before{content:"";position:absolute;left:-1px;top:14px;width:4px;height:26px;background:var(--hx);transform:skewY(-12deg)}
 :root[data-style=hero] .hcard.done,:root[data-style=hero] .trk.fin{background:color-mix(in srgb,var(--hc,#f99e1a) 18%,#141f33)}
 :root[data-style=hero] .hico{border-radius:12px}
-:root[data-style=hero] #tabs{border-radius:0;background:rgba(8,14,27,.92);border:0;border-bottom:2px solid rgba(249,158,26,.5);box-shadow:none;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);gap:6px}
-:root[data-style=hero] #tabs button{border-radius:0;transform:skewX(-14deg);font-family:'Fira Cond','Arial Narrow',sans-serif;font-style:italic;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--tx2)}
-:root[data-style=hero] #tabs button>*{transform:skewX(14deg)}
+:root[data-style=hero] #tabs{border-radius:0;background:rgba(8,14,27,.96);border:0;border-bottom:2px solid rgba(249,158,26,.5);box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;gap:6px}
+:root[data-style=hero] #tabs button{border-radius:0;clip-path:polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%);font-family:'Fira Cond','Arial Narrow',sans-serif;font-style:italic;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--tx2)}
 :root[data-style=hero] #tabs button.on{background:#f99e1a;color:#101722}
-:root[data-style=hero] .btn{border-radius:0;transform:skewX(-12deg);background:#f99e1a;color:#101722;font-family:'Fira Cond','Arial Narrow',sans-serif;font-style:italic;font-weight:800;text-transform:uppercase;letter-spacing:.05em;position:relative;overflow:hidden}
-:root[data-style=hero] .btn.ghost{background:transparent;color:var(--tx);box-shadow:inset 0 0 0 1px rgba(150,190,255,.35)}
+:root[data-style=hero] .btn{border-radius:0;clip-path:polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%);background:#f99e1a;color:#101722;font-family:'Fira Cond','Arial Narrow',sans-serif;font-style:italic;font-weight:800;text-transform:uppercase;letter-spacing:.05em;position:relative;overflow:hidden}
+:root[data-style=hero] .btn.ghost{background:rgba(130,175,255,.14);color:var(--tx);box-shadow:none}
 :root[data-style=hero] .btn.danger{background:rgba(255,96,112,.16);color:var(--red)}
-:root[data-style=hero] .btn::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(12deg);transition:left .55s}
+:root[data-style=hero] .btn::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transition:left .55s}
 :root[data-style=hero] .btn:hover::after{left:130%}
-:root[data-style=hero] .icon-btn,:root[data-style=hero] .pill{border-radius:0;transform:skewX(-10deg)}
+:root[data-style=hero] .icon-btn,:root[data-style=hero] .pill{border-radius:0;border:0;background:#18263e;clip-path:polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%)}
 :root[data-style=hero] .pill b{box-shadow:none;animation:hpulse 2s infinite}
 @keyframes hpulse{50%{opacity:.35}}
 :root[data-style=hero] input:not([type=range]),:root[data-style=hero] select,:root[data-style=hero] textarea{background:rgba(130,175,255,.08);border-radius:2px;border:1px solid rgba(150,190,255,.2);color:var(--tx)}
@@ -448,7 +447,7 @@ nav.tabs button.on{background:var(--fill);color:var(--accent)}
 :root[data-style=hero] .seg{border-radius:0}
 :root[data-style=hero] .seg button{border-radius:0}
 :root[data-style=hero] .seg .on{background:#f99e1a;color:#101722}
-:root[data-style=hero] .bar,:root[data-style=hero] .trk .bar{border-radius:0;background:rgba(130,175,255,.14);transform:skewX(-20deg)}
+:root[data-style=hero] .bar,:root[data-style=hero] .trk .bar{border-radius:0;background:rgba(130,175,255,.14);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
 :root[data-style=hero] .bar i{border-radius:0}
 :root[data-style=hero] .sheet{border-radius:4px;background:#141f33;border:1px solid rgba(249,158,26,.5);-webkit-backdrop-filter:none;backdrop-filter:none}
 :root[data-style=hero] .sheet-bg{background:rgba(4,8,16,.7)}
