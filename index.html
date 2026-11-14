@@ -832,8 +832,11 @@ week(){
 month(){
   const t=today(),[y,mi]=habMonth.split('-').map(Number),m=mi-1,dim=new Date(y,m+1,0).getDate(),isCur=habMonth===t.slice(0,7);
   let head='';for(let d=1;d<=dim;d++)head+=`<span class="dn ${dkey(y,m,d)===t?'t':''}">${d}</span>`;
-  let done=0,plan=0;S.habits.forEach(h=>{const ms=monthStats(h,y,m);done+=ms.done;plan+=ms.plan!=null?ms.plan:0});
-  return `<div class="grid"><section class="card c12"><h3>Месяц<small>${MONTHS[m]} ${y}${plan?' · '+Math.round(Math.min(100,done/plan*100))+'%':''}</small></h3>${monthChipsHtml()}
+  let done=0,plan=0,skip=0;S.habits.forEach(h=>{const ms=monthStats(h,y,m);done+=ms.done;skip+=ms.skip;plan+=ms.plan!=null?ms.plan:0});
+  const mp=plan?Math.min(100,done/plan*100):0;
+  return `<div class="grid"><section class="card c12"><div class="hero"><div><div class="lbl">Месяц · ${MONTHS[m]} ${y}</div><div class="big">${Math.round(mp)}%</div>
+    <div class="stats"><div><b>${done}</b><span class="lbl">выполнено</span></div><div><b>${plan}</b><span class="lbl">по плану</span></div><div><b class="${skip?'down':''}">${skip}</b><span class="lbl">пропусков</span></div></div></div>${ring(mp,128)}</div></section>
+  <section class="card c12"><h3>Месяц<small>${MONTHS[m]} ${y}${plan?' · '+Math.round(Math.min(100,done/plan*100))+'%':''}</small></h3>${monthChipsHtml()}
   ${S.habits.length?`<div class="hscroll"><div class="hm"><div class="hr hh"><div class="hn"></div>${head}</div>${S.habits.map(h=>habRow(h,y,m,dim,t,isCur)).join('')}</div></div><p class="lbl" style="margin:6px 0 0;font-size:12px">Нажатие по дню: ✓ выполнено → ✕ пропуск → снять отметку</p>`:'<p class="empty">Добавьте первую привычку во вкладке «Привычки».</p>'}</section></div>`;
 },
 stats(){
