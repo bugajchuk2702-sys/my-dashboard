@@ -467,6 +467,13 @@ body.swap{animation:hflash .6s both}
 @media (prefers-reduced-motion:reduce){:root[data-style=hero] *,:root[data-style=hero] *::after{animation:none!important;transition:none!important}}
 
 /* ---------- цели (метод Маргулана) ---------- */
+.mis{font-size:17px;font-weight:600;line-height:1.35;padding:14px 16px;color:var(--tx)}
+.gc b{font-size:15px;font-weight:600}
+.gc small.lbl{font-size:13px;color:var(--tx2)}
+:root[data-style=hero] .gc{background:#1d2b45;border:1px solid rgba(150,190,255,.2)}
+:root[data-style=hero] .gc b{font-family:'Fira Sans',sans-serif;font-style:normal;text-transform:none;letter-spacing:0;font-size:16px;font-weight:600;color:#fff}
+:root[data-style=hero] .gc small.lbl{color:#b9cbe6}
+:root[data-style=hero] .mis{color:#fff;background:#1d2b45;border:1px solid rgba(249,158,26,.45)}
 body[data-tab=goals]{--accent:#5e5ce6}
 .mchips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
 .mchips button{border:0;font:inherit;font-size:13px;font-weight:600;padding:7px 13px;border-radius:99px;background:var(--fill);color:var(--tx);cursor:pointer}
@@ -480,7 +487,7 @@ body[data-tab=goals]{--accent:#5e5ce6}
 .gc::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:4px;border-radius:4px;background:var(--sc)}
 .gc b{font-size:14px;line-height:1.25}
 .gc.fin{background:color-mix(in srgb,var(--sc) 18%,var(--fill))}.gc.fin b{text-decoration:line-through;opacity:.7}
-.gc.big{padding:14px 16px 12px 18px;margin:0}
+.gc.gbig{padding:14px 16px 12px 18px;margin:0}
 .gmain{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .gmain .bar{margin:6px 0 4px}
 .gacts{display:flex;gap:4px;margin-top:6px}
@@ -839,8 +846,8 @@ goals(){
   const card=g=>`<div class="gc ${g.st>=5?'fin':''}" style="--sc:${sphOf(g.sp)[2]}"><b>${esc(g.t)}</b>${g.c?`<small class="lbl">${esc(g.c)}</small>`:''}<small class="lbl">${sphOf(g.sp)[1]}</small>${ctl(g)}</div>`;
   const chips=`<div class="mchips"><button class="${f?'':'on'}" data-a="gsph" data-v="">Все · ${G.length}</button>${SPH.map(([k,n,c])=>{const a=G.filter(g=>g.sp===k);return `<button class="${f===k?'on':''}" style="--sc:${c}" data-a="gsph" data-v="${k}"><i class="gdot"></i>${n} · ${a.filter(g=>g.st>=5).length}/${a.length}</button>`}).join('')}</div>`;
   return `<div class="grid">
-  <section class="card c12"><h3>Миссия<small>фильтр для всех целей</small></h3><input data-bind="mission" value="${esc(S.mission||'')}" placeholder="Зачем всё это? Одной фразой" maxlength="160" style="width:100%"></section>
-  <section class="card c12"><h3>Главные цели на 2027<small>${mains.length} из 3</small></h3>${mains.length?`<div class="gmain">${mains.map(g=>`<div class="gc big ${g.st>=5?'fin':''}" style="--sc:${sphOf(g.sp)[2]}"><b>${esc(g.t)}</b>${g.c?`<small class="lbl">${esc(g.c)}</small>`:''}<small class="lbl">${GCOLS[g.st]}</small>${bar(g.st/5*100,sphOf(g.sp)[2])}${ctl(g)}</div>`).join('')}</div>`:'<p class="empty">Отметь ★ до трёх целей, на которых держится год. Остальное идёт фоном.</p>'}</section>
+  <section class="card c12"><h3>Миссия<small>фильтр для всех целей</small></h3><input class="mis" data-bind="mission" value="${esc(S.mission||'')}" placeholder="Зачем всё это? Одной фразой" maxlength="160" style="width:100%"></section>
+  <section class="card c12"><h3>Главные цели на 2027<small>${mains.length} из 3</small></h3>${mains.length?`<div class="gmain">${mains.map(g=>`<div class="gc gbig ${g.st>=5?'fin':''}" style="--sc:${sphOf(g.sp)[2]}"><b>${esc(g.t)}</b>${g.c?`<small class="lbl">${esc(g.c)}</small>`:''}<small class="lbl">${GCOLS[g.st]}</small>${bar(g.st/5*100,sphOf(g.sp)[2])}${ctl(g)}</div>`).join('')}</div>`:'<p class="empty">Отметь ★ до трёх целей, на которых держится год. Остальное идёт фоном.</p>'}</section>
   <section class="card c12"><h3>Доска целей<small>по сферам</small></h3>${chips}
     <div class="gboard">${GCOLS.map((n,i)=>{const a=vis.filter(g=>g.st===i);return `<div class="gcol"><h4>${n}<small>${a.length}</small></h4>${a.map(card).join('')||'<div class="gempty">пусто</div>'}</div>`}).join('')}</div>
     <form class="hadd" data-f="addGoal" style="margin-top:14px"><input name="name" placeholder="Новая цель" autocomplete="off" maxlength="80" required><select name="sp">${SPH.map(([k,n])=>`<option value="${k}" ${f===k?'selected':''}>${n}</option>`).join('')}</select><button class="btn">Добавить</button></form>
