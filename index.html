@@ -465,6 +465,30 @@ nav.tabs button.on{background:var(--fill);color:var(--accent)}
 body.swap{animation:hflash .6s both}
 @keyframes hflash{from{opacity:.35}}
 @media (prefers-reduced-motion:reduce){:root[data-style=hero] *,:root[data-style=hero] *::after{animation:none!important;transition:none!important}}
+
+/* ---------- цели (метод Маргулана) ---------- */
+body[data-tab=goals]{--accent:#5e5ce6}
+.mchips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
+.mchips button{border:0;font:inherit;font-size:13px;font-weight:600;padding:7px 13px;border-radius:99px;background:var(--fill);color:var(--tx);cursor:pointer}
+.mchips button.on{background:var(--sc,var(--accent));color:#fff}
+.gdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--sc);margin-right:6px}
+.mchips button.on .gdot{background:#fff}
+.gboard{display:grid;grid-template-columns:repeat(6,minmax(165px,1fr));gap:10px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x proximity}
+.gcol{scroll-snap-align:start;min-width:0}
+.gcol h4{margin:0 0 8px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--tx2);display:flex;justify-content:space-between;gap:6px}
+.gc{position:relative;display:flex;flex-direction:column;gap:3px;padding:11px 12px 9px 15px;margin-bottom:8px;border-radius:14px;background:var(--fill)}
+.gc::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:4px;border-radius:4px;background:var(--sc)}
+.gc b{font-size:14px;line-height:1.25}
+.gc.fin{background:color-mix(in srgb,var(--sc) 18%,var(--fill))}.gc.fin b{text-decoration:line-through;opacity:.7}
+.gc.big{padding:14px 16px 12px 18px;margin:0}
+.gmain{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.gmain .bar{margin:6px 0 4px}
+.gacts{display:flex;gap:4px;margin-top:6px}
+.gacts .btn{padding:3px 10px;font-size:14px;min-width:34px}
+.gempty{font-size:12px;color:var(--tx2);opacity:.6;padding:6px 2px}
+:root[data-theme=dark] .gc{background:rgba(255,255,255,.07)}
+:root[data-style=hero] .gc{border-radius:2px}
+:root[data-style=hero] .mchips button{border-radius:0;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);padding:7px 16px}
 </style>
 </head>
 <body data-tab="personal">
@@ -559,6 +583,7 @@ function monthChipsHtml(){
   return `<div class="mrow"><div class="mchips">${monthKeys().map(key=>{const [ky,km]=key.split('-').map(Number);return `<button class="${key===habMonth?'on':''} ${key===cur?'cur':''}" data-a="hmonth" data-v="${key}">${MONTHS[km-1]}${ky!==+HAB_START.slice(0,4)?' ’'+String(ky).slice(2):''}</button>`}).join('')}</div>${habMonth===cur?'':`<button class="btn ghost sm" style="flex:none" data-a="hmonth" data-v="${cur}">Сегодня</button>`}</div>`;
 }
 let renderedMonth='';
+let gFilter='',gArm=null;
 function monthKeys(){
   const [sy,sm]=HAB_START.split('-').map(Number),n=new Date(),end=new Date(n.getFullYear(),n.getMonth()+6,1),out=[];
   for(let d=new Date(sy,sm-1,1);d<=end;d=new Date(d.getFullYear(),d.getMonth()+1,1))out.push(d.getFullYear()+'-'+pad(d.getMonth()+1));
@@ -595,11 +620,24 @@ const CHECK='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke=
 
 /* ---------- state ---------- */
 const KEY='my-dashboard-v1';
+const MISSION='Быть сильным, здоровым и финансово независимым, чтобы заботиться о семье и помогать другим';
+const SPH=[['fin','Финансы','#30b0c7'],['biz','Бизнес и работа','#0a84ff'],['dev','Развитие и тело','#bf5af2'],['fam','Семья','#ff375f'],['soc','Общественные дела','#23a04b'],['hob','Хобби','#ff9f0a']];
+const sphOf=k=>SPH.find(x=>x[0]===k)||SPH[0];
+const GCOLS=['Нужно сделать','Запланировано','В процессе','Мяч на другой стороне','Сегодня','Сделано'];
+function seedGoals(){
+  const L=[['fin','Доход 5000 € в месяц',1,'стабильно, не разово'],['fin','Подушка безопасности 12 000 €'],['fin','Начать инвестировать'],['fin','Личный депозит для трейдинга'],
+  ['biz','Найти стабильную работу'],['biz','Стать профессиональным трейдером'],['biz','Аллокация в проп-фирмах до 400 тыс.'],['biz','Открыть первый бизнес'],['biz','Блог без лица (будущий доход)'],
+  ['dev','Финский: YKI C1 и свободная речь',1,'понимать носителя и говорить не задумываясь'],['dev','Прочитать первую мангу на финском'],['dev','Тело: вес 90 кг, без живота и боков',1,'90 кг и сухой торс'],['dev','Пробежать 7 км'],['dev','12 подтягиваний и 20 отжиманий'],['dev','Прочитать 12 книг'],['dev','Пройти 2 курса за год'],['dev','Ходить в зал'],
+  ['fam','12 свиданий жене (раз в месяц)'],['fam','СПА и отель для жены'],['fam','Подарок жене на годовщину'],['fam','Переехать в новое жильё'],['fam','Купить кровать'],['fam','Первое путешествие'],['fam','Норвегия: фьорды'],['fam','Новая машина'],
+  ['soc','Пожертвовать в фонд от 500 € за год'],
+  ['hob','Матч «Милана»'],['hob','Часы Garmin'],['hob','Техника Apple'],['hob','Рабочее место: стол, стул, ноутбук, монитор']];
+  return L.map((x,i)=>({id:'g'+(i+1),sp:x[0],t:x[1],main:!!x[2],c:x[3]||'',st:0}));
+}
 function seed(){
   const n=new Date(),y=n.getFullYear(),m=n.getMonth(),dd=n.getDate();
   const ago=k=>iso(new Date(y,m,dd-k));
   return {
-    tab:'today',theme:'light',style:'apple',name:'',goalPct:80,reward:'',trk:[],
+    tab:'today',theme:'light',style:'apple',name:'',goalPct:80,reward:'',trk:[],mission:MISSION,goals:seedGoals(),
     habits:[
       {id:uid(),name:'Вода с утра',icon:'water',color:'#0a84ff',days:{[ago(0)]:1,[ago(1)]:1,[ago(2)]:1,[ago(4)]:1}},
       {id:uid(),name:'Зарядка',icon:'fit',color:'#ff9f0a',days:{[ago(1)]:1,[ago(2)]:1,[ago(3)]:1}},
@@ -607,8 +645,8 @@ function seed(){
       {id:uid(),name:'Бег',icon:'run',color:'#ff375f',freq:'alt',days:{[ago(1)]:1,[ago(3)]:1,[ago(5)]:1}}]
   };
 }
-const KEEP=['tab','theme','style','name','goalPct','reward','habits','trk','_t'];
-const norm=o=>{const r={};KEEP.forEach(k=>{if(o&&o[k]!==undefined)r[k]=o[k]});if(!['today','week','month','stats','habits','trk'].includes(r.tab))r.tab='today';if(r.trk)r.trk=r.trk.map(t=>({...t,total:+t.total||1,cur:Math.max(0,+t.cur||0)}));if(r.habits)r.habits=r.habits.map(h=>({...h,days:h.days||{},skip:h.skip||{}}));return r};
+const KEEP=['tab','theme','style','name','goalPct','reward','habits','trk','goals','mission','_t'];
+const norm=o=>{const r={};KEEP.forEach(k=>{if(o&&o[k]!==undefined)r[k]=o[k]});if(!['today','week','month','stats','habits','trk','goals'].includes(r.tab))r.tab='today';if(r.trk)r.trk=r.trk.map(t=>({...t,total:+t.total||1,cur:Math.max(0,+t.cur||0)}));if(r.habits)r.habits=r.habits.map(h=>({...h,days:h.days||{},skip:h.skip||{}}));return r};
 const mk=o=>Object.assign(seed(),norm(o));
 let S;
 try{const r=localStorage.getItem(KEY);S=r?mk(JSON.parse(r)):seed()}catch(e){S=seed()}
@@ -691,6 +729,7 @@ async function ghConnect(){
 let sheet=false,sheetMsg='',resetArm=false,bkText='',txType='out',anim=true;
 
 const TABS=[
+  {id:'goals',name:'Цели',ic:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>'},
   {id:'trk',name:'Трекеры',ic:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'},
   {id:'today',name:'Привычки',ic:'<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.3l2.5 2.5 4.5-5"/>'},
   {id:'week',name:'Неделя',ic:'<rect x="3.5" y="5" width="17" height="15" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'},
@@ -794,6 +833,20 @@ const freqLabel=h=>{const f=h.freq||'daily';return f==='daily'?'каждый д�
 
 const addHabitForm=()=>`<form class="hadd" data-f="addHabit"><input name="name" data-bind="newHab" placeholder="Новая привычка" autocomplete="off" maxlength="40" value="${esc(newHabName)}" required><div class="seg">${FREQS.map(([k,n])=>`<button type="button" class="${newFreq===k?'on':''}" data-a="nfreq" data-v="${k}">${n}</button>`).join('')}</div>${newFreq==='dow'?`<div class="wds">${WD.map((n,i)=>`<button type="button" class="${newDow.includes(i)?'on':''}" data-a="ndow" data-v="${i}">${n}</button>`).join('')}</div>`:''}<button class="btn">Добавить</button></form>`;
 const views={
+goals(){
+  const G=S.goals||[],f=gFilter,vis=G.filter(g=>!f||g.sp===f),mains=G.filter(g=>g.main);
+  const ctl=g=>`<div class="gacts"><button class="btn ghost sm" data-a="gmove" data-id="${g.id}" data-v="-1" ${g.st<=0?'disabled':''} aria-label="Назад">‹</button><button class="btn ghost sm" data-a="gmove" data-id="${g.id}" data-v="1" ${g.st>=5?'disabled':''} aria-label="Дальше">›</button><button class="btn ghost sm" data-a="gmain" data-id="${g.id}" aria-label="Главная цель">${g.main?'★':'☆'}</button><button class="btn ghost sm" data-a="gdel" data-id="${g.id}" aria-label="Удалить">${gArm===g.id?'Точно?':'✕'}</button></div>`;
+  const card=g=>`<div class="gc ${g.st>=5?'fin':''}" style="--sc:${sphOf(g.sp)[2]}"><b>${esc(g.t)}</b>${g.c?`<small class="lbl">${esc(g.c)}</small>`:''}<small class="lbl">${sphOf(g.sp)[1]}</small>${ctl(g)}</div>`;
+  const chips=`<div class="mchips"><button class="${f?'':'on'}" data-a="gsph" data-v="">Все · ${G.length}</button>${SPH.map(([k,n,c])=>{const a=G.filter(g=>g.sp===k);return `<button class="${f===k?'on':''}" style="--sc:${c}" data-a="gsph" data-v="${k}"><i class="gdot"></i>${n} · ${a.filter(g=>g.st>=5).length}/${a.length}</button>`}).join('')}</div>`;
+  return `<div class="grid">
+  <section class="card c12"><h3>Миссия<small>фильтр для всех целей</small></h3><input data-bind="mission" value="${esc(S.mission||'')}" placeholder="Зачем всё это? Одной фразой" maxlength="160" style="width:100%"></section>
+  <section class="card c12"><h3>Главные цели на 2027<small>${mains.length} из 3</small></h3>${mains.length?`<div class="gmain">${mains.map(g=>`<div class="gc big ${g.st>=5?'fin':''}" style="--sc:${sphOf(g.sp)[2]}"><b>${esc(g.t)}</b>${g.c?`<small class="lbl">${esc(g.c)}</small>`:''}<small class="lbl">${GCOLS[g.st]}</small>${bar(g.st/5*100,sphOf(g.sp)[2])}${ctl(g)}</div>`).join('')}</div>`:'<p class="empty">Отметь ★ до трёх целей, на которых держится год. Остальное идёт фоном.</p>'}</section>
+  <section class="card c12"><h3>Доска целей<small>по сферам</small></h3>${chips}
+    <div class="gboard">${GCOLS.map((n,i)=>{const a=vis.filter(g=>g.st===i);return `<div class="gcol"><h4>${n}<small>${a.length}</small></h4>${a.map(card).join('')||'<div class="gempty">пусто</div>'}</div>`}).join('')}</div>
+    <form class="hadd" data-f="addGoal" style="margin-top:14px"><input name="name" placeholder="Новая цель" autocomplete="off" maxlength="80" required><select name="sp">${SPH.map(([k,n])=>`<option value="${k}" ${f===k?'selected':''}>${n}</option>`).join('')}</select><button class="btn">Добавить</button></form>
+    <p class="lbl" style="margin:10px 0 0;font-size:12px">Двигай карточку стрелками по колонкам. Не больше 3–5 карточек в «Сегодня».</p></section>
+  </div>`;
+},
 today(){
   const t=today(),k=dayKey(),isT=k===t;
   const list=S.habits.map(h=>({h,due:isDue(h,k)||!!h.days[k]}));
@@ -941,6 +994,10 @@ const A={
   wk:d=>{const cur=mondayOf(today()),lo=iso(addDays(kdate(cur),-7*26)),hi=iso(addDays(kdate(cur),7*8)),m=iso(addDays(kdate(W),7*+d.v));W=m<lo?lo:m>hi?hi:m;return 'skip-save'},
   tedit:d=>{editTrk=editTrk===d.id?null:d.id;trkArm=null;return 'skip-save'},
   tdel:d=>{if(trkArm!==d.id){trkArm=d.id;return 'skip-save'}S.trk=S.trk.filter(x=>x.id!==d.id);editTrk=null;trkArm=null},
+  gmove:d=>{const g=S.goals.find(x=>x.id===d.id);if(g)g.st=clamp(g.st+(+d.v),0,5)},
+  gmain:d=>{const g=S.goals.find(x=>x.id===d.id);if(!g)return;if(!g.main&&S.goals.filter(x=>x.main).length>=3)return 'skip-save';g.main=!g.main},
+  gsph:d=>{gFilter=d.v||'';return 'skip-save'},
+  gdel:d=>{if(gArm!==d.id){gArm=d.id;return 'skip-save'}S.goals=S.goals.filter(x=>x.id!==d.id);gArm=null},
   tdone:d=>{const t=S.trk.find(x=>x.id===d.id);t.cur=t.cur>=t.total?0:t.total},
   ticon:d=>{S.trk.find(x=>x.id===d.id).icon=d.v},
   tcolor:d=>{S.trk.find(x=>x.id===d.id).color=d.v},
@@ -984,6 +1041,7 @@ document.addEventListener('click',e=>{
 });
 
 const F={
+  addGoal:fd=>{S.goals=S.goals||[];S.goals.push({id:uid(),sp:fd.sp||'fin',t:fd.name.trim(),main:false,c:'',st:0})},
   addTrk:fd=>{const total=Math.max(1,Math.round(num(fd.total)));S.trk=S.trk||[];const id=uid();S.trk.push({id,name:fd.name.trim(),total,cur:0,unit:fd.unit||'стр.',icon:'book',color:PICK[S.trk.length%PICK.length]});editTrk=id;newTrkUnit=fd.unit||'стр.'},
   setTrk:(fd,d)=>{const t=S.trk.find(x=>x.id===d.id);if(t)t.cur=clamp(Math.round(num(fd.v)),0,t.total)},
   addHabit:fd=>{
