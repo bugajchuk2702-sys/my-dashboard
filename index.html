@@ -517,6 +517,40 @@ body[data-tab=goals]{--accent:#8b5cf6}
 :root[data-style=hero] .gstep select{background:#142038;border-color:rgba(150,190,255,.35);color:#fff}
 :root[data-style=hero] .gper>div{border:1px solid rgba(150,190,255,.18);border-left:4px solid var(--gc)}
 :root[data-style=hero] .gper b{color:#fff;font-family:'Fira Sans',sans-serif;font-style:normal;text-transform:none;letter-spacing:0}
+
+/* доска целей */
+.gh2{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
+.gdays{text-align:right}.gdays b{display:block;font-size:30px;font-weight:700;line-height:1}.gdays span{font-size:13px;color:var(--tx2)}
+.gmains{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.gm,.gc{position:relative;border-radius:16px;background:var(--fill);padding:14px 16px 12px 20px}
+.gm::before,.gc::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;border-radius:5px;background:var(--sc)}
+.gm em,.gc em{display:block;font-style:normal;font-size:12.5px;font-weight:650;color:color-mix(in srgb,var(--sc) 70%,var(--tx))}
+.gm b{display:block;font-size:17px;font-weight:650;margin:3px 0;line-height:1.25}
+.gm small,.gc small{display:block;font-size:14px;color:var(--tx2);margin-top:2px}
+.gstat{font-size:13.5px;font-weight:600;margin:8px 0 6px}
+.gm .bar{--c:var(--sc);height:8px}
+.gchips{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 14px}
+.gchips button{border:0;font:inherit;font-size:14px;font-weight:600;padding:8px 15px;border-radius:99px;background:var(--fill);color:var(--tx);cursor:pointer}
+.gchips button i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--sc);margin-right:7px}
+.gchips button.on{background:var(--sc,var(--accent));color:#fff}.gchips button.on i{background:#fff}
+.gboard{display:grid;grid-template-columns:repeat(6,minmax(210px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x proximity}
+.gcl{scroll-snap-align:start;min-width:0}
+.gcl h4{margin:0 0 10px;font-size:13px;font-weight:650;text-transform:uppercase;letter-spacing:.04em;color:var(--tx2);display:flex;justify-content:space-between;gap:8px}
+.gc{margin-bottom:10px}.gc b{display:block;font-size:15.5px;font-weight:600;line-height:1.3;margin:2px 0}
+.gc.done b{text-decoration:line-through;opacity:.65}
+.gempty{color:var(--tx2);opacity:.5;padding:6px 4px}
+.gacts{display:flex;gap:6px;margin-top:10px;align-items:center}
+.gacts button{border:0;font:inherit;font-size:15px;min-width:34px;height:30px;padding:0 10px;border-radius:9px;background:var(--glass-hi);color:var(--tx);cursor:pointer}
+.gacts button:disabled{opacity:.3;cursor:default}.gacts button.on{color:#f5a623}.gsp{flex:1}
+:root[data-style=hero] .gm,:root[data-style=hero] .gc{border-radius:2px;background:#1d2b45;border:1px solid rgba(150,190,255,.2)}
+:root[data-style=hero] .gm b,:root[data-style=hero] .gc b{font-family:'Fira Sans',sans-serif;font-style:normal;text-transform:none;letter-spacing:0;color:#fff}
+:root[data-style=hero] .gm em,:root[data-style=hero] .gc em{color:color-mix(in srgb,var(--sc) 45%,#fff)}
+:root[data-style=hero] .gm small,:root[data-style=hero] .gc small,:root[data-style=hero] .gdays span,:root[data-style=hero] .gcl h4{color:#c4d3ea}
+:root[data-style=hero] .gacts button{border-radius:0;background:#2a3d60;clip-path:polygon(7px 0,100% 0,calc(100% - 7px) 100%,0 100%)}
+:root[data-style=hero] .gacts button.on{color:#f99e1a}
+:root[data-style=hero] .gchips button{border-radius:0;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);padding:8px 18px}
+:root[data-style=hero] .gdays b{font-family:'Fira Cond',sans-serif;font-style:italic;font-weight:800}
+@media (max-width:640px){.gboard{grid-template-columns:repeat(6,78vw)}}
 </style>
 </head>
 <body data-tab="personal">
@@ -647,20 +681,13 @@ const CHECK='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke=
 
 /* ---------- state ---------- */
 function seedGoals(){
-  const st=(...a)=>a.map(t=>({id:uid(),t,m:'',d:0}));
-  const g=(t,area,s,crit,steps)=>({id:uid(),t,area,st:s,crit:crit||'',due:'',steps:steps||[]});
-  return [
-    g('Доход: научиться зарабатывать','fin','main','5000 € (период и срок — уточнить)',st('Стать про-трейдером: аллокация в проп-фирмах до 400к','Открыть личный депозит для торговли','Найти работу (стабильный заработок)','Подушка безопасности 12 000 €','Начать инвестировать')),
-    g('Финский: свободное понимание и речь','dev','main','YKI C1 (дату теста и текущий уровень — уточнить)',st('Прочитать первую мангу на финском')),
-    g('Тело: форма и здоровье','dev','main','90 кг, 7 км, 12 подтягиваний, 20 отжиманий',st('Похудеть до 90 кг и убрать живот и бока','Пробежать 7 км','12 подтягиваний и 20 отжиманий')),
-    g('Открыть первый бизнес','biz','bg'),g('Начать блог без лица','biz','bg'),
-    g('Прочитать 12 книг за год','dev','bg','1 книга в месяц'),g('Пройти 2 курса за год','dev','bg','лучше те, что помогают доходу'),
-    g('12 свиданий с женой','fam','bg','1 в месяц'),g('СПА и отель для любимой','fam','bg'),g('Подарок жене на годовщину','fam','bg'),
-    g('Первое путешествие','hob','bg'),g('Съездить в Норвегию на фьорды','hob','bg'),g('Побывать на матче ФК Милан','hob','bg'),
-    g('Пожертвовать в фонд от 500 € за год','soc','bg','500 €'),
-    g('Начать ходить в зал','dev','later'),g('Рабочее пространство: стол, стул, ноут, монитор','fin','later'),g('Часы Garmin','dev','later'),
-    g('Перейти на технику Apple','fin','later'),g('Новая машина','fin','later'),g('Купить кровать','fam','later'),g('Переехать в новую квартиру или дом','fam','later')
-  ];
+  const L=[['fin','Доход 5000 € в месяц',1,'стабильно, не разово'],['fin','Подушка безопасности 12 000 €'],['fin','Начать инвестировать'],['fin','Личный депозит для трейдинга'],
+  ['biz','Найти стабильную работу'],['biz','Стать профессиональным трейдером'],['biz','Аллокация в проп-фирмах до 400 тыс.'],['biz','Открыть первый бизнес'],['biz','Блог без лица (будущий доход)'],
+  ['dev','Финский: YKI C1 и свободная речь',1,'понимать носителя и говорить не задумываясь'],['dev','Прочитать первую мангу на финском'],['dev','Тело: вес 90 кг, без живота и боков',1,'90 кг и сухой торс'],['dev','Пробежать 7 км'],['dev','12 подтягиваний и 20 отжиманий'],['dev','Прочитать 12 книг'],['dev','Пройти 2 курса за год'],['dev','Ходить в зал'],
+  ['fam','12 свиданий жене (раз в месяц)'],['fam','СПА и отель для жены'],['fam','Подарок жене на годовщину'],['fam','Переехать в новое жильё'],['fam','Купить кровать'],['fam','Первое путешествие'],['fam','Норвегия: фьорды'],['fam','Новая машина'],
+  ['soc','Пожертвовать в фонд от 500 € за год'],
+  ['hob','Матч «Милана»'],['hob','Часы Garmin'],['hob','Техника Apple'],['hob','Рабочее место: стол, стул, ноутбук, монитор']];
+  return L.map((x,i)=>({id:'g'+(i+1),area:x[0],t:x[1],main:!!x[2],crit:x[3]||'',col:0}));
 }
 
 const KEY='my-dashboard-v1';
@@ -677,7 +704,7 @@ function seed(){
   };
 }
 const KEEP=['goals','tab','theme','style','name','goalPct','reward','habits','trk','_t'];
-const norm=o=>{const r={};KEEP.forEach(k=>{if(o&&o[k]!==undefined)r[k]=o[k]});if(!['goals','today','week','month','stats','habits','trk'].includes(r.tab))r.tab='today';if(r.goals&&r.goals.some(g=>!g.area))delete r.goals;if(r.goals)r.goals=r.goals.map(g=>({...g,steps:g.steps||[]}));if(r.trk)r.trk=r.trk.map(t=>({...t,total:+t.total||1,cur:Math.max(0,+t.cur||0)}));if(r.habits)r.habits=r.habits.map(h=>({...h,days:h.days||{},skip:h.skip||{}}));return r};
+const norm=o=>{const r={};KEEP.forEach(k=>{if(o&&o[k]!==undefined)r[k]=o[k]});if(!['goals','today','week','month','stats','habits','trk'].includes(r.tab))r.tab='today';if(r.goals&&r.goals.some(g=>typeof g.col!=='number'||!g.area))delete r.goals;if(r.trk)r.trk=r.trk.map(t=>({...t,total:+t.total||1,cur:Math.max(0,+t.cur||0)}));if(r.habits)r.habits=r.habits.map(h=>({...h,days:h.days||{},skip:h.skip||{}}));return r};
 const mk=o=>Object.assign(seed(),norm(o));
 let S;
 try{const r=localStorage.getItem(KEY);S=r?mk(JSON.parse(r)):seed()}catch(e){S=seed()}
@@ -1091,92 +1118,33 @@ document.addEventListener('change',e=>{
   }
 });
 
-/* ---------- Цели (принцип Маргулана) ---------- */
-const AREAS={dev:['Развитие','#3f9b6d'],fam:['Семья','#e8b931'],biz:['Бизнес','#4682b4'],soc:['Общественное','#ec6666'],hob:['Хобби','#9aa0a6'],fin:['Финансы','#20b2aa']};
-const GST={main:'Главные цели 2027',bg:'Фоновые цели',later:'После дохода',done:'Достигнуто'};
-const GM=(()=>{const a=[];for(let y=2026;y<=2027;y++)for(let m=(y===2026?11:1);m<=12;m++)a.push(y+'-'+String(m).padStart(2,'0'));return a})();
-const gmLab=k=>{const [y,m]=k.split('-').map(Number);return MONTHS[m-1]+(y!==2027?' ’'+String(y).slice(2):'')};
+/* ---------- Цели (доска-канбан, принцип Маргулана) ---------- */
+const AREAS={fin:['Финансы','#2bb3a3'],biz:['Бизнес и работа','#4a90e2'],dev:['Развитие и тело','#a76cf0'],fam:['Семья','#f2557a'],soc:['Общественные дела','#3fb36b'],hob:['Хобби','#f0a030']};
+const GCOLS=['Нужно сделать','Запланировано','В процессе','Мяч на другой стороне','Сегодня','Сделано'];
+let gFilter='',gArm=null;
 const gcol=g=>(AREAS[g.area]||AREAS.dev)[1];
-const gp=g=>g.steps&&g.steps.length?g.steps.filter(s=>s.d).length/g.steps.length*100:(g.st==='done'||g.d?100:0);
-const gOpen={bg:false,later:false};document.addEventListener('toggle',e=>{const k=e.target.dataset&&e.target.dataset.gk;if(k)gOpen[k]=e.target.open},true);
-let gPer='month',gMon=(()=>{const t=today().slice(0,7);return GM.includes(t)?t:t<GM[0]?GM[0]:GM[GM.length-1]})(),gEdit=null,gArm=null;
-const gIn=mk=>{if(!mk)return false;const [y,m]=mk.split('-').map(Number),[Y,M]=gMon.split('-').map(Number);
-  if(y!==Y)return false;return gPer==='month'?m===M:gPer==='quarter'?Math.floor((m-1)/3)===Math.floor((M-1)/3):gPer==='half'?Math.floor((m-1)/6)===Math.floor((M-1)/6):true};
-const GPN={month:'Месяц',quarter:'Квартал',half:'Полгода',year:'Год'};
-function gPerLabel(){const [Y,M]=gMon.split('-').map(Number);
-  return gPer==='month'?MONTHS[M-1]+' '+Y:gPer==='quarter'?`${Math.floor((M-1)/3)+1} квартал ${Y}`:gPer==='half'?`${M<=6?'1':'2'} полугодие ${Y}`:`${Y} год`}
-const gMonOpts=(sel,empty)=>`${empty?`<option value="" ${sel?'':'selected'}>${empty}</option>`:''}${GM.map(k=>`<option value="${k}" ${k===sel?'selected':''}>${gmLab(k)}</option>`).join('')}`;
 function goalsView(){
-  const G=S.goals||[],main=G.filter(g=>g.st==='main'),bg=G.filter(g=>g.st==='bg'),later=G.filter(g=>g.st==='later'),dn=G.filter(g=>g.st==='done');
-  const avg=a=>a.length?a.reduce((s,g)=>s+gp(g),0)/a.length:0;
-  const mainAvg=Math.round(avg(main.concat(dn.filter(g=>g.prev==='main'))));
-  const y27=new Date(2028,0,1),dleft=Math.max(0,Math.ceil((y27-new Date(today()+'T00:00:00'))/864e5));
-  const timeTxt=`<b>${dleft}</b><span>дней до конца 2027</span>`;
-  /* шаги периода */
-  const allSteps=G.flatMap(g=>(g.steps||[]).map(s=>({g,s})));
-  const per=allSteps.filter(x=>gIn(x.s.m)),perDone=per.filter(x=>x.s.d).length,perPct=per.length?perDone/per.length*100:0;
-  const unass=allSteps.filter(x=>!x.s.m&&!x.s.d&&x.g.st!=='done');
-  const stepRow=({g,s},showMon)=>`<div class="gstep ${s.d?'d':''}" style="--gc:${gcol(g)}"><button class="gck" data-a="gstep" data-g="${g.id}" data-v="${s.id}" aria-label="Отметить">${s.d?CHECK:''}</button><div class="grow"><span class="gtag">${esc((AREAS[g.area]||AREAS.dev)[0])} · ${esc(g.t)}</span>${esc(s.t)}</div>${showMon?`<select data-gsm="1" data-g="${g.id}" data-s="${s.id}">${gMonOpts(s.m,'Месяц…')}</select>${s.m&&!s.d?`<button class="btn ghost sm" data-a="gnext" data-g="${g.id}" data-v="${s.id}" title="Не успел — перенести на следующий месяц" aria-label="Перенести на следующий месяц">→</button>`:''}`:''}</div>`;
-  /* карточка цели */
-  const card=g=>{
-    const p=Math.round(gp(g)),col=gcol(g),ed=gEdit===g.id,hasSt=g.steps&&g.steps.length;
-    return `<div class="gcard ${g.st==='done'?'fin':''}" style="--gc:${col}"><div class="gtop"><div class="grow"><span class="gtag">${esc((AREAS[g.area]||AREAS.dev)[0])}</span><b>${esc(g.t)}</b>${g.crit?`<small>Критерий: ${esc(g.crit)}</small>`:'<small>Критерий не задан — впишите, как поймёте, что цель достигнута</small>'}${g.due?`<small>Срок: ${kdate(g.due).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})}</small>`:''}</div><div class="gpct">${p}%</div></div>
-      ${bar(p,col)}
-      ${hasSt?`<small class="lbl">${g.steps.filter(s=>s.d).length} из ${g.steps.length} шагов</small>${g.steps.map(s=>`<div class="gstep ${s.d?'d':''}" style="--gc:${col}"><button class="gck" data-a="gstep" data-g="${g.id}" data-v="${s.id}" aria-label="Отметить">${s.d?CHECK:''}</button><div class="grow">${esc(s.t)}</div><select data-gsm="1" data-g="${g.id}" data-s="${s.id}">${gMonOpts(s.m,'Месяц…')}</select></div>`).join('')}`:''}
-      <div class="acts" style="margin-top:10px"><button class="btn sm" data-a="gdone" data-g="${g.id}">${g.st==='done'?'Вернуть в работу':'Цель достигнута'}</button><button class="btn ghost sm" data-a="gedit" data-g="${g.id}">${ed?'Свернуть':'Разбить на шаги / изменить'}</button></div>
-      ${ed?`<div class="hedit"><form class="hadd" data-f="addStep" data-g="${g.id}" style="margin:0 0 12px"><div class="lbl" style="margin-bottom:6px">Новый шаг (маленькая измеримая задача)</div><div class="gfab"><input name="t" placeholder="Например: 100 новых слов за месяц" maxlength="90" autocomplete="off" required style="flex:2 1 200px"><select name="m">${gMonOpts('', 'Без месяца')}</select><button class="btn sm">Добавить</button></div></form>
-      ${hasSt?`<div class="lbl" style="margin-bottom:6px">Шаги</div>${g.steps.map(s=>`<div class="mrow2" style="margin-bottom:6px"><div class="grow">${esc(s.t)}</div><button class="btn danger sm" data-a="gsdel" data-g="${g.id}" data-v="${s.id}" aria-label="Удалить шаг">✕</button></div>`).join('')}`:''}
-      <div class="lbl" style="margin:12px 0 6px">Название</div><input data-gf="t" data-g="${g.id}" value="${esc(g.t)}" maxlength="90" style="width:100%">
-      <div class="lbl" style="margin:12px 0 6px">Критерий (число или факт) и срок</div><div class="row2"><input data-gf="crit" data-g="${g.id}" value="${esc(g.crit||'')}" placeholder="Например: 5000 € в месяц" maxlength="90" style="flex:2 1 160px;min-width:0"><input type="date" data-gf="due" data-g="${g.id}" value="${esc(g.due||'')}" style="flex:1 1 130px;min-width:0"></div>
-      <div class="lbl" style="margin:12px 0 6px">Сфера (цвет)</div><div class="seg" style="flex-wrap:wrap">${Object.entries(AREAS).map(([k,[n,c]])=>`<button class="${g.area===k?'on':''}" data-a="garea" data-g="${g.id}" data-v="${k}"><span class="gdot" style="--gc:${c}"></span>${n}</button>`).join('')}</div>
-      <div class="lbl" style="margin:12px 0 6px">Раздел</div><div class="seg">${['main','bg','later'].map(k=>`<button class="${g.st===k?'on':''}" data-a="gst" data-g="${g.id}" data-v="${k}">${{main:'Главная',bg:'Фон',later:'После дохода'}[k]}</button>`).join('')}</div>
-      <div class="acts" style="margin-top:12px"><button class="btn danger sm" data-a="gdel" data-g="${g.id}">${gArm===g.id?'Точно удалить? Нажмите ещё раз':'Удалить цель'}</button></div></div>`:''}</div>`};
-  const sect=(k,list,hint)=>`<div class="gsec">${GST[k]} · ${list.length}</div>${hint?`<p class="empty" style="margin-top:4px">${hint}</p>`:''}${list.map(card).join('')}`;
-  /* статистика по целям за период */
-  const perGoals=G.filter(g=>g.st!=='later').map(g=>{const st=(g.steps||[]).filter(s=>gIn(s.m));return {g,pl:st.length,dn:st.filter(s=>s.d).length}}).filter(x=>x.pl);
+  const G=S.goals||[],vis=G.filter(g=>!gFilter||g.area===gFilter),mains=G.filter(g=>g.main),dn=G.filter(g=>g.col>=5).length;
+  const dleft=Math.max(0,Math.ceil((new Date(2028,0,1)-new Date(today()+'T00:00:00'))/864e5));
+  const ctl=g=>`<div class="gacts"><button data-a="gmove" data-id="${g.id}" data-v="-1" ${g.col<=0?'disabled':''} aria-label="Назад">‹</button><button data-a="gmove" data-id="${g.id}" data-v="1" ${g.col>=5?'disabled':''} aria-label="Дальше">›</button><span class="gsp"></span><button class="${g.main?'on':''}" data-a="gmain" data-id="${g.id}" aria-label="Главная цель" title="Главная цель">${g.main?'★':'☆'}</button><button data-a="gdel" data-id="${g.id}" aria-label="Удалить">${gArm===g.id?'Удалить?':'✕'}</button></div>`;
+  const card=g=>`<div class="gc ${g.col>=5?'done':''}" style="--sc:${gcol(g)}"><b>${esc(g.t)}</b>${g.crit?`<small>${esc(g.crit)}</small>`:''}<em>${AREAS[g.area]?AREAS[g.area][0]:''}</em>${ctl(g)}</div>`;
+  const chips=`<div class="gchips"><button class="${gFilter?'':'on'}" data-a="gsph" data-v="">Все · ${G.length}</button>${Object.entries(AREAS).map(([k,[n,c]])=>{const a=G.filter(g=>g.area===k);return `<button class="${gFilter===k?'on':''}" style="--sc:${c}" data-a="gsph" data-v="${k}"><i></i>${n} · ${a.filter(g=>g.col>=5).length}/${a.length}</button>`}).join('')}</div>`;
   return `<div class="grid">
-  <section class="card c12"><h3>Цели 2027<small>метод Маргулана</small></h3>
-   <div class="gh"><div><div class="big">${mainAvg}%</div><div class="lbl">прогресс главных целей</div></div>
-   <div class="gs"><div><b>${main.length}</b><span>главных</span></div><div><b>${bg.filter(g=>gp(g)>=100).length}/${bg.length}</b><span>фоновых</span></div><div><b>${dn.length}</b><span>достигнуто</span></div><div>${timeTxt}</div></div></div>
-   ${bar(mainAvg,'var(--accent)')}
-   ${main.length>3?'<div class="gwarn">Главных целей больше трёх: исследования показывают, что фокус на 1–3 целях даёт лучший результат. Лишние переведите в «Фон».</div>':''}</section>
-  <section class="card c12"><h3>Доска периода<small>${gPerLabel()}</small></h3>
-   <div class="seg" style="margin-bottom:10px">${Object.entries(GPN).map(([k,n])=>`<button class="${gPer===k?'on':''}" data-a="gper" data-v="${k}">${n}</button>`).join('')}</div>
-   <div class="mchips">${GM.map(k=>`<button class="${k===gMon?'on':''} ${k===today().slice(0,7)?'cur':''}" data-a="gmon" data-v="${k}">${gmLab(k)}</button>`).join('')}</div>
-   <div class="gh"><div><div class="big">${Math.round(perPct)}%</div><div class="lbl">${perDone} из ${per.length} шагов выполнено</div></div></div>${bar(perPct,'var(--accent)')}
-   ${per.length?per.map(x=>stepRow(x,true)).join(''):'<p class="empty" style="margin-top:12px">На этот период шагов пока нет. Назначьте месяц шагам ниже или добавьте шаги в карточке цели.</p>'}
-   ${perGoals.length?`<div class="gper">${perGoals.map(x=>`<div style="--gc:${gcol(x.g)}"><b>${esc(x.g.t)}</b><span>${x.dn} из ${x.pl} · ${Math.round(x.dn/x.pl*100)}%</span></div>`).join('')}</div>`:''}
-   ${unass.length?`<div class="gsec">Не распределено по месяцам · ${unass.length}</div>${unass.map(x=>stepRow(x,true)).join('')}`:''}
-  </section>
-  <section class="card c12"><h3>Все цели<small>${G.length}</small></h3>
-   ${sect('main',main,'Не больше трёх. Всё остальное идёт фоном или после дохода.')}
-   <details data-gk="bg" ${gOpen.bg?'open':''}><summary class="gsec" style="cursor:pointer">${GST.bg} · ${bg.length}</summary>${bg.map(card).join('')}</details><details data-gk="later" ${gOpen.later?'open':''}><summary class="gsec" style="cursor:pointer">${GST.later} · ${later.length}</summary><p class="empty" style="margin-top:4px">Не берём в работу, пока не выполнены главные.</p>${later.map(card).join('')}</details>${dn.length?sect('done',dn):''}
-   <form class="hadd" data-f="addGoal" style="margin-top:18px"><div class="lbl" style="margin-bottom:6px">Новая цель</div><input name="t" placeholder="Что хотите получить?" maxlength="90" autocomplete="off" required><div class="gfab"><select name="area">${Object.entries(AREAS).map(([k,[n]])=>`<option value="${k}">${n}</option>`).join('')}</select><select name="st"><option value="bg">Фон</option><option value="main">Главная</option><option value="later">После дохода</option></select></div><input name="crit" placeholder="Критерий: число или факт (по желанию)" maxlength="90" autocomplete="off"><button class="btn">Добавить цель</button></form>
-  </section></div>`;
+  <section class="card c12"><div class="gh2"><div><h3 style="margin:0 0 4px">Цели до конца 2027</h3><div class="lbl">${dn} из ${G.length} достигнуто</div></div><div class="gdays"><b>${dleft}</b><span>дней осталось</span></div></div>${bar(G.length?dn/G.length*100:0)}</section>
+  <section class="card c12"><h3>Главные<small>${mains.length} из 3</small></h3>${mains.length?`<div class="gmains">${mains.map(g=>`<div class="gm" style="--sc:${gcol(g)}"><em>${AREAS[g.area][0]}</em><b>${esc(g.t)}</b>${g.crit?`<small>${esc(g.crit)}</small>`:''}<div class="gstat">${GCOLS[g.col]}</div>${bar(g.col/5*100,gcol(g))}${ctl(g)}</div>`).join('')}</div>`:'<p class="empty">Нажми ☆ на карточке, чтобы сделать цель главной (не больше трёх).</p>'}</section>
+  <section class="card c12"><h3>Доска<small>двигай карточки стрелками</small></h3>${chips}
+    <div class="gboard">${GCOLS.map((n,i)=>{const a=vis.filter(g=>g.col===i);return `<div class="gcl"><h4>${n}<small>${a.length}</small></h4>${a.map(card).join('')||'<div class="gempty">—</div>'}</div>`}).join('')}</div>
+    <form class="hadd" data-f="addGoal" style="margin-top:16px"><input name="t" placeholder="Новая цель" maxlength="90" autocomplete="off" required><select name="area">${Object.entries(AREAS).map(([k,[n]])=>`<option value="${k}" ${gFilter===k?'selected':''}>${n}</option>`).join('')}</select><button class="btn">Добавить</button></form></section>
+  </div>`;
 }
 views.goals=goalsView;
 Object.assign(A,{
-  gper:d=>{gPer=d.v;return 'skip-save'},
-  gmon:d=>{gMon=d.v;return 'skip-save'},
-  gstep:d=>{const g=S.goals.find(x=>x.id===d.g),s=g&&g.steps.find(x=>x.id===d.v);if(s)s.d=s.d?0:1},
-  gnext:d=>{const g=S.goals.find(x=>x.id===d.g),s=g&&g.steps.find(x=>x.id===d.v);if(!s)return;const i=GM.indexOf(s.m);if(i>=0&&i<GM.length-1)s.m=GM[i+1]},
-  gsdel:d=>{const g=S.goals.find(x=>x.id===d.g);if(g)g.steps=g.steps.filter(x=>x.id!==d.v)},
-  gdone:d=>{const g=S.goals.find(x=>x.id===d.g);if(!g)return;if(g.st==='done'){g.st=g.prev||'main';delete g.prev}else{g.prev=g.st;g.st='done'}},
-  gedit:d=>{gEdit=gEdit===d.g?null:d.g;gArm=null;return 'skip-save'},
-  gdel:d=>{if(gArm!==d.g){gArm=d.g;return 'skip-save'}S.goals=S.goals.filter(x=>x.id!==d.g);gEdit=null;gArm=null},
-  garea:d=>{S.goals.find(x=>x.id===d.g).area=d.v},
-  gst:d=>{const g=S.goals.find(x=>x.id===d.g);g.st=d.v;delete g.prev}
+  gsph:d=>{gFilter=d.v||'';return 'skip-save'},
+  gmove:d=>{const g=S.goals.find(x=>x.id===d.id);if(g)g.col=clamp(g.col+(+d.v),0,5)},
+  gmain:d=>{const g=S.goals.find(x=>x.id===d.id);if(!g)return;if(!g.main&&S.goals.filter(x=>x.main).length>=3)return 'skip-save';g.main=!g.main},
+  gdel:d=>{if(gArm!==d.id){gArm=d.id;return 'skip-save'}S.goals=S.goals.filter(x=>x.id!==d.id);gArm=null}
 });
-Object.assign(F,{
-  addGoal:fd=>{S.goals=S.goals||[];S.goals.push({id:uid(),t:fd.t.trim(),area:fd.area||'dev',st:fd.st||'bg',crit:(fd.crit||'').trim(),due:'',steps:[]})},
-  addStep:(fd,d)=>{const g=S.goals.find(x=>x.id===d.g);if(g){g.steps=g.steps||[];g.steps.push({id:uid(),t:fd.t.trim(),m:fd.m||'',d:0})}}
-});
-document.addEventListener('change',e=>{
-  const el=e.target;
-  if(el.dataset.gsm){const g=S.goals.find(x=>x.id===el.dataset.g),s=g&&g.steps.find(x=>x.id===el.dataset.s);if(s){s.m=el.value;save();render()}return}
-  if(el.dataset.gf){const g=S.goals.find(x=>x.id===el.dataset.g);if(!g)return;const f=el.dataset.gf;
-    if(f==='t'){if(el.value.trim())g.t=el.value.trim().slice(0,90)}else g[f]=el.value.trim();save();render()}
-});
+Object.assign(F,{addGoal:fd=>{S.goals=S.goals||[];S.goals.push({id:uid(),area:fd.area||'dev',t:fd.t.trim(),main:false,crit:'',col:0})}});
 
 /* ---------- network status ---------- */
 function net(){
