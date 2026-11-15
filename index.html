@@ -465,110 +465,9 @@ nav.tabs button.on{background:var(--fill);color:var(--accent)}
 body.swap{animation:hflash .6s both}
 @keyframes hflash{from{opacity:.35}}
 @media (prefers-reduced-motion:reduce){:root[data-style=hero] *,:root[data-style=hero] *::after{animation:none!important;transition:none!important}}
-body[data-tab=goals]{--accent:#8b5cf6}
-.gh{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.gh .big{font-size:44px;font-weight:700;letter-spacing:-.02em;line-height:1}
-.gh .gs{display:flex;gap:18px;flex-wrap:wrap;margin-left:auto}
-.gh .gs div{display:flex;flex-direction:column;font-size:12px;color:var(--tx2)}.gh .gs b{font-size:20px;color:var(--tx)}
-.gcard{padding:14px 16px;border-radius:22px;background:var(--fill);margin-top:10px;border-left:5px solid var(--gc)}
-.gcard.fin{background:color-mix(in srgb,var(--gc) 14%,var(--fill))}
-.gtop{display:flex;align-items:flex-start;gap:10px}
-.gtop .grow b{font-size:16px;font-weight:620}
-.gtop small{display:block;color:var(--tx2);font-size:12.5px;margin-top:2px}
-.gpct{font-weight:700;font-size:18px;color:var(--gc)}
-.gcard .bar{--c:var(--gc);margin:10px 0 6px;height:8px}
-.gstep{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--sep);font-size:14px}
-.gstep .gck{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--gc);background:transparent;color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}
-.gstep.d .gck{background:var(--gc)}.gstep.d .grow{color:var(--tx2);text-decoration:line-through}
-.gstep select{font-size:12px;padding:4px 6px;max-width:112px}
-.gdot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--gc);margin-right:6px}
-.gtag{font-size:11.5px;font-weight:600;color:var(--gc);margin-bottom:2px;display:block}
-.gsec{margin:18px 0 2px;font-size:13px;font-weight:650;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em}
-.gwarn{background:rgba(255,159,10,.15);color:var(--orange);border-radius:14px;padding:9px 12px;font-size:13px;margin-top:10px}
-.gper{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}
-.gper>div{background:var(--fill);border-radius:16px;padding:12px;border-left:4px solid var(--gc)}
-.gper b{display:block;font-size:13px}.gper span{font-size:12px;color:var(--tx2)}
-.gfab{display:flex;gap:8px;flex-wrap:wrap}.gfab select,.gfab input{flex:1 1 130px;min-width:0}
-:root[data-style=hero] .gcard,:root[data-style=hero] .gper>div{border-radius:2px;background:#1d2b45}
-:root[data-style=hero] .gcard.fin{background:color-mix(in srgb,var(--gc) 20%,#1d2b45)}
-:root[data-style=hero] .gtop .grow b{font-family:'Fira Sans',sans-serif;font-style:normal;text-transform:none;letter-spacing:0;font-size:16px;color:#fff}
-:root[data-style=hero] .gh .big{font-size:48px}
-:root[data-style=hero] .mchips button{border-radius:0;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);padding:8px 16px}
 :root[data-theme=dark] select,:root[data-style=hero] select{color-scheme:dark}
 :root[data-theme=dark] option{background:#26272a;color:#f5f5f7}
 :root[data-style=hero] option{background:#141f33;color:#eef3fb}
-
-/* читаемость целей */
-.gstep{font-size:15.5px;padding:9px 0}
-.gstep select{font-size:14px;max-width:none;min-width:118px;padding:7px 10px}
-.gtag{font-size:13px;font-weight:650;color:color-mix(in srgb,var(--gc) 65%,var(--tx))}
-.gtop small{font-size:14px}
-.gtop .grow b{font-size:17px}
-.gsec{font-size:14px;color:var(--tx)}
-.gper b{font-size:14.5px;line-height:1.3}.gper span{font-size:13.5px}
-.gh .gs div{font-size:13px}
-.gcard small.lbl{font-size:14px}
-:root[data-style=hero] .gtag{color:color-mix(in srgb,var(--gc) 45%,#fff)}
-:root[data-style=hero] .gtop small,:root[data-style=hero] .gcard small.lbl,:root[data-style=hero] .gper span,:root[data-style=hero] .gh .gs div,:root[data-style=hero] .lbl{color:#c4d3ea}
-:root[data-style=hero] .gsec{color:#e3ecf9}
-:root[data-style=hero] .gstep{border-top-color:rgba(150,190,255,.22)}
-:root[data-style=hero] .gstep .grow{color:#fff}
-:root[data-style=hero] .gstep.d .grow{color:#9db3d1}
-:root[data-style=hero] .gstep select{background:#142038;border-color:rgba(150,190,255,.35);color:#fff}
-:root[data-style=hero] .gper>div{border:1px solid rgba(150,190,255,.18);border-left:4px solid var(--gc)}
-:root[data-style=hero] .gper b{color:#fff;font-family:'Fira Sans',sans-serif;font-style:normal;text-transform:none;letter-spacing:0}
-
-/* доска целей */
-.gh2{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
-.gdays{text-align:right}.gdays b{display:block;font-size:30px;font-weight:700;line-height:1}.gdays span{font-size:13px;color:var(--tx2)}
-.gmains{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
-.gm,.gc{position:relative;border-radius:16px;background:var(--fill);padding:14px 16px 12px 20px}
-.gm::before,.gc::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;border-radius:5px;background:var(--sc)}
-.gm em,.gc em{display:block;font-style:normal;font-size:12.5px;font-weight:650;color:color-mix(in srgb,var(--sc) 70%,var(--tx))}
-.gm b{display:block;font-size:17px;font-weight:650;margin:3px 0;line-height:1.25}
-.gm small,.gc small{display:block;font-size:14px;color:var(--tx2);margin-top:2px}
-.gstat{font-size:13.5px;font-weight:600;margin:8px 0 6px}
-.gm .bar{--c:var(--sc);height:8px}
-.gchips{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 14px}
-.gchips button{border:0;font:inherit;font-size:14px;font-weight:600;padding:8px 15px;border-radius:99px;background:var(--fill);color:var(--tx);cursor:pointer}
-.gchips button i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--sc);margin-right:7px}
-.gchips button.on{background:var(--sc,var(--accent));color:#fff}.gchips button.on i{background:#fff}
-.gboard{display:grid;grid-template-columns:repeat(6,minmax(210px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x proximity}
-.gcl{scroll-snap-align:start;min-width:0}
-.gcl h4{margin:0 0 10px;font-size:13px;font-weight:650;text-transform:uppercase;letter-spacing:.04em;color:var(--tx2);display:flex;justify-content:space-between;gap:8px}
-.gc{margin-bottom:10px}.gc b{display:block;font-size:15.5px;font-weight:600;line-height:1.3;margin:2px 0}
-.gc.done b{text-decoration:line-through;opacity:.65}
-.gempty{color:var(--tx2);opacity:.5;padding:6px 4px}
-.gacts{display:flex;gap:4px;margin-top:10px;align-items:center;flex-wrap:wrap}
-.gacts button{border:0;font:inherit;font-size:15px;min-width:30px;height:30px;padding:0 7px;flex:0 0 auto;border-radius:9px;background:var(--glass-hi);color:var(--tx);cursor:pointer}
-.gacts button:disabled{opacity:.3;cursor:default}.gacts button.on{color:#f5a623}.gsp{flex:1 1 0;min-width:0}
-:root[data-style=hero] .gm,:root[data-style=hero] .gc{border-radius:2px;background:#1d2b45;border:1px solid rgba(150,190,255,.2)}
-:root[data-style=hero] .gm b,:root[data-style=hero] .gc b{font-family:'Fira Sans',sans-serif;font-style:normal;text-transform:none;letter-spacing:0;color:#fff}
-:root[data-style=hero] .gm em,:root[data-style=hero] .gc em{color:color-mix(in srgb,var(--sc) 45%,#fff)}
-:root[data-style=hero] .gm small,:root[data-style=hero] .gc small,:root[data-style=hero] .gdays span,:root[data-style=hero] .gcl h4{color:#c4d3ea}
-:root[data-style=hero] .gacts button{border-radius:0;background:#2a3d60;clip-path:polygon(7px 0,100% 0,calc(100% - 7px) 100%,0 100%)}
-:root[data-style=hero] .gacts button.on{color:#f99e1a}
-:root[data-style=hero] .gchips button{border-radius:0;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);padding:8px 18px}
-:root[data-style=hero] .gdays b{font-family:'Fira Cond',sans-serif;font-style:italic;font-weight:800}
-@media (max-width:640px){.gboard{grid-template-columns:repeat(6,78vw)}}
-
-.gpl{font-size:13.5px;font-weight:600;margin:8px 0 5px}
-.gc .bar{--c:var(--sc);height:6px}
-.gedit{margin-top:12px;padding-top:12px;border-top:1px solid var(--sep)}
-.gpart{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--sep);font-size:15px}
-.gedit .gpart:first-of-type{border-top:0}
-.gpart .gck{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--sc);background:transparent;color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}
-.gpart.ok .gck{background:var(--sc)}.gpart.ok .grow{text-decoration:line-through;opacity:.6}
-.gpart select{font-size:13.5px;padding:6px 8px;min-width:96px}
-.gx{border:0;font:inherit;background:var(--glass-hi);color:var(--tx);border-radius:8px;min-width:30px;height:28px;cursor:pointer}
-.gf{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}.gf input[name=t]{flex:1 1 150px}.gf select{min-width:100px}
-.gtg{display:block;font-style:normal;font-size:12.5px;font-weight:650;color:color-mix(in srgb,var(--sc) 70%,var(--tx))}
-:root[data-style=hero] .gpart{border-top-color:rgba(150,190,255,.22)}
-:root[data-style=hero] .gpart .grow{color:#fff}
-:root[data-style=hero] .gtg{color:color-mix(in srgb,var(--sc) 45%,#fff)}
-:root[data-style=hero] .gx{border-radius:0;background:#2a3d60}
-:root[data-style=hero] .gpl{color:#e3ecf9}
-:root[data-style=hero] .gedit{border-top-color:rgba(150,190,255,.25)}
 </style>
 </head>
 <body data-tab="personal">
@@ -698,22 +597,13 @@ function habStatsBody(){
 const CHECK='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 
 /* ---------- state ---------- */
-function seedGoals(){
-  const L=[['fin','Доход 5000 € в месяц',1,'стабильно, не разово'],['fin','Подушка безопасности 12 000 €'],['fin','Начать инвестировать'],['fin','Личный депозит для трейдинга'],
-  ['biz','Найти стабильную работу'],['biz','Стать профессиональным трейдером'],['biz','Аллокация в проп-фирмах до 400 тыс.'],['biz','Открыть первый бизнес'],['biz','Блог без лица (будущий доход)'],
-  ['dev','Финский: YKI C1 и свободная речь',1,'понимать носителя и говорить не задумываясь'],['dev','Прочитать первую мангу на финском'],['dev','Тело: вес 90 кг, без живота и боков',1,'90 кг и сухой торс'],['dev','Пробежать 7 км'],['dev','12 подтягиваний и 20 отжиманий'],['dev','Прочитать 12 книг'],['dev','Пройти 2 курса за год'],['dev','Ходить в зал'],
-  ['fam','12 свиданий жене (раз в месяц)'],['fam','СПА и отель для жены'],['fam','Подарок жене на годовщину'],['fam','Переехать в новое жильё'],['fam','Купить кровать'],['fam','Первое путешествие'],['fam','Норвегия: фьорды'],['fam','Новая машина'],
-  ['soc','Пожертвовать в фонд от 500 € за год'],
-  ['hob','Матч «Милана»'],['hob','Часы Garmin'],['hob','Техника Apple'],['hob','Рабочее место: стол, стул, ноутбук, монитор']];
-  return L.map((x,i)=>({id:'g'+(i+1),area:x[0],t:x[1],main:!!x[2],crit:x[3]||'',col:0}));
-}
 
 const KEY='my-dashboard-v1';
 function seed(){
   const n=new Date(),y=n.getFullYear(),m=n.getMonth(),dd=n.getDate();
   const ago=k=>iso(new Date(y,m,dd-k));
   return {
-    tab:'goals',theme:'light',style:'apple',name:'',goalPct:80,reward:'',trk:[],goals:seedGoals(),
+    tab:'today',theme:'light',style:'apple',name:'',goalPct:80,reward:'',trk:[],
     habits:[
       {id:uid(),name:'Вода с утра',icon:'water',color:'#0a84ff',days:{[ago(0)]:1,[ago(1)]:1,[ago(2)]:1,[ago(4)]:1}},
       {id:uid(),name:'Зарядка',icon:'fit',color:'#ff9f0a',days:{[ago(1)]:1,[ago(2)]:1,[ago(3)]:1}},
@@ -721,8 +611,8 @@ function seed(){
       {id:uid(),name:'Бег',icon:'run',color:'#ff375f',freq:'alt',days:{[ago(1)]:1,[ago(3)]:1,[ago(5)]:1}}]
   };
 }
-const KEEP=['goals','tab','theme','style','name','goalPct','reward','habits','trk','_t'];
-const norm=o=>{const r={};KEEP.forEach(k=>{if(o&&o[k]!==undefined)r[k]=o[k]});if(!['goals','today','week','month','stats','habits','trk'].includes(r.tab))r.tab='today';if(r.goals&&r.goals.some(g=>typeof g.col!=='number'||!g.area))delete r.goals;if(r.goals)r.goals=r.goals.map(g=>({...g,parts:g.parts||[]}));if(r.trk)r.trk=r.trk.map(t=>({...t,total:+t.total||1,cur:Math.max(0,+t.cur||0)}));if(r.habits)r.habits=r.habits.map(h=>({...h,days:h.days||{},skip:h.skip||{}}));return r};
+const KEEP=['tab','theme','style','name','goalPct','reward','habits','trk','_t'];
+const norm=o=>{const r={};KEEP.forEach(k=>{if(o&&o[k]!==undefined)r[k]=o[k]});if(!['today','week','month','stats','habits','trk'].includes(r.tab))r.tab='today';if(r.trk)r.trk=r.trk.map(t=>({...t,total:+t.total||1,cur:Math.max(0,+t.cur||0)}));if(r.habits)r.habits=r.habits.map(h=>({...h,days:h.days||{},skip:h.skip||{}}));return r};
 const mk=o=>Object.assign(seed(),norm(o));
 let S;
 try{const r=localStorage.getItem(KEY);S=r?mk(JSON.parse(r)):seed()}catch(e){S=seed()}
@@ -805,7 +695,6 @@ async function ghConnect(){
 let sheet=false,sheetMsg='',resetArm=false,bkText='',txType='out',anim=true;
 
 const TABS=[
-  {id:'goals',name:'Цели',ic:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/>'},
   {id:'trk',name:'Трекеры',ic:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'},
   {id:'today',name:'Привычки',ic:'<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.3l2.5 2.5 4.5-5"/>'},
   {id:'week',name:'Неделя',ic:'<rect x="3.5" y="5" width="17" height="15" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'},
@@ -1087,7 +976,7 @@ const A={
   reset:()=>{
     if(!resetArm){resetArm=true;return 'skip-save'}
     const keep={tab:S.tab,theme:S.theme,name:S.name};
-    S=Object.assign(seed(),keep,{habits:[],reward:'',goalPct:80,goals:[]});sheet=false;resetArm=false}
+    S=Object.assign(seed(),keep,{habits:[],reward:'',goalPct:80,});sheet=false;resetArm=false}
 };
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-a]');if(!el)return;
@@ -1136,54 +1025,6 @@ document.addEventListener('change',e=>{
   }
 });
 
-/* ---------- Цели (доска-канбан, принцип Маргулана) ---------- */
-const AREAS={fin:['Финансы','#2bb3a3'],biz:['Бизнес и работа','#4a90e2'],dev:['Развитие и тело','#a76cf0'],fam:['Семья','#f2557a'],soc:['Общественные дела','#3fb36b'],hob:['Хобби','#f0a030']};
-const GCOLS=['Нужно сделать','Запланировано','В процессе','Мяч на другой стороне','Сегодня','Сделано'];
-const GM=[];for(let y=2026;y<=2027;y++)for(let m=(y===2026?11:1);m<=12;m++)GM.push(y+'-'+pad(m));
-let gFilter='',gArm=null,gEdit=null,gMon=(()=>{const t=today().slice(0,7);return GM.includes(t)?t:GM[0]})();
-const gmLab=k=>{const [y,m]=k.split('-').map(Number);return MONTHS[m-1]+(y!==2027?' ’'+String(y).slice(2):'')};
-const gmOpts=sel=>GM.map(k=>`<option value="${k}" ${k===sel?'selected':''}>${gmLab(k)}</option>`).join('');
-const gprog=g=>g.parts&&g.parts.length?g.parts.filter(x=>x.d).length/g.parts.length*100:g.col/5*100;
-const gcol=g=>(AREAS[g.area]||AREAS.dev)[1];
-function goalsView(){
-  const G=S.goals||[],vis=G.filter(g=>!gFilter||g.area===gFilter),mains=G.filter(g=>g.main),dn=G.filter(g=>g.col>=5).length;
-  const dleft=Math.max(0,Math.ceil((new Date(2028,0,1)-new Date(today()+'T00:00:00'))/864e5));
-  const ctl=g=>`<div class="gacts"><button data-a="gmove" data-id="${g.id}" data-v="-1" ${g.col<=0?'disabled':''} aria-label="Назад">‹</button><button data-a="gmove" data-id="${g.id}" data-v="1" ${g.col>=5?'disabled':''} aria-label="Дальше">›</button><button class="${gEdit===g.id?'on':''}" data-a="gcut" data-id="${g.id}" aria-label="Разрезать на части" title="Разрезать на части по месяцам">✂</button><span class="gsp"></span><button class="${g.main?'on':''}" data-a="gmain" data-id="${g.id}" aria-label="Главная цель" title="Главная цель">${g.main?'★':'☆'}</button><button data-a="gdel" data-id="${g.id}" aria-label="Удалить">${gArm===g.id?'Удалить?':'✕'}</button></div>`;
-  const pl=g=>g.parts&&g.parts.length?`<div class="gpl">${g.parts.filter(x=>x.d).length} из ${g.parts.length} частей</div>${bar(gprog(g),gcol(g))}`:'';
-  const editor=g=>`<div class="gedit"><div class="lbl" style="margin-bottom:8px">Части («слона по кусочку»)</div>${(g.parts||[]).map(x=>`<div class="gpart ${x.d?'ok':''}"><button class="gck" style="--sc:${gcol(g)}" data-a="gpart" data-id="${g.id}" data-v="${x.id}" aria-label="Готово">${x.d?CHECK:''}</button><div class="grow">${esc(x.t)}</div><select data-gpm="1" data-g="${g.id}" data-p="${x.id}">${gmOpts(x.m)}</select><button class="gx" data-a="gpnext" data-id="${g.id}" data-v="${x.id}" title="Перенести на следующий месяц" aria-label="Перенести на месяц вперёд">→</button><button class="gx" data-a="gpdel" data-id="${g.id}" data-v="${x.id}" aria-label="Удалить часть">✕</button></div>`).join('')||'<p class="empty" style="margin:0 0 8px">Частей пока нет.</p>'}
-    <form class="gf" data-f="addPart" data-g="${g.id}"><input name="t" placeholder="Часть: например, 100 слов" maxlength="80" autocomplete="off" required><select name="m">${gmOpts(gMon)}</select><button class="btn sm">Добавить</button></form>
-    <form class="gf" data-f="splitGoal" data-g="${g.id}"><span class="lbl">Или разделить поровну:</span><input name="n" type="number" min="2" max="14" value="3" inputmode="numeric" style="max-width:70px"><span class="lbl">мес. начиная с</span><select name="m">${gmOpts(gMon)}</select><button class="btn sm">Разделить</button></form></div>`;
-  const card=g=>`<div class="gc ${g.col>=5?'done':''}" style="--sc:${gcol(g)}"><b>${esc(g.t)}</b>${g.crit?`<small>${esc(g.crit)}</small>`:''}<em>${AREAS[g.area]?AREAS[g.area][0]:''}</em>${pl(g)}${ctl(g)}${gEdit===g.id&&!g.main?editor(g):''}</div>`;
-  const allParts=G.flatMap(g=>(g.parts||[]).map(x=>({g,x}))),inMon=allParts.filter(o=>o.x.m===gMon),monDone=inMon.filter(o=>o.x.d).length;
-  const monCard=`<section class="card c12"><h3>Части по месяцам<small>${gmLab(gMon)}: ${monDone} из ${inMon.length}</small></h3><div class="gchips">${GM.map(k=>{const n=allParts.filter(o=>o.x.m===k).length;return `<button class="${k===gMon?'on':''}" data-a="gmon" data-v="${k}">${gmLab(k)}${n?' · '+n:''}</button>`}).join('')}</div>${bar(inMon.length?monDone/inMon.length*100:0)}${inMon.length?inMon.map(o=>`<div class="gpart ${o.x.d?'ok':''}"><button class="gck" style="--sc:${gcol(o.g)}" data-a="gpart" data-id="${o.g.id}" data-v="${o.x.id}" aria-label="Готово">${o.x.d?CHECK:''}</button><div class="grow"><em class="gtg" style="--sc:${gcol(o.g)}">${esc(o.g.t)}</em>${esc(o.x.t)}</div><button class="gx" data-a="gpnext" data-id="${o.g.id}" data-v="${o.x.id}" title="Перенести на следующий месяц">→</button></div>`).join(''):'<p class="empty" style="margin-top:12px">На этот месяц частей нет. Нажми ✂ на любой цели ниже, чтобы разрезать её на куски.</p>'}</section>`;
-  const chips=`<div class="gchips"><button class="${gFilter?'':'on'}" data-a="gsph" data-v="">Все · ${G.length}</button>${Object.entries(AREAS).map(([k,[n,c]])=>{const a=G.filter(g=>g.area===k);return `<button class="${gFilter===k?'on':''}" style="--sc:${c}" data-a="gsph" data-v="${k}"><i></i>${n} · ${a.filter(g=>g.col>=5).length}/${a.length}</button>`}).join('')}</div>`;
-  return `<div class="grid">
-  <section class="card c12"><div class="gh2"><div><h3 style="margin:0 0 4px">Цели до конца 2027</h3><div class="lbl">${dn} из ${G.length} достигнуто</div></div><div class="gdays"><b>${dleft}</b><span>дней осталось</span></div></div>${bar(G.length?dn/G.length*100:0)}</section>
-  <section class="card c12"><h3>Главные<small>${mains.length} из 3</small></h3>${mains.length?`<div class="gmains">${mains.map(g=>`<div class="gm" style="--sc:${gcol(g)}"><em>${AREAS[g.area][0]}</em><b>${esc(g.t)}</b>${g.crit?`<small>${esc(g.crit)}</small>`:''}<div class="gstat">${g.parts&&g.parts.length?g.parts.filter(x=>x.d).length+' из '+g.parts.length+' частей':GCOLS[g.col]}</div>${bar(gprog(g),gcol(g))}${ctl(g)}${gEdit===g.id?editor(g):''}</div>`).join('')}</div>`:'<p class="empty">Нажми ☆ на карточке, чтобы сделать цель главной (не больше трёх).</p>'}</section>
-  ${monCard}
-  <section class="card c12"><h3>Доска<small>двигай карточки стрелками</small></h3>${chips}
-    <div class="gboard">${GCOLS.map((n,i)=>{const a=vis.filter(g=>g.col===i);return `<div class="gcl"><h4>${n}<small>${a.length}</small></h4>${a.map(card).join('')||'<div class="gempty">—</div>'}</div>`}).join('')}</div>
-    <form class="hadd" data-f="addGoal" style="margin-top:16px"><input name="t" placeholder="Новая цель" maxlength="90" autocomplete="off" required><select name="area">${Object.entries(AREAS).map(([k,[n]])=>`<option value="${k}" ${gFilter===k?'selected':''}>${n}</option>`).join('')}</select><button class="btn">Добавить</button></form></section>
-  </div>`;
-}
-views.goals=goalsView;
-Object.assign(A,{
-  gsph:d=>{gFilter=d.v||'';return 'skip-save'},
-  gmon:d=>{gMon=d.v;return 'skip-save'},
-  gcut:d=>{gEdit=gEdit===d.id?null:d.id;return 'skip-save'},
-  gpart:d=>{const g=S.goals.find(x=>x.id===d.id),x=g&&g.parts.find(y=>y.id===d.v);if(x)x.d=x.d?0:1},
-  gpdel:d=>{const g=S.goals.find(x=>x.id===d.id);if(g)g.parts=g.parts.filter(y=>y.id!==d.v)},
-  gpnext:d=>{const g=S.goals.find(x=>x.id===d.id),x=g&&g.parts.find(y=>y.id===d.v);if(!x)return;const i=GM.indexOf(x.m);if(i>=0&&i<GM.length-1)x.m=GM[i+1]},
-  gmove:d=>{const g=S.goals.find(x=>x.id===d.id);if(g)g.col=clamp(g.col+(+d.v),0,5)},
-  gmain:d=>{const g=S.goals.find(x=>x.id===d.id);if(!g)return;if(!g.main&&S.goals.filter(x=>x.main).length>=3)return 'skip-save';g.main=!g.main},
-  gdel:d=>{if(gArm!==d.id){gArm=d.id;return 'skip-save'}S.goals=S.goals.filter(x=>x.id!==d.id);gArm=null}
-});
-Object.assign(F,{
-  addPart:(fd,d)=>{const g=S.goals.find(x=>x.id===d.g);if(g){g.parts=g.parts||[];g.parts.push({id:uid(),t:fd.t.trim(),m:fd.m||gMon,d:0});gMon=fd.m||gMon}},
-  splitGoal:(fd,d)=>{const g=S.goals.find(x=>x.id===d.g);if(!g)return;const n=clamp(Math.round(num(fd.n))||2,2,14),i0=Math.max(0,GM.indexOf(fd.m));g.parts=g.parts||[];for(let i=0;i<n&&i0+i<GM.length;i++)g.parts.push({id:uid(),t:`Часть ${i+1} из ${n}`,m:GM[i0+i],d:0})},
-  addGoal:fd=>{S.goals=S.goals||[];S.goals.push({id:uid(),area:fd.area||'dev',t:fd.t.trim(),main:false,crit:'',col:0})}});
-
-document.addEventListener('change',e=>{const el=e.target;if(el.dataset.gpm){const g=S.goals.find(x=>x.id===el.dataset.g),x=g&&g.parts.find(y=>y.id===el.dataset.p);if(x){x.m=el.value;save();render()}}});
 /* ---------- network status ---------- */
 function net(){
   const on=navigator.onLine,n=$('#net');let txt,warn=!on;
