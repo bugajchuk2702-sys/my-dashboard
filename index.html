@@ -1090,8 +1090,8 @@ function goalsView(){
   const G=S.goals||[],main=G.filter(g=>g.st==='main'),bg=G.filter(g=>g.st==='bg'),later=G.filter(g=>g.st==='later'),dn=G.filter(g=>g.st==='done');
   const avg=a=>a.length?a.reduce((s,g)=>s+gp(g),0)/a.length:0;
   const mainAvg=Math.round(avg(main.concat(dn.filter(g=>g.prev==='main'))));
-  const y27=new Date(2027,0,1),dleft=Math.ceil((y27-new Date(today()+'T00:00:00'))/864e5);
-  const timeTxt=dleft>0?`<b>${dleft}</b><span>дней до 2027</span>`:`<b>${Math.max(0,Math.ceil((new Date(2028,0,1)-new Date(today()+'T00:00:00'))/864e5))}</b><span>дней до конца года</span>`;
+  const y27=new Date(2028,0,1),dleft=Math.max(0,Math.ceil((y27-new Date(today()+'T00:00:00'))/864e5));
+  const timeTxt=`<b>${dleft}</b><span>дней до конца 2027</span>`;
   /* шаги периода */
   const allSteps=G.flatMap(g=>(g.steps||[]).map(s=>({g,s})));
   const per=allSteps.filter(x=>gIn(x.s.m)),perDone=per.filter(x=>x.s.d).length,perPct=per.length?perDone/per.length*100:0;
