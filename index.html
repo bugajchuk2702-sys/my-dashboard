@@ -467,13 +467,13 @@ body.swap{animation:hflash .6s both}
 @media (prefers-reduced-motion:reduce){:root[data-style=hero] *,:root[data-style=hero] *::after{animation:none!important;transition:none!important}}
 
 /* ---------- цели (метод Маргулана) ---------- */
-.mis{font-size:17px;font-weight:600;line-height:1.35;padding:14px 16px;color:#d97706}
+input.mis:not([type=range]){font-size:17px;font-weight:600;line-height:1.35;padding:14px 16px;color:#d97706}
 .gc b{font-size:15px;font-weight:600}
 .gc small.lbl{font-size:13px;color:var(--tx2)}
 :root[data-style=hero] .gc{background:#1d2b45;border:1px solid rgba(150,190,255,.2)}
 :root[data-style=hero] .gc b{font-family:'Fira Sans',sans-serif;font-style:normal;text-transform:none;letter-spacing:0;font-size:16px;font-weight:600;color:#fff}
 :root[data-style=hero] .gc small.lbl{color:#b9cbe6}
-:root[data-style=hero] .mis{color:#f99e1a;background:#1d2b45;border:1px solid rgba(249,158,26,.45)}
+:root[data-style=hero] input.mis:not([type=range]){color:#f99e1a;background:#1d2b45;border:1px solid rgba(249,158,26,.45)}
 body[data-tab=goals]{--accent:#5e5ce6}
 .mchips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
 .mchips button{border:0;font:inherit;font-size:13px;font-weight:600;padding:7px 13px;border-radius:99px;background:var(--fill);color:var(--tx);cursor:pointer}
