@@ -1096,7 +1096,7 @@ function goalsView(){
   const allSteps=G.flatMap(g=>(g.steps||[]).map(s=>({g,s})));
   const per=allSteps.filter(x=>gIn(x.s.m)),perDone=per.filter(x=>x.s.d).length,perPct=per.length?perDone/per.length*100:0;
   const unass=allSteps.filter(x=>!x.s.m&&!x.s.d&&x.g.st!=='done');
-  const stepRow=({g,s},showMon)=>`<div class="gstep ${s.d?'d':''}" style="--gc:${gcol(g)}"><button class="gck" data-a="gstep" data-g="${g.id}" data-v="${s.id}" aria-label="Отметить">${s.d?CHECK:''}</button><div class="grow"><span class="gtag">${esc((AREAS[g.area]||AREAS.dev)[0])} · ${esc(g.t)}</span>${esc(s.t)}</div>${showMon?`<select data-gsm="1" data-g="${g.id}" data-s="${s.id}">${gMonOpts(s.m,'Месяц…')}</select>`:''}</div>`;
+  const stepRow=({g,s},showMon)=>`<div class="gstep ${s.d?'d':''}" style="--gc:${gcol(g)}"><button class="gck" data-a="gstep" data-g="${g.id}" data-v="${s.id}" aria-label="Отметить">${s.d?CHECK:''}</button><div class="grow"><span class="gtag">${esc((AREAS[g.area]||AREAS.dev)[0])} · ${esc(g.t)}</span>${esc(s.t)}</div>${showMon?`<select data-gsm="1" data-g="${g.id}" data-s="${s.id}">${gMonOpts(s.m,'Месяц…')}</select>${s.m&&!s.d?`<button class="btn ghost sm" data-a="gnext" data-g="${g.id}" data-v="${s.id}" title="Не успел — перенести на следующий месяц" aria-label="Перенести на следующий месяц">→</button>`:''}`:''}</div>`;
   /* карточка цели */
   const card=g=>{
     const p=Math.round(gp(g)),col=gcol(g),ed=gEdit===g.id,hasSt=g.steps&&g.steps.length;
@@ -1139,6 +1139,7 @@ Object.assign(A,{
   gper:d=>{gPer=d.v;return 'skip-save'},
   gmon:d=>{gMon=d.v;return 'skip-save'},
   gstep:d=>{const g=S.goals.find(x=>x.id===d.g),s=g&&g.steps.find(x=>x.id===d.v);if(s)s.d=s.d?0:1},
+  gnext:d=>{const g=S.goals.find(x=>x.id===d.g),s=g&&g.steps.find(x=>x.id===d.v);if(!s)return;const i=GM.indexOf(s.m);if(i>=0&&i<GM.length-1)s.m=GM[i+1]},
   gsdel:d=>{const g=S.goals.find(x=>x.id===d.g);if(g)g.steps=g.steps.filter(x=>x.id!==d.v)},
   gdone:d=>{const g=S.goals.find(x=>x.id===d.g);if(!g)return;if(g.st==='done'){g.st=g.prev||'main';delete g.prev}else{g.prev=g.st;g.st='done'}},
   gedit:d=>{gEdit=gEdit===d.g?null:d.g;gArm=null;return 'skip-save'},
