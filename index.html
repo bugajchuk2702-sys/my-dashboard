@@ -497,6 +497,26 @@ body[data-tab=goals]{--accent:#8b5cf6}
 :root[data-theme=dark] select,:root[data-style=hero] select{color-scheme:dark}
 :root[data-theme=dark] option{background:#26272a;color:#f5f5f7}
 :root[data-style=hero] option{background:#141f33;color:#eef3fb}
+
+/* читаемость целей */
+.gstep{font-size:15.5px;padding:9px 0}
+.gstep select{font-size:14px;max-width:none;min-width:118px;padding:7px 10px}
+.gtag{font-size:13px;font-weight:650;color:color-mix(in srgb,var(--gc) 65%,var(--tx))}
+.gtop small{font-size:14px}
+.gtop .grow b{font-size:17px}
+.gsec{font-size:14px;color:var(--tx)}
+.gper b{font-size:14.5px;line-height:1.3}.gper span{font-size:13.5px}
+.gh .gs div{font-size:13px}
+.gcard small.lbl{font-size:14px}
+:root[data-style=hero] .gtag{color:color-mix(in srgb,var(--gc) 45%,#fff)}
+:root[data-style=hero] .gtop small,:root[data-style=hero] .gcard small.lbl,:root[data-style=hero] .gper span,:root[data-style=hero] .gh .gs div,:root[data-style=hero] .lbl{color:#c4d3ea}
+:root[data-style=hero] .gsec{color:#e3ecf9}
+:root[data-style=hero] .gstep{border-top-color:rgba(150,190,255,.22)}
+:root[data-style=hero] .gstep .grow{color:#fff}
+:root[data-style=hero] .gstep.d .grow{color:#9db3d1}
+:root[data-style=hero] .gstep select{background:#142038;border-color:rgba(150,190,255,.35);color:#fff}
+:root[data-style=hero] .gper>div{border:1px solid rgba(150,190,255,.18);border-left:4px solid var(--gc)}
+:root[data-style=hero] .gper b{color:#fff;font-family:'Fira Sans',sans-serif;font-style:normal;text-transform:none;letter-spacing:0}
 </style>
 </head>
 <body data-tab="personal">
@@ -1085,7 +1105,7 @@ const gIn=mk=>{if(!mk)return false;const [y,m]=mk.split('-').map(Number),[Y,M]=g
 const GPN={month:'Месяц',quarter:'Квартал',half:'Полгода',year:'Год'};
 function gPerLabel(){const [Y,M]=gMon.split('-').map(Number);
   return gPer==='month'?MONTHS[M-1]+' '+Y:gPer==='quarter'?`${Math.floor((M-1)/3)+1} квартал ${Y}`:gPer==='half'?`${M<=6?'1':'2'} полугодие ${Y}`:`${Y} год`}
-const gMonOpts=(sel,empty)=>`${empty?`<option value="" ${sel?'':'selected'}>${empty}</option>`:''}${GM.map(k=>`<option value="${k}" ${k===sel?'selected':''}>${gmLab(k)}${k.slice(0,4)==='2026'?' (пробный)':''}</option>`).join('')}`;
+const gMonOpts=(sel,empty)=>`${empty?`<option value="" ${sel?'':'selected'}>${empty}</option>`:''}${GM.map(k=>`<option value="${k}" ${k===sel?'selected':''}>${gmLab(k)}</option>`).join('')}`;
 function goalsView(){
   const G=S.goals||[],main=G.filter(g=>g.st==='main'),bg=G.filter(g=>g.st==='bg'),later=G.filter(g=>g.st==='later'),dn=G.filter(g=>g.st==='done');
   const avg=a=>a.length?a.reduce((s,g)=>s+gp(g),0)/a.length:0;
